@@ -1,0 +1,19 @@
+[toolchain]
+anchor_version = "1.0.0"
+
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+blinkremit = "H16a8Ej3KyAYQ8apJK1ACYiJm7xSMTtnqJqdHinUUsrm"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "/home/star/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
