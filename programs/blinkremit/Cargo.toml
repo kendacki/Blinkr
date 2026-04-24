@@ -22,4 +22,5 @@ idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 [dependencies]
 anchor-lang = { version = "1.0.0", features = ["init-if-needed"] }
 anchor-spl = { version = "1.0.0", features = ["associated_token", "token_2022"] }
+ed25519-dalek = { version = "2.1", default-features = false, features = ["alloc", "zeroize"] }
 solana-sha256-hasher = "3.1.0"

@@ -3,14 +3,14 @@ import { Program } from "@coral-xyz/anchor";
 import { Blinkremit } from "../target/types/blinkremit";
 
 describe("blinkremit", () => {
-  // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const program = anchor.workspace.Blinkremit as Program<Blinkremit>;
 
-  it("Is initialized!", async () => {
-    // Add your test here.
-    const tx = await program.methods.initialize().rpc();
-    console.log("Your transaction signature", tx);
+  it("loads program idl", () => {
+    if (!program) {
+      throw new Error("Program workspace not loaded; run anchor build && anchor test from Anchor toolchain");
+    }
+    expect(program.programId).toBeDefined();
   });
 });

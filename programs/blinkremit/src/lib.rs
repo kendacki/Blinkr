@@ -19,24 +19,25 @@ pub mod blinkremit {
         ctx: Context<CreateEscrow>,
         blink_id: [u8; 32],
         amount: u64,
-        credential_hash: [u8; 32],
         expires_at: i64,
     ) -> Result<()> {
-        instructions::create_escrow::handle_create_escrow(
-            ctx,
-            blink_id,
-            amount,
-            credential_hash,
-            expires_at,
-        )
+        instructions::create_escrow::handle_create_escrow(ctx, blink_id, amount, expires_at)
     }
 
     pub fn claim_escrow(
         ctx: Context<ClaimEscrow>,
         contractor_wallet: Pubkey,
-        webauthn_proof: [u8; 64],
+        credential_hash: [u8; 32],
+        expiry_slot: u64,
+        relayer_sig: [u8; 64],
     ) -> Result<()> {
-        instructions::claim_escrow::handle_claim_escrow(ctx, contractor_wallet, webauthn_proof)
+        instructions::claim_escrow::handle_claim_escrow(
+            ctx,
+            contractor_wallet,
+            credential_hash,
+            expiry_slot,
+            relayer_sig,
+        )
     }
 
     pub fn refund_escrow(ctx: Context<RefundEscrow>) -> Result<()> {

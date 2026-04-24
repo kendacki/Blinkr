@@ -1,10 +1,11 @@
 use anchor_lang::prelude::*;
+use solana_sha256_hasher::hash;
 use anchor_spl::{
     associated_token::AssociatedToken,
     token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked},
 };
 
-use crate::constants::{ESCROW_SEED, USDC_DECIMALS};
+use crate::constants::{ESCROW_SEED, MAX_ESCROW_TTL_SECS, USDC_DECIMALS};
 use crate::error::BlinkRemitError;
 use crate::state::{EscrowAccount, EscrowStatus};
 use crate::EscrowCreated;
@@ -47,22 +48,32 @@ pub fn handle_create_escrow(
     ctx: Context<CreateEscrow>,
     blink_id: [u8; 32],
     amount: u64,
-    credential_hash: [u8; 32],
     expires_at: i64,
 ) -> Result<()> {
     require!(amount > 0, BlinkRemitError::InvalidAmount);
     let now = Clock::get()?.unix_timestamp;
+    let slot = Clock::get()?.slot;
     require!(expires_at > now, BlinkRemitError::InvalidExpiry);
+    require!(
+        expires_at <= now + MAX_ESCROW_TTL_SECS,
+        BlinkRemitError::ExpiryTooLong
+    );
     require!(
         ctx.accounts.usdc_mint.decimals == USDC_DECIMALS,
         BlinkRemitError::InvalidMint
     );
 
+    let mut nonce_input = Vec::with_capacity(32 + 8);
+    nonce_input.extend_from_slice(&blink_id);
+    nonce_input.extend_from_slice(&slot.to_le_bytes());
+    let claim_nonce = hash(&nonce_input).to_bytes();
+
     let escrow = &mut ctx.accounts.escrow;
     escrow.employer = ctx.accounts.employer.key();
     escrow.amount = amount;
     escrow.blink_id = blink_id;
-    escrow.credential_hash = credential_hash;
+    escrow.credential_hash = [0u8; 32];
+    escrow.claim_nonce = claim_nonce;
     escrow.contractor_wallet = None;
     escrow.status = EscrowStatus::Pending;
     escrow.created_at = now;

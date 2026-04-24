@@ -6,7 +6,10 @@ pub struct EscrowAccount {
     pub employer: Pubkey,
     pub amount: u64,
     pub blink_id: [u8; 32],
+    /// Filled at successful claim by relayer (WebAuthn credential id hash off-chain).
     pub credential_hash: [u8; 32],
+    /// Replay guard: SHA-256(blink_id || create_slot_le_bytes).
+    pub claim_nonce: [u8; 32],
     pub contractor_wallet: Option<Pubkey>,
     pub status: EscrowStatus,
     pub created_at: i64,
