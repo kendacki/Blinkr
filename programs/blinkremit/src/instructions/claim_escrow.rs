@@ -1,15 +1,15 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked};
-use solana_sha256_hasher::hash;
+use ed25519_dalek::{Signature, Verifier, VerifyingKey};
 
-use crate::constants::{ESCROW_SEED, USDC_DECIMALS};
+use crate::constants::{ESCROW_SEED, EXPECTED_RELAYER, USDC_DECIMALS};
 use crate::error::BlinkRemitError;
 use crate::state::{EscrowAccount, EscrowStatus};
 use crate::EscrowClaimed;
 
 #[derive(Accounts)]
 pub struct ClaimEscrow<'info> {
-    /// Relayer / fee payer submitting the claim on behalf of the contractor.
+    #[account(mut, signer, constraint = relayer.key() == EXPECTED_RELAYER @ BlinkRemitError::UnauthorizedRelayer)]
     pub relayer: Signer<'info>,
     #[account(
         mut,
@@ -37,7 +37,9 @@ pub struct ClaimEscrow<'info> {
 pub fn handle_claim_escrow(
     ctx: Context<ClaimEscrow>,
     contractor_wallet: Pubkey,
-    webauthn_proof: [u8; 64],
+    credential_hash: [u8; 32],
+    expiry_slot: u64,
+    relayer_sig: [u8; 64],
 ) -> Result<()> {
     require!(
         ctx.accounts.usdc_mint.decimals == USDC_DECIMALS,
@@ -48,29 +50,45 @@ pub fn handle_claim_escrow(
         BlinkRemitError::InvalidMint
     );
 
-    let now = Clock::get()?.unix_timestamp;
+    let clock = Clock::get()?;
+    require!(clock.slot <= expiry_slot, BlinkRemitError::AuthorizationExpired);
+
+    let mut msg = Vec::with_capacity(104);
     {
-        let escrow = &mut ctx.accounts.escrow;
+        let escrow = &ctx.accounts.escrow;
         require!(
             escrow.status == EscrowStatus::Pending,
             BlinkRemitError::AlreadyClaimed
         );
-        require!(now < escrow.expires_at, BlinkRemitError::Expired);
-
-        let provided_hash = hash(webauthn_proof.as_ref()).to_bytes();
         require!(
-            provided_hash == escrow.credential_hash,
-            BlinkRemitError::InvalidCredential
+            clock.unix_timestamp < escrow.expires_at,
+            BlinkRemitError::Expired
         );
-
-        escrow.contractor_wallet = Some(contractor_wallet);
-        escrow.status = EscrowStatus::Claimed;
+        msg.extend_from_slice(&escrow.blink_id);
+        msg.extend_from_slice(contractor_wallet.as_ref());
+        msg.extend_from_slice(&escrow.claim_nonce);
+        msg.extend_from_slice(&expiry_slot.to_le_bytes());
     }
+
+    let vk = VerifyingKey::from_bytes(&ctx.accounts.relayer.key().to_bytes())
+        .map_err(|_| error!(BlinkRemitError::InvalidRelayerSignature))?;
+    let sig = Signature::from_slice(&relayer_sig)
+        .map_err(|_| error!(BlinkRemitError::InvalidRelayerSignature))?;
+    vk.verify(msg.as_slice(), &sig)
+        .map_err(|_| error!(BlinkRemitError::InvalidRelayerSignature))?;
 
     let amount = ctx.accounts.escrow.amount;
     let blink_id = ctx.accounts.escrow.blink_id;
     let employer_key = ctx.accounts.escrow.employer;
     let bump = ctx.accounts.escrow.bump;
+
+    {
+        let escrow = &mut ctx.accounts.escrow;
+        escrow.contractor_wallet = Some(contractor_wallet);
+        escrow.credential_hash = credential_hash;
+        escrow.status = EscrowStatus::Claimed;
+    }
+
     let seeds: &[&[u8]] = &[ESCROW_SEED, employer_key.as_ref(), blink_id.as_ref(), &[bump]];
     let signer = &[seeds];
 

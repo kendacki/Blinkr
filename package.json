@@ -1,4 +1,8 @@
 {
+    "private": true,
+    "workspaces": [
+        "apps/web"
+    ],
     "scripts": {
         "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
         "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
