@@ -6,6 +6,7 @@ import {
 import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { NextRequest } from "next/server";
 import { verifyContractorSession } from "@/lib/auth";
+import { assertBlinkTransition } from "@/lib/blinkStateMachine";
 import { buildClaimAuthorizationMessage } from "@/lib/claimMessage";
 import { buildClaimEscrowInstruction } from "@/lib/claimInstruction";
 import { decodeEscrowClaimNonce } from "@/lib/decodedEscrow";
@@ -33,6 +34,9 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
     });
     if (!blink) {
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
+    }
+    if (blink.status === "CLAIMED" && blink.claimTxSig) {
+      return jsonOk({ claimTxSig: blink.claimTxSig, status: "CLAIMED" as const });
     }
     if (blink.status !== "OPENED" || !blink.walletAddress || !blink.escrowPDA || !blink.credentialId) {
       throw new ApiError(400, "INVALID_STATE", "Blink must be OPENED with wallet and credential before claim");
@@ -117,6 +121,7 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
     });
     await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, "confirmed");
 
+    assertBlinkTransition(blink.status, "CLAIMED");
     await prisma.blink.update({
       where: { id: blink.id },
       data: {
