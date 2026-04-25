@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
-const TERMINAL_STATUSES = ["CLAIMED", "OFFRAMPED", "REFUNDED"] as const;
+const TERMINAL_STATUSES = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"] as const;
 
 export async function GET(
   _req: NextRequest,
@@ -33,6 +33,8 @@ export async function GET(
       status: blink.status,
       expiresAt: blink.expiresAt.toISOString(),
       employerName: blink.employer.email ?? "Employer",
+      escrowPDA: blink.escrowPDA,
+      claimTxSig: blink.claimTxSig,
     });
   } catch (e) {
     return jsonError(e);

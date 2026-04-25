@@ -22,6 +22,9 @@ export async function POST(req: NextRequest) {
     if (blink.walletAddress !== body.walletAddress) {
       throw new ApiError(403, "FORBIDDEN", "Wallet does not match Blink");
     }
+    if (blink.status !== "CLAIMED") {
+      throw new ApiError(400, "INVALID_STATE", "Off-ramp is only available after the Blink is CLAIMED on-chain");
+    }
 
     const quote =
       body.provider === "meso"

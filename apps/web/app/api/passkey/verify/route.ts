@@ -2,6 +2,7 @@ import { Keypair } from "@solana/web3.js";
 import type { AuthenticationResponseJSON, RegistrationResponseJSON } from "@simplewebauthn/types";
 import { NextRequest } from "next/server";
 import { signContractorSessionToken } from "@/lib/auth";
+import { assertBlinkTransition } from "@/lib/blinkStateMachine";
 import { ensureBlinkPasskeyAllowed } from "@/lib/blinkGuards";
 import { ApiError, jsonError, jsonOk } from "@/lib/http";
 import { passkeyChallengeKey } from "@/lib/passkeyChallenge";
@@ -69,6 +70,7 @@ export async function POST(req: NextRequest) {
           counter: verified.counter,
         },
       });
+      assertBlinkTransition(blink.status, "OPENED");
       await prisma.blink.update({
         where: { id: body.blinkId },
         data: {
@@ -106,6 +108,23 @@ export async function POST(req: NextRequest) {
       data: { counter: newCounter },
     });
     const wallet = row.walletAddress;
+    if (
+      blink.status === "OPENED" &&
+      blink.walletAddress === wallet &&
+      blink.credentialId === row.id
+    ) {
+      const sessionToken = await signContractorSessionToken({
+        blinkId: blink.id,
+        walletAddress: wallet,
+      });
+      await getRedis().del(passkeyChallengeKey(body.blinkId));
+      return jsonOk({
+        walletAddress: wallet,
+        claimTxSig: blink.claimTxSig,
+        sessionToken,
+      });
+    }
+    assertBlinkTransition(blink.status, "OPENED");
     await prisma.blink.update({
       where: { id: body.blinkId },
       data: {
