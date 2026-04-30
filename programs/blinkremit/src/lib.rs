@@ -9,7 +9,7 @@ pub use constants::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("H16a8Ej3KyAYQ8apJK1ACYiJm7xSMTtnqJqdHinUUsrm");
+declare_id!("7A2de9YeGGMiLtiBBQYELVZyXTA5YCnUdGts9un9aCxa");
 
 #[program]
 pub mod blinkremit {
@@ -50,16 +50,20 @@ pub struct EscrowCreated {
     pub blink_id: [u8; 32],
     pub amount: u64,
     pub employer: Pubkey,
+    pub usdc_mint: Pubkey,
 }
 
 #[event]
 pub struct EscrowClaimed {
+    pub blink_id: [u8; 32],
     pub contractor_wallet: Pubkey,
     pub amount: u64,
+    pub usdc_mint: Pubkey,
 }
 
 #[event]
 pub struct EscrowRefunded {
     pub blink_id: [u8; 32],
     pub amount: u64,
+    pub usdc_mint: Pubkey,
 }

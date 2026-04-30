@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked};
 
-use crate::constants::{ESCROW_SEED, USDC_DECIMALS};
+use crate::constants::{ESCROW_SEED, EXPECTED_TOKEN_PROGRAM, EXPECTED_USDC_MINT, USDC_DECIMALS};
 use crate::error::BlinkRemitError;
 use crate::state::{EscrowAccount, EscrowStatus};
 use crate::EscrowRefunded;
@@ -40,12 +40,32 @@ pub fn handle_refund_escrow(ctx: Context<RefundEscrow>) -> Result<()> {
         ctx.accounts.usdc_mint.decimals == USDC_DECIMALS,
         BlinkRemitError::InvalidMint
     );
+    require!(
+        ctx.accounts.usdc_mint.key() == EXPECTED_USDC_MINT,
+        BlinkRemitError::InvalidUsdcMint
+    );
+    require!(
+        ctx.accounts.token_program.key() == EXPECTED_TOKEN_PROGRAM,
+        BlinkRemitError::InvalidTokenProgram
+    );
 
     let (amount, blink_id, employer_key, bump) = {
         let escrow = &mut ctx.accounts.escrow;
         require!(
             escrow.status == EscrowStatus::Pending,
             BlinkRemitError::AlreadyClaimed
+        );
+        require!(
+            escrow.usdc_mint == ctx.accounts.usdc_mint.key(),
+            BlinkRemitError::InvalidUsdcMint
+        );
+        require!(
+            escrow.token_program == ctx.accounts.token_program.key(),
+            BlinkRemitError::InvalidTokenProgram
+        );
+        require!(
+            escrow.escrow_token_account == ctx.accounts.escrow_token_account.key(),
+            BlinkRemitError::InvalidEscrowVault
         );
         let amount = escrow.amount;
         let blink_id = escrow.blink_id;
@@ -71,6 +91,10 @@ pub fn handle_refund_escrow(ctx: Context<RefundEscrow>) -> Result<()> {
     );
     token_interface::transfer_checked(cpi_ctx, amount, USDC_DECIMALS)?;
 
-    emit!(EscrowRefunded { blink_id, amount });
+    emit!(EscrowRefunded {
+        blink_id,
+        amount,
+        usdc_mint: ctx.accounts.usdc_mint.key(),
+    });
     Ok(())
 }
