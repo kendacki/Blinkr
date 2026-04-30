@@ -4,6 +4,9 @@ use anchor_lang::prelude::*;
 #[derive(InitSpace)]
 pub struct EscrowAccount {
     pub employer: Pubkey,
+    pub usdc_mint: Pubkey,
+    pub token_program: Pubkey,
+    pub escrow_token_account: Pubkey,
     pub amount: u64,
     pub blink_id: [u8; 32],
     /// Filled at successful claim by relayer (WebAuthn credential id hash off-chain).

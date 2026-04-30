@@ -6,7 +6,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-blinkremit = "H16a8Ej3KyAYQ8apJK1ACYiJm7xSMTtnqJqdHinUUsrm"
+blinkremit = "7A2de9YeGGMiLtiBBQYELVZyXTA5YCnUdGts9un9aCxa"
 
 [registry]
 url = "https://api.apr.dev"

@@ -6,7 +6,7 @@ describe("createBlinkBodySchema", () => {
     const parsed = createBlinkBodySchema.parse({
       contractorEmail: "a@b.com",
       amountUsdc: "10.123456",
-      employerWallet: "H16a8Ej3KyAYQ8apJK1ACYiJm7xSMTtnqJqdHinUUsrm",
+      employerWallet: "7A2de9YeGGMiLtiBBQYELVZyXTA5YCnUdGts9un9aCxa",
     });
     expect(parsed.amountUsdc).toBe("10.123456");
   });
@@ -16,7 +16,7 @@ describe("createBlinkBodySchema", () => {
       createBlinkBodySchema.parse({
         contractorEmail: "a@b.com",
         amountUsdc: "10.1234567",
-        employerWallet: "H16a8Ej3KyAYQ8apJK1ACYiJm7xSMTtnqJqdHinUUsrm",
+        employerWallet: "7A2de9YeGGMiLtiBBQYELVZyXTA5YCnUdGts9un9aCxa",
       }),
     ).toThrow();
   });

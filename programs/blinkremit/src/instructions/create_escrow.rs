@@ -5,7 +5,9 @@ use anchor_spl::{
     token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked},
 };
 
-use crate::constants::{ESCROW_SEED, MAX_ESCROW_TTL_SECS, USDC_DECIMALS};
+use crate::constants::{
+    ESCROW_SEED, EXPECTED_TOKEN_PROGRAM, EXPECTED_USDC_MINT, MAX_ESCROW_TTL_SECS, USDC_DECIMALS,
+};
 use crate::error::BlinkRemitError;
 use crate::state::{EscrowAccount, EscrowStatus};
 use crate::EscrowCreated;
@@ -62,6 +64,14 @@ pub fn handle_create_escrow(
         ctx.accounts.usdc_mint.decimals == USDC_DECIMALS,
         BlinkRemitError::InvalidMint
     );
+    require!(
+        ctx.accounts.usdc_mint.key() == EXPECTED_USDC_MINT,
+        BlinkRemitError::InvalidUsdcMint
+    );
+    require!(
+        ctx.accounts.token_program.key() == EXPECTED_TOKEN_PROGRAM,
+        BlinkRemitError::InvalidTokenProgram
+    );
 
     let mut nonce_input = Vec::with_capacity(32 + 8);
     nonce_input.extend_from_slice(&blink_id);
@@ -70,6 +80,9 @@ pub fn handle_create_escrow(
 
     let escrow = &mut ctx.accounts.escrow;
     escrow.employer = ctx.accounts.employer.key();
+    escrow.usdc_mint = ctx.accounts.usdc_mint.key();
+    escrow.token_program = ctx.accounts.token_program.key();
+    escrow.escrow_token_account = ctx.accounts.escrow_token_account.key();
     escrow.amount = amount;
     escrow.blink_id = blink_id;
     escrow.credential_hash = [0u8; 32];
@@ -96,6 +109,7 @@ pub fn handle_create_escrow(
         blink_id,
         amount,
         employer: ctx.accounts.employer.key(),
+        usdc_mint: ctx.accounts.usdc_mint.key(),
     });
     Ok(())
 }
