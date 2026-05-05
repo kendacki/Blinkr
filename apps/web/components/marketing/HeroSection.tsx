@@ -46,7 +46,7 @@ export function HeroSection() {
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
             <PrimaryButton href="/dashboard/payroll" size="md" tone="onDark">
-              Start Paying Now
+              Blink Now
             </PrimaryButton>
           </motion.div>
         </motion.div>

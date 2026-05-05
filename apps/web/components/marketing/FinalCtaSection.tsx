@@ -37,7 +37,7 @@ export function FinalCtaSection() {
                   </motion.p>
                   <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
                     <PrimaryButton href="/dashboard/payroll" size="md" tone="onDark">
-                      Start Paying Now
+                      Blink Now
                     </PrimaryButton>
                     <SecondaryButton href="/#faq" tone="onDark">
                       Read FAQs
