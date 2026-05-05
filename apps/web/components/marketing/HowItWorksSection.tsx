@@ -31,7 +31,7 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="border-t border-slate-100 bg-white py-16 sm:py-20 lg:py-24">
+    <section id="how-it-works" className="overflow-x-hidden border-t border-slate-100 bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
@@ -52,7 +52,25 @@ export function HowItWorksSection() {
           </motion.p>
         </motion.div>
 
-        <div className="mt-12 grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,1.5fr)_1fr] lg:gap-14">
+        <div className="relative mt-12 w-screen max-w-[100vw] left-1/2 right-1/2 -translate-x-1/2 flex justify-center px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5 }}
+            className="relative aspect-[464/830] w-full max-w-[min(1920px,calc(100vw-2rem))] drop-shadow-[0_30px_80px_rgba(168,85,247,0.22)]"
+          >
+            <Image
+              src="/images/how-it-works-dashboard.png"
+              alt="Dashboard preview: balances, activity, and client payouts in the Blinkr app"
+              fill
+              className="object-contain object-center"
+              sizes="(max-width: 1920px) 100vw, 1920px"
+            />
+          </motion.div>
+        </div>
+
+        <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div className="space-y-4">
             {steps
               .filter((s) => s.side === "left")
@@ -81,24 +99,6 @@ export function HowItWorksSection() {
                 );
               })}
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.5 }}
-            className="relative mx-auto w-full max-w-[min(100%,56rem)] lg:max-w-none"
-          >
-            <div className="relative mx-auto aspect-[1024/682] w-full drop-shadow-[0_30px_80px_rgba(168,85,247,0.22)]">
-              <Image
-                src="/images/how-it-works-dashboard.png"
-                alt="Dashboard preview: balances, activity, and client payouts in the Blinkr app"
-                fill
-                className="object-contain object-center"
-                sizes="(max-width: 1024px) 100vw, min(896px, 55vw)"
-              />
-            </div>
-          </motion.div>
 
           <div className="space-y-4">
             {steps
