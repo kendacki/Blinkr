@@ -24,8 +24,7 @@ export function FeatureSplitSection() {
                 Your payments are safe with Blinkr.
               </motion.h2>
               <motion.p variants={fadeUp} className="text-lg leading-relaxed text-slate-600">
-                Audited by top security firms. Funds are secured in non-custodial SPL Token-2022 Transfer Hook smart
-                contracts. No hidden fees, no custodial risk.
+                Verified by Certik, our smart contracts ensure you always keep control of your money. Zero hidden fees.
               </motion.p>
               <motion.div variants={fadeUp} className="grid gap-3 sm:grid-cols-2">
                 {[
