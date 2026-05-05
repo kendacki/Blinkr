@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { PrimaryButton, Pill } from "@/components/marketing/styled";
+import { PrimaryButton } from "@/components/marketing/styled";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 import { HeroFlowVisual } from "@/components/marketing/HeroFlowVisual";
 
@@ -17,9 +17,6 @@ export function HeroSection() {
           variants={stagger}
           className="space-y-6"
         >
-          <motion.div variants={fadeUp}>
-            <Pill>Solana native global payroll</Pill>
-          </motion.div>
           <motion.h1
             variants={fadeUp}
             className="font-[var(--font-poppins)] text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl"
@@ -34,11 +31,6 @@ export function HeroSection() {
               Start Paying Now
             </PrimaryButton>
           </motion.div>
-          <motion.ul variants={fadeUp} className="flex flex-wrap gap-4 text-sm text-slate-600">
-            <li className="rounded-lg bg-white/80 px-3 py-2 shadow-sm ring-1 ring-slate-100">USDC funding</li>
-            <li className="rounded-lg bg-white/80 px-3 py-2 shadow-sm ring-1 ring-slate-100">Passkey claim</li>
-            <li className="rounded-lg bg-white/80 px-3 py-2 shadow-sm ring-1 ring-slate-100">Local bank cash-out</li>
-          </motion.ul>
         </motion.div>
 
         <motion.div
