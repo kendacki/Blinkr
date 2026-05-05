@@ -15,7 +15,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
-    "worker:offramp": "npx tsx workers/offramp.ts"
+    "worker:offramp": "npx tsx workers/offramp.ts",
+    "optimize:dashboard-image": "node ./scripts/remove-dashboard-bg.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -50,6 +51,7 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.18",
     "prisma": "^5.22.0",
+    "sharp": "^0.34.5",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vitest": "^2.1.4"

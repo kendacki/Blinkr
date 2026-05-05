@@ -52,7 +52,7 @@ export function HowItWorksSection() {
           </motion.p>
         </motion.div>
 
-        <div className="mt-12 grid items-center gap-10 lg:grid-cols-3">
+        <div className="mt-12 grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,1.5fr)_1fr] lg:gap-14">
           <div className="space-y-4">
             {steps
               .filter((s) => s.side === "left")
@@ -87,15 +87,15 @@ export function HowItWorksSection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={viewportOnce}
             transition={{ duration: 0.5 }}
-            className="relative mx-auto w-full max-w-sm"
+            className="relative mx-auto w-full max-w-[min(100%,56rem)] lg:max-w-none"
           >
-            <div className="relative mx-auto aspect-[10/18] w-full drop-shadow-[0_30px_80px_rgba(168,85,247,0.18)]">
+            <div className="relative mx-auto aspect-[1024/682] w-full drop-shadow-[0_30px_80px_rgba(168,85,247,0.22)]">
               <Image
                 src="/images/how-it-works-dashboard.png"
                 alt="Dashboard preview: balances, activity, and client payouts in the Blinkr app"
                 fill
                 className="object-contain object-center"
-                sizes="(max-width: 1024px) 100vw, 384px"
+                sizes="(max-width: 1024px) 100vw, min(896px, 55vw)"
               />
             </div>
           </motion.div>
