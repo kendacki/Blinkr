@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Fingerprint, Link2, Wallet } from "lucide-react";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
@@ -88,34 +89,14 @@ export function HowItWorksSection() {
             transition={{ duration: 0.5 }}
             className="relative mx-auto w-full max-w-sm"
           >
-            <div className="relative mx-auto aspect-[10/18] w-full rounded-[2.6rem] border border-white/10 bg-gradient-to-b from-slate-900 to-slate-950 shadow-[0_30px_80px_rgba(168,85,247,0.18)]">
-              <div className="absolute left-1/2 top-3 h-1 w-20 -translate-x-1/2 rounded-full bg-white/15" />
-              <div className="absolute inset-0 rounded-[2.6rem] bg-[radial-gradient(ellipse_at_30%_15%,rgba(168,85,247,0.28),transparent_55%)]" />
-              <div className="relative h-full p-6">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs font-semibold text-white/90">Recipient Bank Details</div>
-                  <div className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">
-                    Verified
-                  </div>
-                </div>
-                <div className="mt-6 space-y-3">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-[10px] uppercase tracking-wide text-slate-400">Account name</div>
-                    <div className="mt-1 text-sm font-semibold text-white">Alex Contractor</div>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-[10px] uppercase tracking-wide text-slate-400">Claim method</div>
-                    <div className="mt-1 text-sm font-semibold text-white">Passkey (FaceID)</div>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-[10px] uppercase tracking-wide text-slate-400">Status</div>
-                    <div className="mt-1 text-sm font-semibold text-white">Ready to claim</div>
-                  </div>
-                </div>
-                <div className="absolute inset-x-6 bottom-6 rounded-2xl bg-white px-4 py-3 text-center text-sm font-semibold text-slate-900">
-                  Continue
-                </div>
-              </div>
+            <div className="relative mx-auto aspect-[10/18] w-full drop-shadow-[0_30px_80px_rgba(168,85,247,0.18)]">
+              <Image
+                src="/images/how-it-works-dashboard.png"
+                alt="Dashboard preview: balances, activity, and client payouts in the Blinkr app"
+                fill
+                className="object-contain object-center"
+                sizes="(max-width: 1024px) 100vw, 384px"
+              />
             </div>
           </motion.div>
 
