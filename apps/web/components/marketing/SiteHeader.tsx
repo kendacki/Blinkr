@@ -10,7 +10,7 @@ const nav = [
   { label: "Home", href: "/#hero" },
   { label: "Solutions", href: "/#features" },
   { label: "FAQ", href: "/#faq" },
-  { label: "Contact", href: "/#final-cta" },
+  { label: "Waitlist", href: "/#final-cta" },
 ];
 
 export function SiteHeader() {
