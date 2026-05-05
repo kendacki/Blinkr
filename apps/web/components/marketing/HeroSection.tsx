@@ -24,7 +24,7 @@ export function HeroSection() {
             variants={fadeUp}
             className="font-[var(--font-poppins)] text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl"
           >
-            Pay your global team instantly. Zero crypto knowledge required.
+            Pay your global team instantly.
           </motion.h1>
           <motion.p variants={fadeUp} className="max-w-xl text-lg leading-relaxed text-slate-600">
             Fund payroll in USDC. Send a link. Recipients claim with FaceID and cash out to their local bank.
