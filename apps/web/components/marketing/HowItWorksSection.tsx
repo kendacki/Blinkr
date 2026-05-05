@@ -89,7 +89,7 @@ export function HowItWorksSection() {
             transition={{ duration: 0.5 }}
             className="relative mx-auto w-full max-w-[min(100%,56rem)] lg:max-w-none"
           >
-            <div className="relative mx-auto aspect-[1024/682] w-full drop-shadow-[0_30px_80px_rgba(168,85,247,0.22)]">
+            <div className="relative mx-auto aspect-[464/830] w-full drop-shadow-[0_30px_80px_rgba(168,85,247,0.22)]">
               <Image
                 src="/images/how-it-works-dashboard.png"
                 alt="Dashboard preview: balances, activity, and client payouts in the Blinkr app"
