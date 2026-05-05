@@ -12,15 +12,15 @@ export function HeroFlowVisual({ variant = "light" }: HeroFlowVisualProps) {
   const cosmic = variant === "cosmic";
 
   const shell = cosmic
-    ? "relative aspect-[10/9] overflow-hidden rounded-3xl border border-white/20 bg-white/10 shadow-2xl shadow-purple-950/50 ring-1 ring-white/10 backdrop-blur-xl"
+    ? "relative aspect-[10/9] overflow-hidden rounded-3xl border border-white/25 bg-slate-950/35 shadow-2xl shadow-purple-950/40 ring-1 ring-white/15"
     : "relative aspect-[10/9] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-purple-500/10 ring-1 ring-slate-200";
 
   return (
     <div className={shell} role="img" aria-label="Phone mock with floating payroll status cards">
       {cosmic ? (
         <>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(250,204,21,0.12),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_80%,rgba(168,85,247,0.25),transparent_45%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(250,204,21,0.08),transparent_50%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_80%,rgba(168,85,247,0.12),transparent_45%)]" />
         </>
       ) : (
         <>
@@ -32,7 +32,7 @@ export function HeroFlowVisual({ variant = "light" }: HeroFlowVisualProps) {
       <div
         className={
           cosmic
-            ? "relative mx-auto mt-10 h-[78%] w-[58%] rounded-[2.2rem] border border-white/15 bg-slate-950/45 shadow-lg backdrop-blur-md"
+            ? "relative mx-auto mt-10 h-[78%] w-[58%] rounded-[2.2rem] border border-white/20 bg-slate-950/70 shadow-lg"
             : "relative mx-auto mt-10 h-[78%] w-[58%] rounded-[2.2rem] border border-slate-200 bg-gradient-to-b from-slate-50 to-white shadow-lg"
         }
       >
@@ -113,7 +113,7 @@ export function HeroFlowVisual({ variant = "light" }: HeroFlowVisualProps) {
       <motion.div
         className={
           cosmic
-            ? "absolute left-5 top-16 w-56 rounded-2xl border border-white/20 bg-slate-950/55 p-4 shadow-lg shadow-purple-950/30 backdrop-blur-md"
+            ? "absolute left-5 top-16 w-56 rounded-2xl border border-white/20 bg-slate-950/80 p-4 shadow-lg shadow-purple-950/30"
             : "absolute left-5 top-16 w-56 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-lg backdrop-blur"
         }
         animate={{ y: [0, -10, 0] }}
@@ -140,7 +140,7 @@ export function HeroFlowVisual({ variant = "light" }: HeroFlowVisualProps) {
       <motion.div
         className={
           cosmic
-            ? "absolute -right-2 top-24 w-60 rounded-2xl border border-white/20 bg-slate-950/55 p-4 shadow-lg shadow-purple-950/30 backdrop-blur-md"
+            ? "absolute -right-2 top-24 w-60 rounded-2xl border border-white/20 bg-slate-950/80 p-4 shadow-lg shadow-purple-950/30"
             : "absolute -right-2 top-24 w-60 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-lg backdrop-blur"
         }
         animate={{ y: [0, 12, 0] }}
