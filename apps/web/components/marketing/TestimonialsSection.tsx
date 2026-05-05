@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
@@ -76,8 +77,7 @@ export function TestimonialsSection() {
               <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-slate-700">&ldquo;{t.quote}&rdquo;</blockquote>
               <figcaption className="mt-6 flex items-center gap-3">
                 <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 ring-2 ring-white">
-                  {/* Use <img> to avoid Next image remotePatterns changes */}
-                  <img src={t.avatar} alt="" className="h-full w-full object-cover" aria-hidden />
+                  <Image src={t.avatar} alt="" fill sizes="48px" className="object-cover" aria-hidden />
                   <span className="sr-only">Avatar for {t.name}</span>
                 </div>
                 <div>

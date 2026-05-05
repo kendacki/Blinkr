@@ -1,5 +1,6 @@
-import type { BlinkStatus } from "@prisma/client";
 import { ApiError } from "./http";
+
+export type BlinkStatus = "PENDING" | "OPENED" | "CLAIMED" | "OFFRAMPED" | "EXPIRED" | "REFUNDED";
 
 export function ensureBlinkPasskeyAllowed(blink: { status: BlinkStatus; expiresAt: Date }): void {
   if (

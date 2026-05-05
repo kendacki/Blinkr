@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { PublicKey } from "@solana/web3.js";
 import { NextRequest } from "next/server";
 import { verifyEmployerJwt } from "@/lib/auth";
@@ -30,7 +29,8 @@ export async function POST(req: NextRequest) {
       data: {
         employerId: employerRecord.id,
         contractorEmail: body.contractorEmail,
-        amountUsdc: new Prisma.Decimal(body.amountUsdc),
+        // Prisma accepts Decimal fields as strings; avoid relying on Prisma.Decimal export shape at build time.
+        amountUsdc: body.amountUsdc,
         expiresAt,
       },
     });

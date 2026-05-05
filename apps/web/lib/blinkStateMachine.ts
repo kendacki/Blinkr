@@ -1,5 +1,6 @@
-import type { BlinkStatus } from "@prisma/client";
 import { ApiError } from "@/lib/http";
+
+export type BlinkStatus = "PENDING" | "OPENED" | "CLAIMED" | "OFFRAMPED" | "EXPIRED" | "REFUNDED";
 
 const transitions: Record<BlinkStatus, BlinkStatus[]> = {
   PENDING: ["OPENED", "EXPIRED", "REFUNDED"],

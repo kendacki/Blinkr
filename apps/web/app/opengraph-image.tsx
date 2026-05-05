@@ -6,6 +6,8 @@ export const size = { width: 1200, height: 630 };
 
 export const contentType = "image/png";
 
+export const runtime = "edge";
+
 function LogoMark() {
   return (
     <div
@@ -17,7 +19,7 @@ function LogoMark() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        boxShadow: "0 24px 80px rgba(0, 163, 255, 0.35)",
+        boxShadow: "0 24px 80px rgba(147, 51, 234, 0.35)",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -26,7 +28,7 @@ function LogoMark() {
             width: 52,
             height: 120,
             borderRadius: 18,
-            background: "#00a3ff",
+            background: "#A855F7",
             transform: "rotate(-8deg)",
           }}
         />
@@ -35,7 +37,7 @@ function LogoMark() {
             width: 52,
             height: 120,
             borderRadius: 18,
-            background: "#00a3ff",
+            background: "#9333EA",
             opacity: 0.85,
             transform: "rotate(8deg)",
             marginLeft: -28,
@@ -58,7 +60,7 @@ export default function OpenGraphImage() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: 64,
-          background: "linear-gradient(120deg, #020617 0%, #0f172a 45%, #0369a1 100%)",
+          background: "linear-gradient(120deg, #0F172A 0%, #3B0764 45%, #9333EA 100%)",
           color: "#ffffff",
           fontFamily: "ui-sans-serif, system-ui, sans-serif",
         }}
@@ -72,8 +74,10 @@ export default function OpenGraphImage() {
           }}
         >
           <div style={{ fontSize: 58, fontWeight: 800, letterSpacing: -2 }}>Blinkr</div>
-          <div style={{ fontSize: 30, fontWeight: 600, color: "#e0f2fe" }}>Solana-native cross-border payroll</div>
-          <div style={{ fontSize: 22, color: "#cbd5f5", maxWidth: 640, lineHeight: 1.4 }}>
+          <div style={{ fontSize: 30, fontWeight: 600, color: "rgba(250, 204, 21, 0.92)" }}>
+            Solana-native cross-border payroll
+          </div>
+          <div style={{ fontSize: 22, color: "rgba(255,255,255,0.86)", maxWidth: 640, lineHeight: 1.4 }}>
             USDC escrows, passkey-secured claims, and webhook-driven reconciliation for global teams.
           </div>
         </div>

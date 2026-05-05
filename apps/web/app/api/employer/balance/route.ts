@@ -7,6 +7,7 @@ import { getConnection } from "@/lib/anchor";
 import { getRedis } from "@/lib/redis";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const CACHE_TTL_SEC = 10;
 

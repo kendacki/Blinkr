@@ -1,9 +1,11 @@
 import { NextRequest } from "next/server";
 import * as jose from "jose";
+import type { Blink } from "@prisma/client";
 import { ApiError, jsonError, jsonOk } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 async function walletFromEmployerJwt(authHeader: string | null): Promise<string> {
   if (!authHeader?.startsWith("Bearer ")) {
@@ -37,7 +39,7 @@ export async function GET(req: NextRequest) {
       },
     });
     const blinks =
-      employer?.blinks.map((b) => ({
+      employer?.blinks.map((b: Blink) => ({
         id: b.id,
         contractorEmail: b.contractorEmail,
         amountUsdc: b.amountUsdc.toString(),

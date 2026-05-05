@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { verifyContractorSession } from "@/lib/auth";
 import { ApiError, jsonError, jsonOk } from "@/lib/http";
@@ -38,7 +37,7 @@ export async function POST(req: NextRequest) {
         status: "initiated",
         amountUsdc: blink.amountUsdc,
         fiatCurrency: quote.currency,
-        fiatAmount: new Prisma.Decimal(quote.estimatedFiat),
+        fiatAmount: quote.estimatedFiat,
         providerRef: null,
       },
     });
