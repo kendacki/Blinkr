@@ -34,12 +34,7 @@ export function SiteHeader() {
       ].join(" ")}
     >
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2">
-          <LogoMark href="/" size={40} priority />
-          <span className="hidden font-[var(--font-poppins)] text-lg font-semibold text-purple-600 sm:inline">
-            Blinkr
-          </span>
-        </Link>
+        <LogoMark href="/" size={40} priority />
 
         <nav className="hidden flex-1 items-center justify-center gap-8 md:flex" aria-label="Primary">
           {navItems.map((item) => (

@@ -39,7 +39,7 @@ export function LogoMark({
   return (
     <Link href={href} className="inline-flex items-center gap-2 font-semibold text-slate-900">
       {img}
-      <span className="text-lg tracking-tight">Blinkr</span>
+      <span className="text-lg tracking-tight text-purple-600">Blinkr</span>
     </Link>
   );
 }
