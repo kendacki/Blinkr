@@ -38,7 +38,6 @@ export function HeroSection() {
           <motion.h1
             variants={fadeUp}
             className="font-[var(--font-poppins)] text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl"
-            style={{ textShadow }}
           >
             Pay your global team instantly.
           </motion.h1>
