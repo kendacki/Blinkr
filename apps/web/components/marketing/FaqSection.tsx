@@ -40,7 +40,10 @@ export function FaqSection() {
           variants={stagger}
           className="text-center"
         >
-          <motion.h2 variants={fadeUp} className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          <motion.h2
+            variants={fadeUp}
+            className="font-[var(--font-poppins)] text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+          >
             Frequently asked questions
           </motion.h2>
           <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">

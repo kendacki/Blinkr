@@ -38,50 +38,51 @@ const items = [
 
 export function FeatureGridSection() {
   return (
-    <section id="features" className="border-t border-slate-100 bg-[#FAFAFA] py-16 sm:py-20 lg:py-24">
+    <section id="features" className="border-t border-slate-100 bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={stagger}
-          className="mx-auto max-w-3xl text-center"
-        >
-          <motion.h2
-            variants={fadeUp}
-            className="font-[var(--font-poppins)] text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
+        <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6 sm:p-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+            variants={stagger}
+            className="mx-auto max-w-3xl text-center"
           >
-            Key benefits
-          </motion.h2>
-          <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">
-            Fast settlement, passkey claims, and local cash out. Built for modern payroll ops.
-          </motion.p>
-        </motion.div>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          variants={stagger}
-          className="mt-12 grid gap-6 lg:grid-cols-12 lg:items-stretch"
-        >
-          {items.map((item) => (
-            <motion.div
-              key={item.title}
+            <motion.h2
               variants={fadeUp}
-              className={[
-                item.span === "third" ? "lg:col-span-4" : "",
-                item.span === "wide" ? "lg:col-span-12" : "",
-              ].join(" ")}
+              className="font-[var(--font-poppins)] text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
             >
-              <FeatureCard
+              Key benefits
+            </motion.h2>
+            <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">
+              Fast settlement, passkey claims, and local cash out. Built for modern payroll ops.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+            variants={stagger}
+            className="mt-10 grid gap-6 lg:grid-cols-12 lg:items-stretch"
+          >
+            {items.map((item) => (
+              <motion.div
+                key={item.title}
+                variants={fadeUp}
                 className={[
-                  "flex h-full min-h-[260px] flex-col gap-4 !border-slate-200/80 !bg-white",
+                  item.span === "third" ? "lg:col-span-4" : "",
+                  item.span === "wide" ? "lg:col-span-12" : "",
                 ].join(" ")}
-                css={{
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
-                }}
               >
+                <FeatureCard
+                  className={[
+                    "flex h-full min-h-[260px] flex-col gap-4 !border-slate-200/80 !bg-white",
+                  ].join(" ")}
+                  css={{
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+                  }}
+                >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blinkr-muted text-blinkr">
                     <item.icon className="h-6 w-6" />
@@ -159,8 +160,9 @@ export function FeatureGridSection() {
                 </div>
               </FeatureCard>
             </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
