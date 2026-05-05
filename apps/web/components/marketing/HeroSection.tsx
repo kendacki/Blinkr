@@ -44,7 +44,7 @@ export function HeroSection() {
           </motion.h1>
           <motion.p
             variants={fadeUp}
-            className="text-xl leading-relaxed text-white sm:text-2xl lg:text-[1.75rem] lg:leading-snug"
+            className="max-w-2xl text-base leading-relaxed text-white sm:text-lg lg:text-xl"
             style={{ textShadow }}
           >
             Fund payroll in USDC. Send a link. Recipients claim with FaceID and cash out to their local bank.
