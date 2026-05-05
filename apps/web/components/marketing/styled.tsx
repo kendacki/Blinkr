@@ -35,6 +35,7 @@ export const PrimaryButton = styled("a", {
         "&:hover": {
           backgroundColor: "$primaryMuted",
           color: "$primaryHover",
+          boxShadow: "0 1px 2px rgba(15, 23, 42, 0.06), 0 0 0 2px white",
         },
         "&:focus-visible": {
           outlineColor: "white",

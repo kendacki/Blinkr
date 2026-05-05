@@ -50,7 +50,7 @@ export function HeroSection() {
             Fund payroll in USDC. Send a link. Recipients claim with FaceID and cash out to their local bank.
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
-            <PrimaryButton href="/dashboard/payroll" size="lg" tone="onDark">
+            <PrimaryButton href="/dashboard/payroll" size="md" tone="onDark">
               Start Paying Now
             </PrimaryButton>
           </motion.div>
