@@ -16,7 +16,8 @@
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "worker:offramp": "npx tsx workers/offramp.ts",
-    "optimize:dashboard-image": "node ./scripts/remove-dashboard-bg.mjs"
+    "optimize:dashboard-image": "node ./scripts/remove-dashboard-bg.mjs",
+    "upscale:dashboard-image": "node ./scripts/upscale-dashboard-4k.mjs"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
