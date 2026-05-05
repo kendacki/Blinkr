@@ -67,13 +67,18 @@ export function FeatureGridSection() {
           className="mt-12 grid gap-6 lg:grid-cols-12"
         >
           {items.map((item) => (
-            <motion.div key={item.title} variants={fadeUp}>
+            <motion.div
+              key={item.title}
+              variants={fadeUp}
+              className={[
+                item.span === "lg" ? "lg:col-span-7" : "",
+                item.span === "sm" ? "lg:col-span-5" : "",
+                item.span === "wide" ? "lg:col-span-12" : "",
+              ].join(" ")}
+            >
               <FeatureCard
                 className={[
                   "h-full space-y-4 !border-slate-200/80 !bg-white",
-                  item.span === "lg" ? "lg:col-span-7" : "",
-                  item.span === "sm" ? "lg:col-span-5" : "",
-                  item.span === "wide" ? "lg:col-span-12" : "",
                 ].join(" ")}
                 css={{
                   boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
