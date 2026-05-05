@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-blinkr: #00a3ff;
-  --color-blinkr-dark: #0088d9;
-  --color-blinkr-muted: #e6f7ff;
+  --color-blinkr: #a855f7; /* purple500 */
+  --color-blinkr-dark: #9333ea; /* purple600 */
+  --color-blinkr-muted: rgba(168, 85, 247, 0.12); /* tinted purple */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 

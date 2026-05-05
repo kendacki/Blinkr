@@ -3,33 +3,32 @@ import { LogoMark } from "@/components/marketing/LogoMark";
 
 const columns = [
   {
-    title: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Support", href: "/support" },
-      { label: "Download", href: "/download" },
-    ],
-  },
-  {
     title: "Product",
     links: [
-      { label: "Payroll Blinks", href: "/#product" },
-      { label: "Passkey payouts", href: "/#features" },
-      { label: "Settlement & off-ramp", href: "/#plans" },
+      { label: "Home", href: "/#hero" },
+      { label: "Solutions", href: "/#features" },
+      { label: "How it works", href: "/#how-it-works" },
     ],
   },
   {
-    title: "Resources",
+    title: "Support",
+    links: [
+      { label: "FAQ", href: "/#faq" },
+      { label: "Contact", href: "/#final-cta" },
+    ],
+  },
+  {
+    title: "Developers",
     links: [
       { label: "Documentation", href: "https://github.com/kendacki/Blinkr" },
-      { label: "Status", href: "/support" },
+      { label: "Dashboard", href: "/dashboard/payroll" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Privacy", href: "/support" },
-      { label: "Terms", href: "/support" },
+      { label: "Privacy", href: "/#faq" },
+      { label: "Terms", href: "/#faq" },
     ],
   },
 ];
@@ -42,11 +41,11 @@ export function SiteFooter() {
           <div className="max-w-sm space-y-4">
             <LogoMark href="/" size={36} />
             <p className="text-sm leading-relaxed text-slate-600">
-              Blinkr is a Solana-native cross-border payroll layer: employers fund USDC escrows, contractors claim with
-              passkeys, and settlement routes through compliant off-ramp partners when you need local currency.
+              Blinkr is a Solana-native cross-border payroll protocol: fund in USDC, send a Blink, recipients claim with
+              passkeys, and cash out to their local bank.
             </p>
             <p className="text-xs text-slate-500">
-              Social placeholders: follow updates on X and GitHub for release notes and integration guides.
+              Built for modern fintech UX with non-custodial guarantees.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">

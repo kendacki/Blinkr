@@ -30,6 +30,7 @@
     "framer-motion": "^12.38.0",
     "ioredis": "^5.4.1",
     "jose": "^5.9.6",
+    "lucide-react": "^1.14.0",
     "next": "^14.2.18",
     "postcss": "^8.4.31",
     "react": "^18.3.1",
