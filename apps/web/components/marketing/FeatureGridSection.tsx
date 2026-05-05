@@ -14,22 +14,22 @@ const items = [
     icon: ToggleLeft,
   },
   {
-    title: "Sub-10 Second Settlement",
-    body: "Payroll funding and claims finalize at Solana speed—built for teams that need fast, predictable payouts.",
+    title: "Under 10 Second Settlement",
+    body: "Payroll funding and claims finalize at Solana speed. Fast payouts with clear status updates.",
     kind: "speed",
     span: "third",
     icon: Gauge,
   },
   {
     title: "Local Fiat Off-ramp",
-    body: "Route USDC to local currency (NGN and more) via compliant partners—contractors cash out to their bank.",
+    body: "Convert USDC to local currency through compliant partners. Contractors cash out to their bank.",
     kind: "fx",
     span: "third",
     icon: ArrowLeftRight,
   },
   {
-    title: "Non-Custodial Escrow",
-    body: "Funds live in smart-contract escrows you control—not a custodial wallet. Clear state, clear receipts, fewer surprises.",
+    title: "Non Custodial Escrow",
+    body: "Funds live in smart contract escrows you control. Clear state, clear receipts, fewer surprises.",
     kind: "escrow",
     span: "wide",
     icon: Lock,
@@ -54,8 +54,7 @@ export function FeatureGridSection() {
             Key benefits
           </motion.h2>
           <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">
-            Modern payroll primitives—fast settlement, passkey claims, and local off-ramps—wrapped in a clean operator
-            experience.
+            Fast settlement, passkey claims, and local cash out. Built for modern payroll ops.
           </motion.p>
         </motion.div>
 

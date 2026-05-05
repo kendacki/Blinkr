@@ -28,11 +28,11 @@ export function FinalCtaSection() {
                   variants={fadeUp}
                   className="font-[var(--font-poppins)] text-3xl font-bold tracking-tight sm:text-4xl"
                 >
-                  Join the payroll revolution — simple, secure, rewarding.
+                  Join the payroll revolution. Simple, secure, rewarding.
                 </motion.h2>
                 <motion.p variants={fadeUp} className="max-w-2xl text-lg text-white/90">
-                  Start paying contractors globally with USDC funding, passkey claims, and bank cash-out. No custodial
-                  risk, no crypto learning curve.
+                  Start paying contractors globally with USDC funding, passkey claims, and bank cash out. No custodial
+                  risk and no crypto learning curve.
                 </motion.p>
                 <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
                   <PrimaryButton href="/dashboard/payroll" size="lg" tone="onDark">

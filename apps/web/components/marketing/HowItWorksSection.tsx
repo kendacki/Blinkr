@@ -46,7 +46,7 @@ export function HowItWorksSection() {
             How it works
           </motion.h2>
           <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-300">
-            A clean, three-step flow from USDC funding to passkey claim—built for teams that want global payouts without
+            A simple three step flow from USDC funding to passkey claim. Built for teams that want global payouts without
             crypto setup.
           </motion.p>
         </motion.div>

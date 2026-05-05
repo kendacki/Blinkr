@@ -26,7 +26,7 @@ const testimonials = [
     name: "Lara Whitmore",
     title: "Freelance Product Designer",
     quote:
-      "The claim UX feels like a modern fintech app. No wallet setup, no confusion—just a clean receipt and money in my account.",
+      "The claim flow feels like a modern fintech app. No wallet setup, no confusion. Just a clear receipt and money in my account.",
     avatar:
       "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=160&h=160&q=80",
   },

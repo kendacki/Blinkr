@@ -41,8 +41,8 @@ export function SiteFooter() {
           <div className="max-w-sm space-y-4">
             <LogoMark href="/" size={36} />
             <p className="text-sm leading-relaxed text-slate-600">
-              Blinkr is a Solana-native cross-border payroll protocol: fund in USDC, send a Blink, recipients claim with
-              passkeys, and cash out to their local bank.
+              Blinkr is a Solana native global payroll protocol. Fund in USDC, send a link, recipients claim with
+              passkeys, then cash out to their local bank.
             </p>
             <p className="text-xs text-slate-500">
               Built for modern fintech UX with non-custodial guarantees.

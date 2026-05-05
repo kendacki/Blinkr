@@ -18,7 +18,7 @@ export function HeroSection() {
           className="space-y-6"
         >
           <motion.div variants={fadeUp}>
-            <Pill>Solana-native cross-border payroll</Pill>
+            <Pill>Solana native global payroll</Pill>
           </motion.div>
           <motion.h1
             variants={fadeUp}
@@ -27,8 +27,7 @@ export function HeroSection() {
             Pay your global team instantly. Zero crypto knowledge required.
           </motion.h1>
           <motion.p variants={fadeUp} className="max-w-xl text-lg leading-relaxed text-slate-600">
-            The Solana-native cross-border payroll protocol. Fund in USDC, recipients claim via FaceID and cash out to
-            their local bank.
+            Fund payroll in USDC. Send a link. Recipients claim with FaceID and cash out to their local bank.
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
             <PrimaryButton href="/dashboard/payroll" size="lg">
