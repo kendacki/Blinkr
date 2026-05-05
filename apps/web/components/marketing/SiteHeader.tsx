@@ -33,10 +33,15 @@ export function SiteHeader() {
         scrolled ? "border-b border-slate-200/70 bg-white/80 backdrop-blur-xl" : "border-b border-transparent bg-white/0",
       ].join(" ")}
     >
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <LogoMark href="/" size={40} priority />
+      <div className="mx-auto grid max-w-6xl grid-cols-2 items-center gap-3 px-4 py-3 sm:px-6 md:grid-cols-[1fr_auto_1fr] lg:px-8">
+        <div className="flex min-w-0 justify-start">
+          <LogoMark href="/" size={40} priority />
+        </div>
 
-        <nav className="hidden flex-1 items-center justify-center gap-8 md:flex" aria-label="Primary">
+        <nav
+          className="hidden items-center justify-center gap-6 whitespace-nowrap md:flex md:justify-self-center lg:gap-8"
+          aria-label="Primary"
+        >
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -48,27 +53,29 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <SecondaryButton href="/dashboard/payroll">Log In</SecondaryButton>
-          <PrimaryButton href="/dashboard/payroll" size="md">
-            Sign Up
-          </PrimaryButton>
-        </div>
+        <div className="flex min-w-0 justify-end justify-self-end md:justify-self-end">
+          <div className="hidden items-center gap-3 md:flex">
+            <SecondaryButton href="/dashboard/payroll">Log In</SecondaryButton>
+            <PrimaryButton href="/dashboard/payroll" size="md">
+              Sign Up
+            </PrimaryButton>
+          </div>
 
-        <button
-          type="button"
-          className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span className="sr-only">Menu</span>
-          <span className="flex flex-col gap-1.5">
-            <span className="h-0.5 w-5 bg-slate-800" />
-            <span className="h-0.5 w-5 bg-slate-800" />
-            <span className="h-0.5 w-5 bg-slate-800" />
-          </span>
-        </button>
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 md:hidden"
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen((v) => !v)}
+          >
+            <span className="sr-only">Menu</span>
+            <span className="flex flex-col gap-1.5">
+              <span className="h-0.5 w-5 bg-slate-800" />
+              <span className="h-0.5 w-5 bg-slate-800" />
+              <span className="h-0.5 w-5 bg-slate-800" />
+            </span>
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
