@@ -33,10 +33,15 @@ export function SiteHeader() {
         scrolled ? "border-b border-slate-200/70 bg-white/80 backdrop-blur-xl" : "border-b border-transparent bg-white/0",
       ].join(" ")}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <LogoMark href="/" size={44} priority />
+      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <Link href="/" className="flex items-center gap-2">
+          <LogoMark href="/" size={40} priority />
+          <span className="hidden font-[var(--font-poppins)] text-lg font-semibold text-purple-600 sm:inline">
+            Blinkr
+          </span>
+        </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
+        <nav className="hidden flex-1 items-center justify-center gap-8 md:flex" aria-label="Primary">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -57,7 +62,7 @@ export function SiteHeader() {
 
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 md:hidden"
+          className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-700 md:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}
