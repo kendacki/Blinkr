@@ -9,7 +9,7 @@ pub use constants::*;
 pub use instructions::*;
 pub use state::*;
 
-declare_id!("7A2de9YeGGMiLtiBBQYELVZyXTA5YCnUdGts9un9aCxa");
+declare_id!("246VxdVvQkKDk51fxbAYaszJHsqoRQd8vdqbBy7LKjgx");
 
 #[program]
 pub mod blinkremit {

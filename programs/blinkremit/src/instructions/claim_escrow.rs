@@ -73,7 +73,11 @@ pub fn handle_claim_escrow(
     let clock = Clock::get()?;
     require!(clock.slot <= expiry_slot, BlinkRemitError::AuthorizationExpired);
 
-    let mut msg = Vec::with_capacity(104);
+    // Relayer-signed payload: domain-separated, bound to this escrow instance and claim parameters.
+    // Layout (344 bytes): program_id(32) | escrow(32) | blink_id(32) | employer(32) | contractor(32)
+    // | amount(u64 le) | usdc_mint(32) | token_program(32) | escrow_token(32) | expires_at(i64 le)
+    // | claim_nonce(32) | credential_hash(32) | expiry_slot(u64 le)
+    let mut msg = Vec::with_capacity(344);
     {
         let escrow = &ctx.accounts.escrow;
         require!(
@@ -96,9 +100,18 @@ pub fn handle_claim_escrow(
             escrow.escrow_token_account == ctx.accounts.escrow_token_account.key(),
             BlinkRemitError::InvalidEscrowVault
         );
+        msg.extend_from_slice(crate::ID.as_ref());
+        msg.extend_from_slice(ctx.accounts.escrow.key().as_ref());
         msg.extend_from_slice(&escrow.blink_id);
+        msg.extend_from_slice(escrow.employer.as_ref());
         msg.extend_from_slice(contractor_wallet.as_ref());
+        msg.extend_from_slice(&escrow.amount.to_le_bytes());
+        msg.extend_from_slice(escrow.usdc_mint.as_ref());
+        msg.extend_from_slice(escrow.token_program.as_ref());
+        msg.extend_from_slice(escrow.escrow_token_account.as_ref());
+        msg.extend_from_slice(&escrow.expires_at.to_le_bytes());
         msg.extend_from_slice(&escrow.claim_nonce);
+        msg.extend_from_slice(&credential_hash);
         msg.extend_from_slice(&expiry_slot.to_le_bytes());
     }
 

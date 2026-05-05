@@ -32,4 +32,6 @@ pub enum BlinkRemitError {
     InvalidContractorTokenAccount,
     #[msg("Escrow vault account does not match the originally funded vault")]
     InvalidEscrowVault,
+    #[msg("Refund is only allowed after the escrow claim deadline")]
+    RefundBeforeExpiry,
 }

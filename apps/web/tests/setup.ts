@@ -5,7 +5,7 @@
 process.env.SKIP_ENV_VALIDATION = "1";
 
 process.env.SOLANA_RPC_URL = "http://localhost:8899";
-process.env.PROGRAM_ID = "7A2de9YeGGMiLtiBBQYELVZyXTA5YCnUdGts9un9aCxa";
+process.env.PROGRAM_ID = "246VxdVvQkKDk51fxbAYaszJHsqoRQd8vdqbBy7LKjgx";
 // Must match `EXPECTED_RELAYER` in programs/blinkremit/src/constants.rs (dev sample).
 process.env.RELAYER_KEYPAIR =
   "[170,5,83,62,148,154,172,24,35,216,119,121,164,21,9,10,47,25,209,71,32,187,24,165,255,135,216,146,135,132,23,47,150,14,176,34,57,1,102,57,217,38,243,66,223,111,118,119,169,126,182,20,177,124,135,102,230,100,33,174,205,254,37,204]";
@@ -26,6 +26,6 @@ process.env.FROM_EMAIL = "noreply@example.com";
 process.env.SENTRY_DSN = "https://example.com/123";
 process.env.HELIUS_WEBHOOK_AUTH_HEADER = "x";
 process.env.HELIUS_API_KEY = "x";
-process.env.USDC_MINT_ADDRESS = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+process.env.USDC_MINT_ADDRESS = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
 process.env.SQUADS_PROGRAM_ID = "11111111111111111111111111111111";
 process.env.CORS_ALLOWED_ORIGINS = "http://localhost:3000";

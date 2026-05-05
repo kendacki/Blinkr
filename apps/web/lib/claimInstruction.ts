@@ -1,6 +1,5 @@
 import { Buffer } from "buffer";
-import { PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { PublicKey, SYSVAR_INSTRUCTIONS_PUBKEY, TransactionInstruction } from "@solana/web3.js";
 
 /** Anchor `sha256("global:claim_escrow")[:8]` */
 const CLAIM_ESCROW_DISCRIMINATOR = Buffer.from([0xc8, 0x50, 0xb6, 0x9f, 0x3d, 0x4b, 0x09, 0xcd]);
@@ -43,6 +42,7 @@ export function buildClaimEscrowInstruction(params: {
   credentialHash: Buffer;
   expirySlot: bigint;
   relayerSig: Buffer;
+  tokenProgram: PublicKey;
 }): TransactionInstruction {
   const data = buildClaimEscrowInstructionData({
     contractorWallet: params.contractorWallet,
@@ -58,7 +58,8 @@ export function buildClaimEscrowInstruction(params: {
       { pubkey: params.usdcMint, isSigner: false, isWritable: false },
       { pubkey: params.escrowToken, isSigner: false, isWritable: true },
       { pubkey: params.contractorToken, isSigner: false, isWritable: true },
-      { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+      { pubkey: SYSVAR_INSTRUCTIONS_PUBKEY, isSigner: false, isWritable: false },
+      { pubkey: params.tokenProgram, isSigner: false, isWritable: false },
     ],
     data,
   });

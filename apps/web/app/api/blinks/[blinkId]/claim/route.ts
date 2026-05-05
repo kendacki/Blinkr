@@ -3,13 +3,18 @@ import {
   createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
-import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
+import {
+  Ed25519Program,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import { NextRequest } from "next/server";
 import { verifyContractorSession } from "@/lib/auth";
 import { assertBlinkTransition } from "@/lib/blinkStateMachine";
 import { buildClaimAuthorizationMessage } from "@/lib/claimMessage";
 import { buildClaimEscrowInstruction } from "@/lib/claimInstruction";
-import { decodeEscrowClaimNonce } from "@/lib/decodedEscrow";
+import { decodeEscrowClaimAuthFields } from "@/lib/decodedEscrow";
 import { getConnection, getProgramId } from "@/lib/anchor";
 import { ApiError, jsonError, jsonOk } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
@@ -59,15 +64,35 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
     if (!escrowInfo?.data) {
       throw new ApiError(404, "NOT_FOUND", "Escrow account not found on-chain");
     }
-    const claimNonce = decodeEscrowClaimNonce(Buffer.from(escrowInfo.data));
+    const escrowFields = decodeEscrowClaimAuthFields(Buffer.from(escrowInfo.data));
+    if (escrowFields.usdcMint.toBase58() !== usdcMint.toBase58()) {
+      throw new ApiError(500, "CONFIG", "USDC_MINT_ADDRESS does not match on-chain escrow mint");
+    }
 
     const blinkIdBytes = blinkDbIdToBytes(blink.id);
+    if (!blinkIdBytes.equals(escrowFields.blinkId)) {
+      throw new ApiError(500, "CONFIG", "Blink id hash does not match on-chain escrow");
+    }
+
     const currentSlot = BigInt(await connection.getSlot("confirmed"));
     const expirySlot = currentSlot + SLOT_AUTH_WINDOW;
+    const credHash = createHash("sha256")
+      .update(Buffer.from(blink.credential.credentialId, "utf8"))
+      .digest();
+
     const message = buildClaimAuthorizationMessage({
+      programId,
+      escrow: escrowPk,
       blinkIdBytes,
+      employer: escrowFields.employer,
       contractorWallet: contractor,
-      claimNonce,
+      amount: escrowFields.amount,
+      usdcMint: escrowFields.usdcMint,
+      tokenProgram: escrowFields.tokenProgram,
+      escrowTokenAccount: escrowFields.escrowTokenAccount,
+      expiresAt: escrowFields.expiresAt,
+      claimNonce: escrowFields.claimNonce,
+      credentialHash: credHash,
       expirySlot,
     });
 
@@ -75,12 +100,18 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
     assertRelayerMatchesProgramConstant(relayerKp);
     const relayerSig = signClaimAuthorizationMessage(relayerKp.secretKey, message);
 
-    const credHash = createHash("sha256")
-      .update(Buffer.from(blink.credential.credentialId, "utf8"))
-      .digest();
-
-    const escrowToken = getAssociatedTokenAddressSync(usdcMint, escrowPk, true);
-    const contractorToken = getAssociatedTokenAddressSync(usdcMint, contractor, false);
+    const escrowToken = getAssociatedTokenAddressSync(
+      usdcMint,
+      escrowPk,
+      true,
+      escrowFields.tokenProgram,
+    );
+    const contractorToken = getAssociatedTokenAddressSync(
+      usdcMint,
+      contractor,
+      false,
+      escrowFields.tokenProgram,
+    );
 
     const ixs: TransactionInstruction[] = [];
     const contractorInfo = await connection.getAccountInfo(contractorToken);
@@ -91,9 +122,18 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
           contractorToken,
           contractor,
           usdcMint,
+          escrowFields.tokenProgram,
         ),
       );
     }
+
+    ixs.push(
+      Ed25519Program.createInstructionWithPublicKey({
+        publicKey: relayerKp.publicKey.toBytes(),
+        message: Uint8Array.from(message),
+        signature: Uint8Array.from(relayerSig),
+      }),
+    );
 
     ixs.push(
       buildClaimEscrowInstruction({
@@ -107,6 +147,7 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
         credentialHash: credHash,
         expirySlot,
         relayerSig,
+        tokenProgram: escrowFields.tokenProgram,
       }),
     );
 

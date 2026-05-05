@@ -49,11 +49,17 @@ pub fn handle_refund_escrow(ctx: Context<RefundEscrow>) -> Result<()> {
         BlinkRemitError::InvalidTokenProgram
     );
 
+    let clock = Clock::get()?;
+
     let (amount, blink_id, employer_key, bump) = {
         let escrow = &mut ctx.accounts.escrow;
         require!(
             escrow.status == EscrowStatus::Pending,
             BlinkRemitError::AlreadyClaimed
+        );
+        require!(
+            clock.unix_timestamp >= escrow.expires_at,
+            BlinkRemitError::RefundBeforeExpiry
         );
         require!(
             escrow.usdc_mint == ctx.accounts.usdc_mint.key(),

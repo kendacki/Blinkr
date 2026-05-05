@@ -73,8 +73,10 @@ pub fn handle_create_escrow(
         BlinkRemitError::InvalidTokenProgram
     );
 
-    let mut nonce_input = Vec::with_capacity(32 + 8);
+    // Bind nonce to employer so the same (blink_id, slot) cannot collide across employers (replay isolation).
+    let mut nonce_input = Vec::with_capacity(32 + 32 + 8);
     nonce_input.extend_from_slice(&blink_id);
+    nonce_input.extend_from_slice(ctx.accounts.employer.key().as_ref());
     nonce_input.extend_from_slice(&slot.to_le_bytes());
     let claim_nonce = hash(&nonce_input).to_bytes();
 
