@@ -5,9 +5,6 @@ import { motion } from "framer-motion";
 import { PrimaryButton } from "@/components/marketing/styled";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 
-const textShadow =
-  "0 2px 14px rgba(0,0,0,0.85), 0 4px 28px rgba(0,0,0,0.55), 0 0 2px rgba(0,0,0,0.9)";
-
 export function HeroSection() {
   return (
     <section
@@ -44,9 +41,8 @@ export function HeroSection() {
           <motion.p
             variants={fadeUp}
             className="max-w-2xl text-base leading-relaxed text-white sm:text-lg lg:text-xl"
-            style={{ textShadow }}
           >
-            Fund payroll in USDC. Send a link. Recipients claim with FaceID and cash out to their local bank.
+            Fund payroll in USDC. Send a link. Recipients claim with Verification and cash out to their local bank.
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
             <PrimaryButton href="/dashboard/payroll" size="md" tone="onDark">
