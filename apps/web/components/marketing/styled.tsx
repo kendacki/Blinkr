@@ -16,7 +16,8 @@ export const PrimaryButton = styled("a", {
   color: "white",
   textDecoration: "none",
   boxShadow: "$md",
-  transition: "transform 160ms ease, background-color 160ms ease, box-shadow 200ms ease",
+  transition:
+    "transform 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 200ms ease",
   "&:hover": {
     backgroundColor: "$primaryHover",
     transform: "translateY(-1px)",
@@ -33,9 +34,9 @@ export const PrimaryButton = styled("a", {
         color: "$primary",
         boxShadow: "$sm",
         "&:hover": {
-          backgroundColor: "$primaryMuted",
-          color: "$primaryHover",
-          boxShadow: "0 1px 2px rgba(15, 23, 42, 0.06), 0 0 0 2px white",
+          backgroundColor: "$primaryHover",
+          color: "white",
+          boxShadow: "0 1px 2px rgba(15, 23, 42, 0.12), 0 0 0 2px white",
         },
         "&:focus-visible": {
           outlineColor: "white",
