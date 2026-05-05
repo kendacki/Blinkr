@@ -30,7 +30,7 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="border-t border-slate-900/10 bg-slate-950 py-16 sm:py-20 lg:py-24">
+    <section id="how-it-works" className="border-t border-slate-100 bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
@@ -41,11 +41,11 @@ export function HowItWorksSection() {
         >
           <motion.h2
             variants={fadeUp}
-            className="font-[var(--font-poppins)] text-3xl font-bold tracking-tight text-white sm:text-4xl"
+            className="font-[var(--font-poppins)] text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl"
           >
             How it works
           </motion.h2>
-          <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-300">
+          <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">
             A simple three step flow from USDC funding to passkey claim. Built for teams that want global payouts without
             crypto setup.
           </motion.p>
@@ -64,18 +64,18 @@ export function HowItWorksSection() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={viewportOnce}
                     transition={{ duration: 0.45 }}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_rgba(0,0,0,0.30)] backdrop-blur"
+                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/15 text-purple-200">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blinkr-muted text-blinkr">
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">{s.n}</div>
-                        <div className="text-base font-semibold text-white">{s.title}</div>
+                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{s.n}</div>
+                        <div className="text-base font-semibold text-slate-900">{s.title}</div>
                       </div>
                     </div>
-                    <p className="mt-3 text-sm leading-relaxed text-slate-300">{s.body}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-600">{s.body}</p>
                   </motion.div>
                 );
               })}
@@ -131,18 +131,18 @@ export function HowItWorksSection() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={viewportOnce}
                     transition={{ duration: 0.45, delay: idx * 0.06 }}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_10px_30px_rgba(0,0,0,0.30)] backdrop-blur"
+                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/15 text-purple-200">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blinkr-muted text-blinkr">
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">{s.n}</div>
-                        <div className="text-base font-semibold text-white">{s.title}</div>
+                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{s.n}</div>
+                        <div className="text-base font-semibold text-slate-900">{s.title}</div>
                       </div>
                     </div>
-                    <p className="mt-3 text-sm leading-relaxed text-slate-300">{s.body}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-slate-600">{s.body}</p>
                   </motion.div>
                 );
               })}
