@@ -33,18 +33,18 @@ export function HeroSection() {
           whileInView="visible"
           viewport={viewportOnce}
           variants={stagger}
-          className="max-w-xl space-y-6 text-white"
+          className="max-w-3xl space-y-8 text-white"
         >
           <motion.h1
             variants={fadeUp}
-            className="font-[var(--font-poppins)] text-4xl font-bold tracking-tight text-white sm:text-5xl"
+            className="font-[var(--font-poppins)] text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl"
             style={{ textShadow }}
           >
             Pay your global team instantly.
           </motion.h1>
           <motion.p
             variants={fadeUp}
-            className="text-lg leading-relaxed text-white"
+            className="text-xl leading-relaxed text-white sm:text-2xl lg:text-[1.75rem] lg:leading-snug"
             style={{ textShadow }}
           >
             Fund payroll in USDC. Send a link. Recipients claim with FaceID and cash out to their local bank.
