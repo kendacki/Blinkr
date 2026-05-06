@@ -97,14 +97,9 @@ export function FeatureGridSection() {
                 <div className="mt-auto">
                   {item.kind === "speed" ? (
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <div className="flex items-end justify-between gap-3">
-                        <div>
-                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Settlement</div>
-                          <div className="mt-1 text-2xl font-bold text-slate-900">~8s</div>
-                        </div>
-                        <div className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                          Fast
-                        </div>
+                      <div>
+                        <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Settlement</div>
+                        <div className="mt-1 text-2xl font-bold text-slate-900">~8s</div>
                       </div>
                       <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white ring-1 ring-slate-200">
                         <div className="h-full w-[78%] rounded-full bg-gradient-to-r from-purple-500 to-purple-700" />
@@ -134,7 +129,7 @@ export function FeatureGridSection() {
                       <div className="flex items-center justify-center text-slate-500">→</div>
                       <div className="rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
                         <div className="text-[10px] uppercase text-slate-500">To</div>
-                        <div className="mt-1 font-semibold text-slate-900">NGN</div>
+                        <div className="mt-1 font-semibold text-slate-900">EUR</div>
                       </div>
                     </div>
                   ) : null}
