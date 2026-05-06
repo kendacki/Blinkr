@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeftRight, Gauge, Lock, ToggleLeft } from "lucide-react";
+import { ArrowLeftRight, ChevronRight, Gauge, Lock, ToggleLeft } from "lucide-react";
 import { FeatureCard } from "@/components/marketing/styled";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 
@@ -137,17 +137,28 @@ export function FeatureGridSection() {
                   ) : null}
 
                   {item.kind === "escrow" ? (
-                    <div className="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-3">
+                    <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:flex-row md:items-stretch md:gap-1">
                       {[
                         { k: "Fund", v: "USDC escrow" },
                         { k: "Claim", v: "Passkey verified" },
                         { k: "Settle", v: "On-chain receipt" },
-                      ].map((b) => (
-                        <div key={b.k} className="rounded-xl bg-white px-3 py-3 shadow-sm ring-1 ring-slate-200">
-                          <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{b.k}</div>
-                          <div className="mt-1 text-sm font-semibold text-slate-900">{b.v}</div>
-                        </div>
-                      ))}
+                      ].flatMap((b, idx) => {
+                        const card = (
+                          <div key={b.k} className="min-w-0 flex-1 rounded-xl bg-white px-3 py-3 shadow-sm ring-1 ring-slate-200">
+                            <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{b.k}</div>
+                            <div className="mt-1 text-sm font-semibold text-slate-900">{b.v}</div>
+                          </div>
+                        );
+                        if (idx === 0) return [card];
+                        return [
+                          <ChevronRight
+                            key={`${b.k}-arrow`}
+                            className="mx-0.5 hidden h-4 w-4 shrink-0 self-center text-blinkr md:block"
+                            aria-hidden
+                          />,
+                          card,
+                        ];
+                      })}
                     </div>
                   ) : null}
                 </div>
