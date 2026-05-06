@@ -35,7 +35,7 @@ export function FeatureSplitSection() {
               transition={{ duration: 0.45 }}
               className="relative mx-auto w-full max-w-xl"
             >
-              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="rounded-3xl border border-slate-200 bg-white px-8 pb-8 pt-12 shadow-sm sm:pt-14">
                 <Shield className="h-7 w-7 shrink-0 text-blinkr" aria-hidden />
 
                 <h3 className="mt-6 font-[var(--font-poppins)] text-xl font-semibold text-slate-900">
