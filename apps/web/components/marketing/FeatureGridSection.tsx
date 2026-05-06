@@ -29,7 +29,7 @@ const items = [
   },
   {
     title: "Non Custodial Escrow",
-    body: "Funds live in smart contract escrows you control. Clear state, clear receipts, fewer surprises.",
+    body: "Your money stays in your control. Every transaction is transparent, easy to track, and free of hidden surprises.",
     kind: "escrow",
     span: "wide",
     icon: Lock,
