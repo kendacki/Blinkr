@@ -88,7 +88,7 @@ export function FinalCtaSection() {
                       <PrimaryButton href="/dashboard/payroll" size="md" tone="onDark" className="w-full justify-center">
                         Request access
                       </PrimaryButton>
-                      <div className="mt-3 text-xs text-white/60">
+                      <div className="mt-3 text-center text-xs text-white/60">
                         We will reserve a spot for you and email you when we launch.
                       </div>
                     </div>
