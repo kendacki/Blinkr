@@ -43,7 +43,7 @@ export function FinalCtaSection() {
                 >
                   <form id="waitlist-form" className="space-y-3">
                     <label className="block">
-                      <span className="text-xs font-semibold text-white/80">Work email</span>
+                      <span className="text-xs font-semibold text-white/80">E-Mail</span>
                       <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
                         <Mail className="h-4 w-4 text-white/70" aria-hidden />
                         <input
