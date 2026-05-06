@@ -35,29 +35,29 @@ const columns = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-slate-50">
+    <footer className="border-t border-white/10 bg-[#2B0A3D]">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div className="max-w-sm space-y-4">
             <LogoMark href="/" size={36} />
-            <p className="text-sm leading-relaxed text-slate-600">
+            <p className="text-sm leading-relaxed text-white/80">
               Blinkr is a Solana native global payroll protocol. Fund in USDC, send a link, recipients claim with
               passkeys, then cash out to their local bank.
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-white/60">
               Built for modern fintech UX with non-custodial guarantees.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {columns.map((col) => (
               <div key={col.title}>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{col.title}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-white/65">{col.title}</p>
                 <ul className="mt-3 space-y-2">
                   {col.links.map((link) => (
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-sm text-slate-700 transition-colors hover:text-blinkr"
+                        className="text-sm text-white/80 transition-colors hover:text-white"
                         {...(link.href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}
                       >
                         {link.label}
@@ -69,7 +69,7 @@ export function SiteFooter() {
             ))}
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-slate-200 pt-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-8 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} Blinkr. All rights reserved.</p>
           <p className="text-xs">Built for high-assurance payroll on Solana.</p>
         </div>
