@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowLeftRight, Gauge, Lock } from "lucide-react";
+import { ArrowLeftRight, Gauge, Lock, ToggleLeft } from "lucide-react";
 import { FeatureCard } from "@/components/marketing/styled";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 
@@ -10,8 +9,9 @@ const items = [
   {
     title: "Zero Crypto Complexity",
     body: "Recipients don’t install wallets, memorize seed phrases, or learn gas. They claim with passkeys (FaceID/TouchID) in seconds.",
-    kind: "solana",
+    kind: "toggle",
     span: "third",
+    icon: ToggleLeft,
   },
   {
     title: "Under 10 Second Settlement",
@@ -83,11 +83,9 @@ export function FeatureGridSection() {
                     boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
                   }}
                 >
-                {"icon" in item && item.icon ? (
-                  <div className="flex items-start justify-between gap-4">
-                    <item.icon className="h-6 w-6 shrink-0 text-blinkr" aria-hidden />
-                  </div>
-                ) : null}
+                <div className="flex items-start justify-between gap-4">
+                  <item.icon className="h-6 w-6 shrink-0 text-blinkr" aria-hidden />
+                </div>
 
                 <div>
                   <h3 className="font-[var(--font-poppins)] text-lg font-semibold text-slate-900">{item.title}</h3>
@@ -108,15 +106,19 @@ export function FeatureGridSection() {
                     </div>
                   ) : null}
 
-                  {item.kind === "solana" ? (
-                    <div className="relative mx-auto mt-2 aspect-square w-full max-w-[200px]">
-                      <Image
-                        src="/images/key-benefit-solana-coin.png"
-                        alt="Solana"
-                        fill
-                        className="object-contain object-center"
-                        sizes="200px"
-                      />
+                  {item.kind === "toggle" ? (
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-xs font-semibold text-slate-700">Wallet setup</div>
+                        <div className="text-xs font-semibold text-slate-500">Passkey</div>
+                      </div>
+                      <div className="mt-3 flex items-center gap-3">
+                        <div className="h-9 flex-1 rounded-xl bg-white shadow-sm ring-1 ring-slate-200" />
+                        <div className="relative h-9 w-16 rounded-full bg-blinkr-muted ring-1 ring-purple-200">
+                          <div className="absolute left-1 top-1 h-7 w-7 rounded-full bg-blinkr shadow-sm" />
+                        </div>
+                        <div className="h-9 flex-1 rounded-xl bg-white shadow-sm ring-1 ring-slate-200" />
+                      </div>
                     </div>
                   ) : null}
 
