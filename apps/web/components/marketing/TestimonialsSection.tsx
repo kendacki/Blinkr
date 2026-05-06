@@ -50,7 +50,7 @@ export function TestimonialsSection() {
             >
               What our users say
             </motion.h2>
-            <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">
+            <motion.p variants={fadeUp} className="mt-4 text-base text-slate-600">
               Effortless funding. One-tap claims.
             </motion.p>
           </motion.div>

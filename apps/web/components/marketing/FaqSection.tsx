@@ -46,7 +46,7 @@ export function FaqSection() {
           >
             Frequently asked questions
           </motion.h2>
-          <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">
+          <motion.p variants={fadeUp} className="mt-4 text-base text-slate-600">
             Find out how Blinkr works and how easily it connects to your existing Payment solutions.
           </motion.p>
         </motion.div>

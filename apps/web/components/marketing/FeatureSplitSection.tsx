@@ -23,7 +23,7 @@ export function FeatureSplitSection() {
               >
                 Your payments are safe with Blinkr.
               </motion.h2>
-              <motion.p variants={fadeUp} className="text-lg leading-relaxed text-slate-600">
+              <motion.p variants={fadeUp} className="text-base leading-relaxed text-slate-600">
                 Verified by Certik, our smart contracts ensure you always keep control of your money. Zero hidden fees.
               </motion.p>
             </motion.div>

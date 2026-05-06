@@ -55,7 +55,7 @@ export function FeatureGridSection() {
             >
               Key benefits
             </motion.h2>
-            <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">
+            <motion.p variants={fadeUp} className="mt-4 text-base text-slate-600">
               Fast settlement, passkey claims, and local cash out. Built for modern payroll operations.
             </motion.p>
           </motion.div>
