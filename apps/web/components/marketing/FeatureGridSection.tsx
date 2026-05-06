@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeftRight, ChevronRight, Gauge, Lock, ToggleLeft } from "lucide-react";
 import { FeatureCard } from "@/components/marketing/styled";
@@ -95,13 +96,13 @@ export function FeatureGridSection() {
                 <div className="mt-auto">
                   {item.kind === "plain" ? (
                     <div className="mt-2 flex w-full justify-center">
-                      <img
+                      <Image
                         src="/images/badge-check.svg"
                         alt=""
                         width={112}
                         height={112}
                         className="h-28 w-28 shrink-0"
-                        decoding="async"
+                        priority={false}
                       />
                     </div>
                   ) : null}

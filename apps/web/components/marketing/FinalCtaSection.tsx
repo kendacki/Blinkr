@@ -33,7 +33,7 @@ export function FinalCtaSection() {
                     Join the Blinkr waitlist.
                   </motion.h2>
                   <motion.p variants={fadeUp} className="max-w-2xl text-lg text-white/90">
-                    Effortless funding, one-tap claims, and instant tracking. Tell us a bit about your team and we'll
+                    Effortless funding, one-tap claims, and instant tracking. Tell us a bit about your team and we&apos;ll
                     reach out when your spot is ready.
                   </motion.p>
                   <motion.ul variants={fadeUp} className="grid gap-3 sm:grid-cols-2">
@@ -119,7 +119,7 @@ export function FinalCtaSection() {
                         Request access
                       </PrimaryButton>
                       <div className="mt-3 text-xs text-white/60">
-                        We'll email you when onboarding opens. No spam.
+                        We&apos;ll email you when onboarding opens. No spam.
                       </div>
                     </div>
                   </form>
