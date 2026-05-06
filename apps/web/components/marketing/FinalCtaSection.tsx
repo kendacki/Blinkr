@@ -85,7 +85,13 @@ export function FinalCtaSection() {
                     </label>
 
                     <div className="pt-2">
-                      <PrimaryButton href="/dashboard/payroll" size="md" tone="onDark" className="w-full justify-center">
+                      <PrimaryButton
+                        href="/dashboard/payroll"
+                        size="md"
+                        tone="onDark"
+                        className="w-full justify-center"
+                        css={{ color: "#0B0B0B" }}
+                      >
                         Request access
                       </PrimaryButton>
                       <div className="mt-3 text-center text-xs text-white/60">
