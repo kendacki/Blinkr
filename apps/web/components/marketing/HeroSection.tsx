@@ -40,7 +40,7 @@ export function HeroSection() {
           </motion.h1>
           <motion.p
             variants={fadeUp}
-            className="max-w-2xl text-base leading-relaxed text-white sm:text-lg lg:text-xl"
+            className="max-w-2xl font-[var(--font-poppins)] text-base leading-relaxed text-white sm:text-lg lg:text-xl"
           >
             Fund payroll in USDC. Send a link. Recipients claim with Verification and cash out to their local bank.
           </motion.p>
