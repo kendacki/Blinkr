@@ -33,8 +33,7 @@ export function FinalCtaSection() {
                     Join the Blinkr waitlist.
                   </motion.h2>
                   <motion.p variants={fadeUp} className="max-w-2xl text-lg text-white/90">
-                    Effortless funding, one-tap claims, and instant tracking. Tell us a bit about your team and we&apos;ll
-                    reach out when your spot is ready.
+                    Reserve Your Spot Today.
                   </motion.p>
                 </div>
 
