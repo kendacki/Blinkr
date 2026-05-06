@@ -87,7 +87,7 @@ export function HowItWorksSection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={viewportOnce}
             transition={{ duration: 0.5 }}
-            className="relative mx-auto w-full max-w-[min(100%,56rem)] lg:max-w-none"
+            className="relative mx-auto w-full max-w-[min(260px,calc(100vw-2rem))]"
           >
             <div className="relative mx-auto aspect-[464/830] w-full drop-shadow-[0_30px_80px_rgba(168,85,247,0.22)]">
               <Image
@@ -95,7 +95,7 @@ export function HowItWorksSection() {
                 alt="Dashboard preview: balances, activity, and client payouts in the Blinkr app"
                 fill
                 className="object-contain object-center"
-                sizes="(max-width: 1024px) 100vw, min(896px, 55vw)"
+                sizes="(max-width: 640px) calc(100vw - 2rem), 260px"
               />
             </div>
           </motion.div>
