@@ -51,7 +51,7 @@ export function TestimonialsSection() {
               What our users say
             </motion.h2>
             <motion.p variants={fadeUp} className="mt-4 text-lg text-slate-600">
-              Clean payouts for operators, a zero-setup claim flow for recipients.
+              Effortless funding. One-tap claims.
             </motion.p>
           </motion.div>
 
