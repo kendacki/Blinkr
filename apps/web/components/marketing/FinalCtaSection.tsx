@@ -13,10 +13,10 @@ export function FinalCtaSection() {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6 sm:p-8">
-          <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-[#A855F7] via-[#9333EA] to-[#7C3AED] text-white shadow-[0_30px_80px_rgba(147,51,234,0.28)]">
+          <div className="overflow-hidden rounded-3xl bg-black text-white shadow-[0_30px_80px_rgba(0,0,0,0.55)]">
             <div className="relative px-6 py-12 sm:px-10 sm:py-14 lg:px-14">
-              <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
-              <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-amber-300/15 blur-2xl" />
+              <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/5 blur-2xl" />
+              <div className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-white/5 blur-2xl" />
 
               <motion.div
                 initial="hidden"
@@ -39,13 +39,13 @@ export function FinalCtaSection() {
 
                 <motion.div
                   variants={fadeUp}
-                  className="rounded-3xl border border-white/15 bg-white/10 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur"
+                  className="rounded-3xl border border-white/15 bg-black/80 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur"
                 >
                   <form id="waitlist-form" className="space-y-3">
                     <label className="block">
                       <span className="text-xs font-semibold text-white/80">E-Mail</span>
-                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
-                        <Mail className="h-4 w-4 text-white/70" aria-hidden />
+                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-black/60 px-4 py-3">
+                        <Mail className="h-4 w-4 text-white/80" aria-hidden />
                         <input
                           type="email"
                           name="email"
@@ -58,8 +58,8 @@ export function FinalCtaSection() {
 
                     <label className="block">
                       <span className="text-xs font-semibold text-white/80">Your name</span>
-                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
-                        <User className="h-4 w-4 text-white/70" aria-hidden />
+                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-black/60 px-4 py-3">
+                        <User className="h-4 w-4 text-white/80" aria-hidden />
                         <input
                           type="text"
                           name="name"
@@ -72,8 +72,8 @@ export function FinalCtaSection() {
 
                     <label className="block">
                       <span className="text-xs font-semibold text-white/80">Company</span>
-                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
-                        <Building2 className="h-4 w-4 text-white/70" aria-hidden />
+                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-black/60 px-4 py-3">
+                        <Building2 className="h-4 w-4 text-white/80" aria-hidden />
                         <input
                           type="text"
                           name="company"
