@@ -43,7 +43,7 @@ export function FinalCtaSection() {
                 >
                   <form id="waitlist-form" className="space-y-3">
                     <label className="block">
-                      <span className="text-xs font-semibold text-white/80">E-Mail</span>
+                      <span className="text-xs font-semibold text-white">E-Mail</span>
                       <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-black/60 px-4 py-3">
                         <Mail className="h-4 w-4 text-white/80" aria-hidden />
                         <input
@@ -57,7 +57,7 @@ export function FinalCtaSection() {
                     </label>
 
                     <label className="block">
-                      <span className="text-xs font-semibold text-white/80">Your name</span>
+                      <span className="text-xs font-semibold text-white">Your name</span>
                       <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-black/60 px-4 py-3">
                         <User className="h-4 w-4 text-white/80" aria-hidden />
                         <input
@@ -71,7 +71,7 @@ export function FinalCtaSection() {
                     </label>
 
                     <label className="block">
-                      <span className="text-xs font-semibold text-white/80">Company</span>
+                      <span className="text-xs font-semibold text-white">Company</span>
                       <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-black/60 px-4 py-3">
                         <Building2 className="h-4 w-4 text-white/80" aria-hidden />
                         <input
