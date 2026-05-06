@@ -44,9 +44,6 @@ export function SiteFooter() {
               Blinkr is a Solana native global payroll protocol. Fund in USDC, send a link, recipients claim with
               passkeys, then cash out to their local bank.
             </p>
-            <p className="text-xs text-white/60">
-              Built for modern fintech UX with non-custodial guarantees.
-            </p>
           </div>
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {columns.map((col) => (
