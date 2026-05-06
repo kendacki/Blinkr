@@ -64,10 +64,7 @@ export function FaqSection() {
               <motion.div key={item.q} variants={fadeUp} className="px-4 sm:px-6">
                 <button
                   type="button"
-                  className={[
-                    "flex w-full items-center justify-between gap-4 rounded-xl px-3 py-4 text-left text-base font-semibold text-slate-900 outline-none transition-shadow",
-                    isOpen ? "ring-2 ring-blinkr ring-offset-2 ring-offset-slate-50/60" : "",
-                  ].join(" ")}
+                  className="flex w-full items-center justify-between gap-4 py-4 text-left text-base font-semibold text-slate-900"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? null : idx)}
                 >
