@@ -36,30 +36,6 @@ export function FinalCtaSection() {
                     Effortless funding, one-tap claims, and instant tracking. Tell us a bit about your team and we&apos;ll
                     reach out when your spot is ready.
                   </motion.p>
-                  <motion.ul variants={fadeUp} className="grid gap-3 sm:grid-cols-2">
-                    {[
-                      { k: "Passkey claims", v: "Secure, device-bound verification" },
-                      { k: "Instant visibility", v: "Real-time status tracking" },
-                      { k: "Non-custodial rails", v: "You keep control of funds" },
-                      { k: "Local cash out", v: "Payout to bank accounts" },
-                    ].map((x) => (
-                      <li
-                        key={x.k}
-                        className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm backdrop-blur"
-                      >
-                        <div className="text-xs font-semibold uppercase tracking-wide text-white/70">{x.k}</div>
-                        <div className="mt-1 font-semibold text-white">{x.v}</div>
-                      </li>
-                    ))}
-                  </motion.ul>
-                  <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
-                    <PrimaryButton href="#waitlist-form" size="md" tone="onDark">
-                      Join Waitlist
-                    </PrimaryButton>
-                    <SecondaryButton href="/#faq" tone="onDark">
-                      Read FAQs
-                    </SecondaryButton>
-                  </motion.div>
                 </div>
 
                 <motion.div
