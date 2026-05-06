@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Building2, Mail, Sparkles, User } from "lucide-react";
 import { PrimaryButton, SecondaryButton } from "@/components/marketing/styled";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 
@@ -29,15 +30,31 @@ export function FinalCtaSection() {
                     variants={fadeUp}
                     className="font-[var(--font-poppins)] text-3xl font-bold tracking-tight sm:text-4xl"
                   >
-                    Join the payroll revolution. Simple, secure, rewarding.
+                    Join the Blinkr waitlist.
                   </motion.h2>
                   <motion.p variants={fadeUp} className="max-w-2xl text-lg text-white/90">
-                    Start paying contractors globally with USDC funding, passkey claims, and bank cash out. No custodial
-                    risk and no crypto learning curve.
+                    Effortless funding, one-tap claims, and instant tracking. Tell us a bit about your team and we'll
+                    reach out when your spot is ready.
                   </motion.p>
+                  <motion.ul variants={fadeUp} className="grid gap-3 sm:grid-cols-2">
+                    {[
+                      { k: "Passkey claims", v: "Secure, device-bound verification" },
+                      { k: "Instant visibility", v: "Real-time status tracking" },
+                      { k: "Non-custodial rails", v: "You keep control of funds" },
+                      { k: "Local cash out", v: "Payout to bank accounts" },
+                    ].map((x) => (
+                      <li
+                        key={x.k}
+                        className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm backdrop-blur"
+                      >
+                        <div className="text-xs font-semibold uppercase tracking-wide text-white/70">{x.k}</div>
+                        <div className="mt-1 font-semibold text-white">{x.v}</div>
+                      </li>
+                    ))}
+                  </motion.ul>
                   <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
-                    <PrimaryButton href="/dashboard/payroll" size="md" tone="onDark">
-                      Blink Now
+                    <PrimaryButton href="#waitlist-form" size="md" tone="onDark">
+                      Join Waitlist
                     </PrimaryButton>
                     <SecondaryButton href="/#faq" tone="onDark">
                       Read FAQs
@@ -49,14 +66,63 @@ export function FinalCtaSection() {
                   variants={fadeUp}
                   className="rounded-3xl border border-white/15 bg-white/10 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur"
                 >
-                  <div className="text-xs font-semibold uppercase tracking-wide text-white/70">Trusted rails</div>
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm font-semibold">
-                    {["USDC", "Solana", "Passkeys", "Bank cash out"].map((x) => (
-                      <div key={x} className="rounded-2xl bg-white/10 px-4 py-3">
-                        {x}
-                      </div>
-                    ))}
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-white/70">
+                    <Sparkles className="h-4 w-4" aria-hidden />
+                    Waitlist request
                   </div>
+
+                  <form id="waitlist-form" className="mt-5 space-y-3">
+                    <label className="block">
+                      <span className="text-xs font-semibold text-white/80">Work email</span>
+                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
+                        <Mail className="h-4 w-4 text-white/70" aria-hidden />
+                        <input
+                          type="email"
+                          name="email"
+                          placeholder="name@company.com"
+                          autoComplete="email"
+                          className="w-full bg-transparent text-sm text-white placeholder:text-white/50 focus:outline-none"
+                        />
+                      </div>
+                    </label>
+
+                    <label className="block">
+                      <span className="text-xs font-semibold text-white/80">Your name</span>
+                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
+                        <User className="h-4 w-4 text-white/70" aria-hidden />
+                        <input
+                          type="text"
+                          name="name"
+                          placeholder="Full name"
+                          autoComplete="name"
+                          className="w-full bg-transparent text-sm text-white placeholder:text-white/50 focus:outline-none"
+                        />
+                      </div>
+                    </label>
+
+                    <label className="block">
+                      <span className="text-xs font-semibold text-white/80">Company</span>
+                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
+                        <Building2 className="h-4 w-4 text-white/70" aria-hidden />
+                        <input
+                          type="text"
+                          name="company"
+                          placeholder="Company name"
+                          autoComplete="organization"
+                          className="w-full bg-transparent text-sm text-white placeholder:text-white/50 focus:outline-none"
+                        />
+                      </div>
+                    </label>
+
+                    <div className="pt-2">
+                      <PrimaryButton href="/dashboard/payroll" size="md" tone="onDark" className="w-full justify-center">
+                        Request access
+                      </PrimaryButton>
+                      <div className="mt-3 text-xs text-white/60">
+                        We'll email you when onboarding opens. No spam.
+                      </div>
+                    </div>
+                  </form>
                 </motion.div>
               </motion.div>
             </div>
