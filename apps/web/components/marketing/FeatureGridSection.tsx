@@ -93,6 +93,19 @@ export function FeatureGridSection() {
                 </div>
 
                 <div className="mt-auto">
+                  {item.kind === "plain" ? (
+                    <div className="mt-2 flex justify-start">
+                      <img
+                        src="/images/badge-check.svg"
+                        alt=""
+                        width={56}
+                        height={56}
+                        className="h-14 w-14 shrink-0"
+                        decoding="async"
+                      />
+                    </div>
+                  ) : null}
+
                   {item.kind === "speed" ? (
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                       <div>
