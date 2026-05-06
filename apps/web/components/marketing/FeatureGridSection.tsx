@@ -8,21 +8,21 @@ import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 const items = [
   {
     title: "Zero Crypto Complexity",
-    body: "Recipients don’t install wallets, memorize seed phrases, or learn gas. They claim with passkeys (FaceID/TouchID) in seconds.",
+    body: "No wallets or passwords required. Claim your funds in seconds using just FaceID or preferred Authentication.",
     kind: "toggle",
     span: "third",
     icon: ToggleLeft,
   },
   {
     title: "Under 10 Second Settlement",
-    body: "Payroll funding and claims finalize at Solana speed. Fast payouts with clear status updates.",
+    body: "Fast payouts and clear tracking. We've removed the delays so you get paid instantly and stay updated in real time.",
     kind: "speed",
     span: "third",
     icon: Gauge,
   },
   {
     title: "Local Fiat Off-ramp",
-    body: "Convert USDC to local currency through compliant partners. Contractors cash out to their bank.",
+    body: "Get paid in your local currency. Cash out your funds directly to your bank account in just a few clicks.",
     kind: "fx",
     span: "third",
     icon: ArrowLeftRight,
