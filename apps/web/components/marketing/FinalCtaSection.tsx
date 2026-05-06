@@ -89,7 +89,7 @@ export function FinalCtaSection() {
                         Request access
                       </PrimaryButton>
                       <div className="mt-3 text-xs text-white/60">
-                        We&apos;ll email you when onboarding opens. No spam.
+                        We will reserve a spot for you and email you when we launch.
                       </div>
                     </div>
                   </form>
