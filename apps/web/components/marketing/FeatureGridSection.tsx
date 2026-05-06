@@ -114,7 +114,7 @@ export function FeatureGridSection() {
                         <div className="mt-1 text-2xl font-bold text-slate-900">~8s</div>
                       </div>
                       <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white ring-1 ring-slate-200">
-                        <div className="h-full w-[78%] rounded-full bg-gradient-to-r from-purple-500 to-purple-700" />
+                        <div className="h-full w-[78%] rounded-full bg-black" />
                       </div>
                       <div className="mt-2 text-xs text-slate-500">Typical confirmation</div>
                     </div>
