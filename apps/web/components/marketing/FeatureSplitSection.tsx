@@ -15,7 +15,7 @@ export function FeatureSplitSection() {
               whileInView="visible"
               viewport={viewportOnce}
               variants={stagger}
-              className="space-y-5"
+              className="space-y-5 pt-6 sm:pt-8 lg:pt-10"
             >
               <motion.h2
                 variants={fadeUp}
