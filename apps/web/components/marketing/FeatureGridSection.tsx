@@ -139,9 +139,9 @@ export function FeatureGridSection() {
                   {item.kind === "escrow" ? (
                     <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:flex-row md:items-stretch md:gap-1">
                       {[
-                        { k: "Fund", v: "USDC escrow" },
+                        { k: "Fund", v: "USDC Assets" },
                         { k: "Claim", v: "Passkey verified" },
-                        { k: "Settle", v: "On-chain receipt" },
+                        { k: "Settle", v: "Fiat Deposits" },
                       ].flatMap((b, idx) => {
                         const card = (
                           <div key={b.k} className="min-w-0 flex-1 rounded-xl bg-white px-3 py-3 shadow-sm ring-1 ring-slate-200">
