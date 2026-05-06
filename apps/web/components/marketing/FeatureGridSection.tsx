@@ -124,12 +124,12 @@ export function FeatureGridSection() {
                     <div className="grid grid-cols-3 gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs">
                       <div className="rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
                         <div className="text-[10px] uppercase text-slate-500">From</div>
-                        <div className="mt-1 font-semibold text-slate-900">USDC</div>
+                        <div className="mt-1 font-semibold text-blinkr">USDC</div>
                       </div>
                       <div className="flex items-center justify-center text-slate-500">→</div>
                       <div className="rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
                         <div className="text-[10px] uppercase text-slate-500">To</div>
-                        <div className="mt-1 font-semibold text-slate-900">EUR</div>
+                        <div className="mt-1 font-semibold text-blinkr">NGN</div>
                       </div>
                     </div>
                   ) : null}
