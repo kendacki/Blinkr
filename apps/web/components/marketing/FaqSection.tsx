@@ -7,23 +7,23 @@ import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 const faqs = [
   {
     q: "Is Blinkr secure for production payroll?",
-    a: "Yes. Passkeys never leave the user device unverified: the backend completes WebAuthn checks, then issues a short-lived relayer signature that the on-chain program validates with Solana's ed25519 syscall. Escrow balances stay in program-derived accounts, not custodial spreadsheets.",
+    a: "Yes. Hardware-level security with instant verification. Your biometric data never leaves your device. Our system simply confirms your identity through a secure digital handshake, instantly unlocking your funds. Everything is settled directly on the blockchain for total transparency.",
   },
   {
     q: "How fast do payouts settle?",
-    a: "Blinkr targets Solana confirmation speeds for funding and claims. Exact wall-clock time depends on network load, priority fees, and partner off-ramp processing when you convert USDC to fiat. Status webhooks keep your dashboard aligned with chain events.",
+    a: "Most funding and claims happen in seconds. While external bank transfers can vary, our real-time dashboard keeps you updated every step of the way so you're never left guessing.",
   },
   {
     q: "Can contractors use multiple devices?",
-    a: "Passkeys are bound to platform authenticators. Contractors can register multiple credentials per policy, and employers can require re-verification when risk signals change. The Blink page is a standard Next route, so it works anywhere a wallet or Blink client can open a link.",
+    a: "Contractors can sign in with their device's built-in security (like a fingerprint) and add backup devices so they never get locked out. For employers, we've added \"smart verification\" that triggers only when needed. Plus, because our payment pages are standard web links, you can open them on any device, anywhere.",
   },
   {
     q: "Is there a free version?",
-    a: "The Starter path is free for sandbox and integration testing. Production traffic on mainnet uses usage-based pricing so you only pay when escrows move and webhooks fire at scale.",
+    a: "Start for free. Scale when you're ready. Get everything set up and tested at zero cost. When you start sending real payments, you only pay based on your actual volume. No hidden fees.",
   },
   {
     q: "How do you prevent replayed claims?",
-    a: "Each escrow carries a claim nonce and signed authorization includes expiry slots. The program rejects reused authorizations, so captured payloads cannot be replayed across escrows or time windows.",
+    a: "Every payout has a unique Blink URL. Once a payment is claimed, that fingerprint expires instantly, making it impossible for anyone to reuse or intercept the data.",
   },
 ];
 
