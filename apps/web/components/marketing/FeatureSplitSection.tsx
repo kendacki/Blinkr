@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
-import { BadgeCheck, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 
 export function FeatureSplitSection() {
   return (
@@ -52,15 +52,7 @@ export function FeatureSplitSection() {
                 <div className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-purple-500/15 blur-2xl" aria-hidden />
                 <div className="absolute -left-12 -bottom-12 h-44 w-44 rounded-full bg-amber-400/15 blur-2xl" aria-hidden />
 
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-500/15 text-purple-700">
-                    <Shield className="h-7 w-7" />
-                  </div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                    <BadgeCheck className="h-4 w-4" />
-                    100% Audited
-                  </div>
-                </div>
+                <Shield className="h-7 w-7 shrink-0 text-blinkr" aria-hidden />
 
                 <h3 className="mt-6 font-[var(--font-poppins)] text-xl font-semibold text-slate-900">
                   Built for high-assurance payroll
