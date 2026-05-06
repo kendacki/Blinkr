@@ -69,9 +69,8 @@ export function SiteFooter() {
             ))}
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-8 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} Blinkr. All rights reserved.</p>
-          <p className="text-xs">Built for high-assurance payroll on Solana.</p>
+        <div className="mt-10 border-t border-white/10 pt-8 text-sm">
+          <p className="text-blinkr">&copy; {new Date().getFullYear()} Blinkr. All rights reserved.</p>
         </div>
       </div>
     </footer>
