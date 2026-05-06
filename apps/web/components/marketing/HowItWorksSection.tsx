@@ -68,9 +68,7 @@ export function HowItWorksSection() {
                     className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blinkr-muted text-blinkr">
-                        <Icon className="h-5 w-5" />
-                      </div>
+                      <Icon className="h-5 w-5 shrink-0 text-blinkr" aria-hidden />
                       <div>
                         <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{s.n}</div>
                         <div className="text-base font-semibold text-slate-900">{s.title}</div>
@@ -115,9 +113,7 @@ export function HowItWorksSection() {
                     className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.05)]"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blinkr-muted text-blinkr">
-                        <Icon className="h-5 w-5" />
-                      </div>
+                      <Icon className="h-5 w-5 shrink-0 text-blinkr" aria-hidden />
                       <div>
                         <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{s.n}</div>
                         <div className="text-base font-semibold text-slate-900">{s.title}</div>
