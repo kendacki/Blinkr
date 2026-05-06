@@ -94,13 +94,13 @@ export function FeatureGridSection() {
 
                 <div className="mt-auto">
                   {item.kind === "plain" ? (
-                    <div className="mt-2 flex justify-start">
+                    <div className="mt-2 flex w-full justify-center">
                       <img
                         src="/images/badge-check.svg"
                         alt=""
-                        width={56}
-                        height={56}
-                        className="h-14 w-14 shrink-0"
+                        width={112}
+                        height={112}
+                        className="h-28 w-28 shrink-0"
                         decoding="async"
                       />
                     </div>
