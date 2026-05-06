@@ -84,9 +84,7 @@ export function FeatureGridSection() {
                   }}
                 >
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blinkr-muted text-blinkr">
-                    <item.icon className="h-6 w-6" />
-                  </div>
+                  <item.icon className="h-6 w-6 shrink-0 text-blinkr" aria-hidden />
                 </div>
 
                 <div>
