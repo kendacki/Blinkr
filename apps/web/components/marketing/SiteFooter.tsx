@@ -48,7 +48,7 @@ export function SiteFooter() {
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {columns.map((col) => (
               <div key={col.title}>
-                <p className="text-xs font-semibold uppercase tracking-wide text-white/65">{col.title}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-white">{col.title}</p>
                 <ul className="mt-3 space-y-2">
                   {col.links.map((link) => (
                     <li key={link.label}>
