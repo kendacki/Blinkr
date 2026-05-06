@@ -25,14 +25,14 @@ export function FinalCtaSection() {
                 variants={stagger}
                 className="grid items-center gap-8 lg:grid-cols-[1.3fr,0.7fr]"
               >
-                <div className="space-y-5">
+                <div className="flex flex-col items-center justify-center space-y-5 text-center">
                   <motion.h2
                     variants={fadeUp}
                     className="font-[var(--font-poppins)] text-3xl font-bold tracking-tight sm:text-4xl"
                   >
                     Join the Blinkr waitlist.
                   </motion.h2>
-                  <motion.p variants={fadeUp} className="max-w-2xl text-lg text-white/90">
+                  <motion.p variants={fadeUp} className="max-w-xl text-lg text-white/90">
                     Reserve Your Spot Today.
                   </motion.p>
                 </div>
