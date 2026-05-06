@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Building2, Mail, Sparkles, User } from "lucide-react";
+import { Building2, Mail, User } from "lucide-react";
 import { PrimaryButton, SecondaryButton } from "@/components/marketing/styled";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 
@@ -41,12 +41,7 @@ export function FinalCtaSection() {
                   variants={fadeUp}
                   className="rounded-3xl border border-white/15 bg-white/10 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur"
                 >
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-white/70">
-                    <Sparkles className="h-4 w-4" aria-hidden />
-                    Waitlist request
-                  </div>
-
-                  <form id="waitlist-form" className="mt-5 space-y-3">
+                  <form id="waitlist-form" className="space-y-3">
                     <label className="block">
                       <span className="text-xs font-semibold text-white/80">Work email</span>
                       <div className="mt-2 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3">
