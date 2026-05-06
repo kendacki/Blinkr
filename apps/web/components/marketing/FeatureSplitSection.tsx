@@ -58,8 +58,8 @@ export function FeatureSplitSection() {
                   Built for high-assurance payroll
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                  Blinkr keeps sensitive auth off chain while preserving verifiable settlement on chain. Claims are passkey
-                  gated and escrows remain non custodial, so you can pay globally with modern UX and strong guarantees.
+                  Global payments with a click. We use passkeys to keep your money safe and accessible only to you. You get
+                  the speed of modern apps with the unshakeable security of the blockchain.
                 </p>
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-3">
