@@ -35,10 +35,7 @@ export function FeatureSplitSection() {
               transition={{ duration: 0.45 }}
               className="relative mx-auto w-full max-w-xl"
             >
-              <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-                <div className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-purple-500/15 blur-2xl" aria-hidden />
-                <div className="absolute -left-12 -bottom-12 h-44 w-44 rounded-full bg-amber-400/15 blur-2xl" aria-hidden />
-
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
                 <Shield className="h-7 w-7 shrink-0 text-blinkr" aria-hidden />
 
                 <h3 className="mt-6 font-[var(--font-poppins)] text-xl font-semibold text-slate-900">
@@ -55,7 +52,7 @@ export function FeatureSplitSection() {
                     { k: "Identity", v: "WebAuthn passkeys" },
                     { k: "Receipts", v: "On-chain state" },
                   ].map((x) => (
-                    <div key={x.k} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <div key={x.k} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
                       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{x.k}</div>
                       <div className="mt-1 text-sm font-semibold text-slate-900">{x.v}</div>
                     </div>
