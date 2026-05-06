@@ -8,6 +8,8 @@ type LogoMarkProps = {
   size?: number;
   className?: string;
   priority?: boolean;
+  linkClassName?: string;
+  wordmarkClassName?: string;
 };
 
 export function LogoMark({
@@ -15,6 +17,8 @@ export function LogoMark({
   size = 40,
   className = "",
   priority = false,
+  linkClassName = "text-slate-900",
+  wordmarkClassName = "text-purple-600",
 }: LogoMarkProps) {
   const img = (
     <span
@@ -37,9 +41,9 @@ export function LogoMark({
   }
 
   return (
-    <Link href={href} className="inline-flex items-center gap-2 font-semibold text-slate-900">
+    <Link href={href} className={`inline-flex items-center gap-2 font-semibold ${linkClassName}`}>
       {img}
-      <span className="text-lg tracking-tight text-purple-600">Blinkr</span>
+      <span className={`text-lg tracking-tight ${wordmarkClassName}`}>Blinkr</span>
     </Link>
   );
 }

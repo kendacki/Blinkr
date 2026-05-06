@@ -35,11 +35,11 @@ const columns = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-white/10 bg-[#2B0A3D]">
+    <footer className="border-t border-white/10 bg-black">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div className="max-w-sm space-y-4">
-            <LogoMark href="/" size={36} />
+            <LogoMark href="/" size={36} linkClassName="text-white" wordmarkClassName="text-white" />
             <p className="text-sm leading-relaxed text-white/80">
               Blinkr is a Solana native global payroll protocol. Fund in USDC, send a link, recipients claim with
               passkeys, then cash out to their local bank.
