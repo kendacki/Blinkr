@@ -45,19 +45,6 @@ export function FeatureSplitSection() {
                   Global payments with a click. We use passkeys to keep your money safe and accessible only to you. You get
                   the speed of modern apps with the unshakeable security of the blockchain.
                 </p>
-
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                  {[
-                    { k: "Contracts", v: "Token-2022 hooks" },
-                    { k: "Identity", v: "WebAuthn passkeys" },
-                    { k: "Receipts", v: "On-chain state" },
-                  ].map((x) => (
-                    <div key={x.k} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                      <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{x.k}</div>
-                      <div className="mt-1 text-sm font-semibold text-slate-900">{x.v}</div>
-                    </div>
-                  ))}
-                </div>
               </div>
             </motion.div>
           </div>
