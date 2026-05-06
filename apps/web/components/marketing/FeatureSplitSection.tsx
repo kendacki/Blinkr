@@ -26,19 +26,6 @@ export function FeatureSplitSection() {
               <motion.p variants={fadeUp} className="text-lg leading-relaxed text-slate-600">
                 Verified by Certik, our smart contracts ensure you always keep control of your money. Zero hidden fees.
               </motion.p>
-              <motion.div variants={fadeUp} className="grid gap-3 sm:grid-cols-2">
-                {[
-                  { k: "Non-custodial", v: "Escrow contracts hold funds" },
-                  { k: "Audited", v: "Security-reviewed design" },
-                  { k: "Transparent", v: "On-chain receipts + status" },
-                  { k: "Operator-friendly", v: "Clear states & retries" },
-                ].map((b) => (
-                  <div key={b.k} className="rounded-2xl border border-slate-200 bg-white p-4">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{b.k}</div>
-                    <div className="mt-1 text-sm font-semibold text-slate-900">{b.v}</div>
-                  </div>
-                ))}
-              </motion.div>
             </motion.div>
 
             <motion.div
