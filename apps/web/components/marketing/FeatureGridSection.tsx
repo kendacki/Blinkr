@@ -131,7 +131,7 @@ export function FeatureGridSection() {
                       <div className="flex items-center justify-center text-slate-500">→</div>
                       <div className="rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
                         <div className="text-[10px] uppercase text-slate-500">To</div>
-                        <div className="mt-1 font-semibold text-blinkr">NGN</div>
+                        <div className="mt-1 font-semibold text-blinkr">EUR</div>
                       </div>
                     </div>
                   ) : null}
