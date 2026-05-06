@@ -9,7 +9,7 @@ const items = [
   {
     title: "Zero Crypto Complexity",
     body: "No wallets or passwords required. Claim your funds in seconds using just FaceID or preferred Authentication.",
-    kind: "toggle",
+    kind: "plain",
     span: "third",
     icon: ToggleLeft,
   },
@@ -103,22 +103,6 @@ export function FeatureGridSection() {
                         <div className="h-full w-[78%] rounded-full bg-gradient-to-r from-purple-500 to-purple-700" />
                       </div>
                       <div className="mt-2 text-xs text-slate-500">Typical confirmation</div>
-                    </div>
-                  ) : null}
-
-                  {item.kind === "toggle" ? (
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="text-xs font-semibold text-slate-700">Wallet setup</div>
-                        <div className="text-xs font-semibold text-slate-500">Passkey</div>
-                      </div>
-                      <div className="mt-3 flex items-center gap-3">
-                        <div className="h-9 flex-1 rounded-xl bg-white shadow-sm ring-1 ring-slate-200" />
-                        <div className="relative h-9 w-16 rounded-full bg-blinkr-muted ring-1 ring-purple-200">
-                          <div className="absolute left-1 top-1 h-7 w-7 rounded-full bg-blinkr shadow-sm" />
-                        </div>
-                        <div className="h-9 flex-1 rounded-xl bg-white shadow-sm ring-1 ring-slate-200" />
-                      </div>
                     </div>
                   ) : null}
 
