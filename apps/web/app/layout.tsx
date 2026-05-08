@@ -20,7 +20,7 @@ const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL("http://localhost:3000"),
   icons: {
     icon: [{ url: "/images/blinkr-logo.webp", type: "image/webp" }],
     shortcut: ["/images/blinkr-logo.webp"],

@@ -8,6 +8,9 @@ export default function PayrollPage() {
   const [email, setEmail] = useState("");
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [lastBlinkId, setLastBlinkId] = useState<string | null>(null);
+  const [lastContractorEmail, setLastContractorEmail] = useState<string | null>(null);
 
   const createBlink = async () => {
     if (!jwt || !wallet) return;
@@ -24,8 +27,11 @@ export default function PayrollPage() {
           amountUsdc: amount.trim(),
         }),
       });
-      const body = (await res.json()) as { blinkUrl?: string; error?: { message?: string } };
+      const body = (await res.json()) as { blinkId?: string; blinkUrl?: string; error?: { message?: string } };
       if (!res.ok) throw new Error(body.error?.message ?? "Create Blink failed");
+      const createdBlinkId = body.blinkId ?? null;
+      setLastBlinkId(createdBlinkId);
+      setLastContractorEmail(email.trim() || null);
       setEmail("");
       setAmount("");
       await refresh();
@@ -41,6 +47,26 @@ export default function PayrollPage() {
       setError(e instanceof Error ? e.message : "Create failed");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const sendBlinkLinkEmail = async () => {
+    if (!jwt || !wallet || !lastBlinkId) return;
+    setError(null);
+    setNotice(null);
+    setSending(true);
+    try {
+      const res = await fetch(`/api/blinks/${lastBlinkId}/send-link?employerWallet=${encodeURIComponent(wallet)}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${jwt}` },
+      });
+      const body = (await res.json()) as { sent?: boolean; to?: string; error?: { message?: string } };
+      if (!res.ok) throw new Error(body.error?.message ?? "Send email failed");
+      setNotice(`Sent Blink link to ${body.to ?? lastContractorEmail ?? "receiver"}.`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Send email failed");
+    } finally {
+      setSending(false);
     }
   };
 
@@ -101,6 +127,22 @@ export default function PayrollPage() {
           >
             Create Blink
           </button>
+
+          <div className="mt-3">
+            <button
+              type="button"
+              disabled={sending || loading || !lastBlinkId}
+              onClick={() => void sendBlinkLinkEmail()}
+              className="rounded-xl border border-blinkr bg-white px-5 py-2.5 text-sm font-semibold text-blinkr hover:bg-blinkr/10 disabled:opacity-50"
+            >
+              Send link to receiver email
+            </button>
+            {lastBlinkId && (
+              <p className="mt-2 text-xs text-slate-600">
+                Sends the most recently created Blink link{lastContractorEmail ? ` to ${lastContractorEmail}` : ""}.
+              </p>
+            )}
+          </div>
         </section>
       ) : (
         <p className="text-sm text-slate-600">
