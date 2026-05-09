@@ -7,9 +7,15 @@ import { prisma } from "@/lib/prisma";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-async function walletFromEmployerJwt(authHeader: string | null): Promise<string> {
+async function walletFromEmployerJwt(
+  authHeader: string | null
+): Promise<string> {
   if (!authHeader?.startsWith("Bearer ")) {
-    throw new ApiError(401, "UNAUTHORIZED", "Missing Authorization bearer token");
+    throw new ApiError(
+      401,
+      "UNAUTHORIZED",
+      "Missing Authorization bearer token"
+    );
   }
   const token = authHeader.slice("Bearer ".length).trim();
   const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? "");
@@ -18,8 +24,8 @@ async function walletFromEmployerJwt(authHeader: string | null): Promise<string>
     typeof payload.walletAddress === "string"
       ? payload.walletAddress
       : typeof payload.sub === "string"
-        ? payload.sub
-        : null;
+      ? payload.sub
+      : null;
   if (!wallet) {
     throw new ApiError(401, "UNAUTHORIZED", "Invalid employer token");
   }
@@ -28,7 +34,9 @@ async function walletFromEmployerJwt(authHeader: string | null): Promise<string>
 
 export async function GET(req: NextRequest) {
   try {
-    const wallet = await walletFromEmployerJwt(req.headers.get("authorization"));
+    const wallet = await walletFromEmployerJwt(
+      req.headers.get("authorization")
+    );
     const employer = await prisma.employer.findUnique({
       where: { walletAddress: wallet },
       include: {

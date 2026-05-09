@@ -12,7 +12,11 @@ import type {
 } from "@simplewebauthn/types";
 import { createHash } from "crypto";
 
-export function getRpConfig(): { rpName: string; rpID: string; origin: string } {
+export function getRpConfig(): {
+  rpName: string;
+  rpID: string;
+  origin: string;
+} {
   const rpID = process.env.RP_ID;
   const origin = process.env.NEXT_PUBLIC_URL;
   if (!rpID || !origin) {
@@ -21,7 +25,10 @@ export function getRpConfig(): { rpName: string; rpID: string; origin: string } 
   return { rpName: "Blinkr", rpID, origin };
 }
 
-export async function generateRegistrationChallenge(userId: string, email: string) {
+export async function generateRegistrationChallenge(
+  userId: string,
+  email: string
+) {
   const { rpName, rpID } = getRpConfig();
   return generateRegistrationOptions({
     rpName,
@@ -53,7 +60,7 @@ export async function generateAuthenticationChallenge(credentialIds: string[]) {
 
 export async function verifyRegistration(
   credential: RegistrationResponseJSON,
-  expectedChallenge: string,
+  expectedChallenge: string
 ): Promise<{
   credentialId: string;
   publicKey: Uint8Array;
@@ -70,9 +77,12 @@ export async function verifyRegistration(
   if (!result.verified || !result.registrationInfo) {
     throw new Error("Registration verification failed");
   }
-  const { credentialID, credentialPublicKey, counter } = result.registrationInfo;
+  const { credentialID, credentialPublicKey, counter } =
+    result.registrationInfo;
   const credentialId = credential.id;
-  const credentialHash = createHash("sha256").update(Buffer.from(credentialId, "utf8")).digest();
+  const credentialHash = createHash("sha256")
+    .update(Buffer.from(credentialId, "utf8"))
+    .digest();
   return {
     credentialId,
     publicKey: credentialPublicKey,
@@ -84,7 +94,7 @@ export async function verifyRegistration(
 export async function verifyAuthentication(
   credential: AuthenticationResponseJSON,
   expectedChallenge: string,
-  storedCred: { credentialId: string; publicKey: Uint8Array; counter: number },
+  storedCred: { credentialId: string; publicKey: Uint8Array; counter: number }
 ): Promise<{ newCounter: number }> {
   const { rpID, origin } = getRpConfig();
   const result = await verifyAuthenticationResponse({

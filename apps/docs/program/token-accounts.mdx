@@ -1,0 +1,20 @@
+---
+title: Token accounts and mint checks
+description: SPL ATA wiring for employer funding and contractor payout paths.
+---
+
+## Mint validity
+
+Program enforces:
+
+- Mint pubkey equals `EXPECTED_USDC_MINT` (`constants.rs`).
+- Decimals equal fixed USDC scale (`USDC_DECIMALS`).
+- Token interface matches `EXPECTED_TOKEN_PROGRAM` for canonical SPL Token program ID (`programs/blinkremit/src/constants.rs`).
+
+Mismatch yields Anchor errors (`InvalidMint`, `InvalidUsdcMint`, `InvalidTokenProgram`).
+
+## Associated token addresses
+
+API derives ATA addresses via SPL helpers (`getAssociatedTokenAddressSync`), respecting mint-owned token program id fetched per-cluster (`tokenProgram.ts`). Escrow PDAs may hold ATA where escrow acts authority (`prepare-fund-tx`, claim ix builders).
+
+Claim verifies contractor ATA ownership equals asserted contractor wallet on-chain (`claim_escrow.rs`).

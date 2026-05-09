@@ -1,8 +1,17 @@
 import { ApiError } from "./http";
 
-export type BlinkStatus = "PENDING" | "OPENED" | "CLAIMED" | "OFFRAMPED" | "EXPIRED" | "REFUNDED";
+export type BlinkStatus =
+  | "PENDING"
+  | "OPENED"
+  | "CLAIMED"
+  | "OFFRAMPED"
+  | "EXPIRED"
+  | "REFUNDED";
 
-export function ensureBlinkPasskeyAllowed(blink: { status: BlinkStatus; expiresAt: Date }): void {
+export function ensureBlinkPasskeyAllowed(blink: {
+  status: BlinkStatus;
+  expiresAt: Date;
+}): void {
   if (
     blink.status === "CLAIMED" ||
     blink.status === "OFFRAMPED" ||

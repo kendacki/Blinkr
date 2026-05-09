@@ -39,8 +39,12 @@ describe("POST /api/blinks/create", () => {
       .setExpirationTime("1h")
       .sign(secret);
 
-    vi.mocked(prisma.employer.upsert).mockResolvedValue({ id: "emp1" } as never);
-    vi.mocked(prisma.blink.create).mockResolvedValue({ id: "blink-db-id-1" } as never);
+    vi.mocked(prisma.employer.upsert).mockResolvedValue({
+      id: "emp1",
+    } as never);
+    vi.mocked(prisma.blink.create).mockResolvedValue({
+      id: "blink-db-id-1",
+    } as never);
     vi.mocked(prisma.blink.update).mockResolvedValue({} as never);
 
     const req = new NextRequest("http://localhost/api/blinks/create", {

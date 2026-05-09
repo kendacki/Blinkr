@@ -1,0 +1,34 @@
+---
+title: POST /api/blinks/[blinkId]/claim
+description: Relayer-paid claim transaction; contractor session required.
+---
+
+## Auth
+
+`Authorization: Bearer <contractor session JWT>` scoped to `blinkId`.
+
+Implementation: `apps/web/app/api/blinks/[blinkId]/claim/route.ts`.
+
+## Preconditions
+
+- Blink `OPENED` with populated `walletAddress`, `escrowPDA`, `credentialId`, credential relation.
+- Session wallet equals Blink wallet (`403 FORBIDDEN` otherwise).
+- Escrow account exists on-chain; decoded mint/blink hash/env mint consistency enforced (`decodeEscrowClaimAuthFields`).
+- Idempotent-ish: if already `CLAIMED` with `claimTxSig`, returns stored sig (`200`).
+
+## Behavior (high level)
+
+1. Decode escrow account for canonical amounts/mints/nonces (`decodedEscrow.ts`).
+2. Build authorization payload (`claimMessage.ts`) including credential SHA-256, expiry slot window (`currentSlot + SLOT_AUTH_WINDOW`).
+3. Relayer keypair signs message (`relayer.ts`); `assertRelayerMatchesProgramConstant` aligns backend config with `EXPECTED_RELAYER` in program source.
+4. Assemble instructions: optional ATA create for contractor USDC, Ed25519Program verify ix carrying relayer pubkey + message + sig, `claim_escrow` ix (`claimInstruction.ts`).
+5. Transaction fee payer = relayer; broadcast + confirm.
+6. On success: `assertBlinkTransition(OPENED, CLAIMED)` then Prisma update `CLAIMED`, `claimTxSig`, `claimedAt`.
+
+## Errors
+
+Typical codes: `401`/`403` auth, `400 INVALID_STATE`, `404 NOT_FOUND` missing escrow account, `500 CONFIG` mismatched mint / blink hash / credential wiring.
+
+## Lifecycle impact
+
+Advances Blink to `CLAIMED`. Helius webhook handler may also patch status when wired with compatible payloads — keep webhook payloads consistent with API outcomes to avoid races.

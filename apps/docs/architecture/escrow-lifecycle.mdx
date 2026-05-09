@@ -1,0 +1,52 @@
+---
+title: Escrow lifecycle
+description: Order of operations from blink creation through funding, passkeys, claim, refund, and off-ramp.
+---
+
+This describes the **intended** flow encoded in `apps/web` routes and Prisma `Blink` statuses (`PENDING`, `OPENED`, `CLAIMED`, `OFFRAMPED`, `EXPIRED`, `REFUNDED`). On-chain escrow state (`programs/blinkremit`) uses its own `EscrowStatus` (Pending / Claimed / Refunded); DB updates must stay coherent with chain outcomes.
+
+## 1. Create Blink (DB)
+
+`POST /api/blinks/create` (employer JWT): inserts `Blink` with `status = PENDING`, computes escrow PDA from `sha256(blinkDbId)` seeds (`lib/solana.ts` `blinkDbIdToBytes`, `getEscrowPDA`), stores `escrowPDA` on the row. TTL default 7 days (`BLINK_TTL_DAYS`).
+
+## 2. Prepare fund transaction
+
+`POST /api/blinks/[blinkId]/prepare-fund-tx`: requires `PENDING`. Builds one `create_escrow` instruction (`lib/createEscrowInstruction.ts`), employer pays fees. Response is base64-serialized partial transaction for wallet signing.
+
+## 3. Confirm escrow landed
+
+`POST /api/blinks/[blinkId]/confirm-escrow`: employer JWT; body `{ escrowTxSig }`. Loads transaction from RPC; on success records `escrowTxSig`. **Does not** flip status by itself — Blink may remain `PENDING` until contractor completes passkey flow.
+
+## 4. Contractor passkey (OPENED)
+
+Redis stores challenge from register/verify flows. `POST /api/passkey/verify`: after successful WebAuthn verification, transitions `PENDING` → `OPENED` (via `assertBlinkTransition`), attaches newly allocated Solana address + `Credential` row for first registration, issues contractor session JWT.
+
+Claim prerequisites per `claim/route.ts`: DB must be `OPENED` with `walletAddress`, `escrowPDA`, `credentialId`, and live escrow account data matching mint/blink id hash.
+
+## 5. Claim (relayer)
+
+`POST /api/blinks/[blinkId]/claim`: contractor session JWT; builds relayer-signed authorization (`lib/claimMessage.ts`, `lib/relayer.ts`), adds ed25519 verify ix + `claim_escrow` ix, sends tx fee-paid by relayer, then `OPENED` → `CLAIMED` with `claimTxSig`.
+
+## 6. Expiry / refund (DB vs chain)
+
+`POST /api/cron/expiry-refund`: bearer `CRON_SECRET`; marks overdue `PENDING`/`OPENED` rows as `EXPIRED`. Comment in route: on-chain `refund_escrow` remains a separate operational step.
+
+## 7. Off-ramp
+
+`POST /api/offramp/initiate` creates `OfframpRequest`; worker stub advances statuses. `POST /api/webhooks/meso`: HMAC-verified; on provider `completed`, sets Blink `OFFRAMPED` and sends email.
+
+## Diagram (logical)
+
+```text
+Employer JWT -> create Blink (PENDING)
+           -> prepare-fund-tx -> wallet submits create_escrow
+           -> confirm-escrow (escrowTxSig recorded)
+
+Contractor -> passkey verify -> OPENED
+
+Contractor session -> claim -> relayer tx -> CLAIMED
+
+Cron -> EXPIRED (DB) | refund_escrow (program, ops)
+
+Offramp webhook -> OFFRAMPED
+```

@@ -1,9 +1,15 @@
 import { Buffer } from "buffer";
-import { PublicKey, SystemProgram, TransactionInstruction } from "@solana/web3.js";
+import {
+  PublicKey,
+  SystemProgram,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import { ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 /** Anchor `sha256("global:create_escrow")[:8]` */
-const CREATE_ESCROW_DISCRIMINATOR = Buffer.from([0xfd, 0xd7, 0xa5, 0x74, 0x24, 0x6c, 0x44, 0x50]);
+const CREATE_ESCROW_DISCRIMINATOR = Buffer.from([
+  0xfd, 0xd7, 0xa5, 0x74, 0x24, 0x6c, 0x44, 0x50,
+]);
 
 function u64le(n: bigint): Buffer {
   const b = Buffer.allocUnsafe(8);
@@ -59,10 +65,18 @@ export function buildCreateEscrowInstruction(params: {
       { pubkey: params.employer, isSigner: true, isWritable: true },
       { pubkey: params.escrow, isSigner: false, isWritable: true },
       { pubkey: params.usdcMint, isSigner: false, isWritable: false },
-      { pubkey: params.employerTokenAccount, isSigner: false, isWritable: true },
+      {
+        pubkey: params.employerTokenAccount,
+        isSigner: false,
+        isWritable: true,
+      },
       { pubkey: params.escrowTokenAccount, isSigner: false, isWritable: true },
       { pubkey: params.tokenProgram, isSigner: false, isWritable: false },
-      { pubkey: ASSOCIATED_TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+      {
+        pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
+        isSigner: false,
+        isWritable: false,
+      },
       { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
     ],
     data,

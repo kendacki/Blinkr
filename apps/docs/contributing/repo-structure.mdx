@@ -1,0 +1,14 @@
+---
+title: Repository structure
+description: Where Blink UI, APIs, program, tests, and docs live.
+---
+
+| Path | Role |
+|------|------|
+| `apps/web/` | Next.js App Router site + REST-ish Route Handlers; Prisma in `prisma/`; Vitest in `tests/`; workers under `workers/`. |
+| `programs/blinkremit/` | Anchor crate (`instructions`, `state`). |
+| `tests/` (repo root) | Anchor workspace TS smoke/integration invoked via `anchor test`. |
+| `migrations/` | Anchor deploy scaffold hook (`deploy.ts`). |
+| `apps/docs/` | Mintlify MDX (`docs.json`, MDX pages). |
+
+Orchestration logic concentrates under `apps/web/lib/` (`blinkStateMachine`, Solana ix builders, auth helpers).

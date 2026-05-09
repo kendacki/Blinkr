@@ -1,0 +1,16 @@
+---
+title: Relayer identity and signatures
+description: EXPECTED_RELAYER binding across Rust program and Node signer.
+---
+
+## Program constraint
+
+`ClaimEscrow` accounts require `relayer.key() == EXPECTED_RELAYER` (`programs/blinkremit/src/instructions/claim_escrow.rs`). Compile-time constant in `programs/blinkremit/src/constants.rs`.
+
+Changing production relayer requires coordinated deploy + backend env (`RELAYER_KEYPAIR`) plus migrations/funds.
+
+## Backend alignment
+
+`loadRelayerKeypair()` reads `RELAYER_KEYPAIR` JSON secret (`apps/web/lib/relayer.ts`). `assertRelayerMatchesProgramConstant` compares pubkey bytes against expected pubkey baked into backend constants aligned with program deployment (`EXPECTED_RELAYER`).
+
+Mismatch yields startup/route failures (`CONFIG`), avoiding silently deploying txs signed by wrong authority.

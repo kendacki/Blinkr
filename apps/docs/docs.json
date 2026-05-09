@@ -1,0 +1,70 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Blinkr",
+  "colors": {
+    "primary": "#a855f7",
+    "light": "#c084fc",
+    "dark": "#9333ea"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Engineering",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["index"]
+          },
+          {
+            "group": "Architecture",
+            "pages": [
+              "architecture/system-overview",
+              "architecture/escrow-lifecycle",
+              "architecture/auth-flow",
+              "architecture/state-machine",
+              "architecture/webhook-flow",
+              "architecture/queue-workers"
+            ]
+          },
+          {
+            "group": "HTTP API",
+            "pages": [
+              "api/employer-auth",
+              "api/create-blink",
+              "api/prepare-fund-tx",
+              "api/confirm-escrow",
+              "api/claim",
+              "api/status",
+              "api/webhooks"
+            ]
+          },
+          {
+            "group": "Solana program",
+            "pages": [
+              "program/pda-derivation",
+              "program/escrow-accounts",
+              "program/claim-authorization",
+              "program/relayer-signatures",
+              "program/token-accounts"
+            ]
+          },
+          {
+            "group": "Contributing",
+            "pages": [
+              "contributing/local-setup",
+              "contributing/repo-structure",
+              "contributing/testing",
+              "contributing/ci",
+              "contributing/common-mistakes"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "contextual": {
+    "options": ["copy", "view", "chatgpt", "claude", "cursor", "vscode"]
+  }
+}

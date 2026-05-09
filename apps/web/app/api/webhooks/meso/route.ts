@@ -11,9 +11,14 @@ export async function POST(req: NextRequest) {
     const raw = await req.text();
     const secret = process.env.MESO_WEBHOOK_SECRET ?? "";
     if (!secret) {
-      throw new ApiError(500, "CONFIG", "MESO_WEBHOOK_SECRET is not configured");
+      throw new ApiError(
+        500,
+        "CONFIG",
+        "MESO_WEBHOOK_SECRET is not configured"
+      );
     }
-    const sig = req.headers.get("Meso-Signature") ?? req.headers.get("meso-signature");
+    const sig =
+      req.headers.get("Meso-Signature") ?? req.headers.get("meso-signature");
     try {
       verifyHmacSha256Hex(secret, raw, sig);
     } catch {
@@ -26,7 +31,8 @@ export async function POST(req: NextRequest) {
       blinkId?: string;
     };
 
-    const offrampId = typeof payload.offrampId === "string" ? payload.offrampId : null;
+    const offrampId =
+      typeof payload.offrampId === "string" ? payload.offrampId : null;
     const status = typeof payload.status === "string" ? payload.status : "";
     if (!offrampId) {
       return jsonOk({ ok: true, ignored: true });

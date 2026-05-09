@@ -1,0 +1,17 @@
+---
+title: CI
+description: GitHub Actions workflow for web workspace checks.
+---
+
+`.github/workflows/ci.yml` triggers on pushes / PRs targeting `main` or `master`.
+
+Jobs:
+
+1. Checkout repo.
+2. Setup Node 20 with Yarn cache on root `yarn.lock`.
+3. `yarn install --frozen-lockfile`.
+4. Run `@blinkr/web` scripts: `typecheck`, `lint`, `test`.
+
+Anchor compilation/tests intentionally omit — avoids heavyweight runners unless contributors extend workflows separately.
+
+Documentation validation (`mint validate` via `yarn docs:validate`) is not wired inside CI yet; run locally before merging docs-only branches (`yarn docs:build`, same script).

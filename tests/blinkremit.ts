@@ -9,7 +9,9 @@ describe("blinkremit", () => {
 
   it("loads program idl", () => {
     if (!program) {
-      throw new Error("Program workspace not loaded; run anchor build && anchor test from Anchor toolchain");
+      throw new Error(
+        "Program workspace not loaded; run anchor build && anchor test from Anchor toolchain"
+      );
     }
     expect(program.programId).toBeDefined();
   });

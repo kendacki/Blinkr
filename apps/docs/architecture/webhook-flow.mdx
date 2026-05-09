@@ -1,0 +1,25 @@
+---
+title: Webhook flow
+description: Helius and Meso ingress — verification and DB side effects.
+---
+
+## Helius
+
+Route: `POST /api/webhooks/helius`
+
+- Reads **raw** body string; verifies `Helius-Signature` / variants via `verifyHmacSha256Hex(secret, raw, sig)` where `secret` is `HELIUS_WEBHOOK_AUTH_HEADER`.
+- Parses JSON defensively. If `type` mentions CLAIM/EscrowClaimed-shaped strings, updates matching Blink `status` to `CLAIMED` when `blinkId` present in payload or nested meta (implementation is string-match oriented).
+- REFUND-shaped types set `REFUNDED`.
+
+Extend parsing when your Enhanced Webhook subscription emits stable field shapes; today’s handler is intentionally conservative.
+
+## Meso
+
+Route: `POST /api/webhooks/meso`
+
+- Verifies `Meso-Signature` against `MESO_WEBHOOK_SECRET`.
+- Updates `OfframpRequest` by `offrampId`; when status string is `completed`, sets parent Blink `OFFRAMPED` and triggers transactional email (`lib/email.ts`).
+
+## Failure modes
+
+Missing secrets → 500 `CONFIG`. Bad signature → 401 `UNAUTHORIZED`. Invalid JSON on Helius → 400 `INVALID_JSON`.

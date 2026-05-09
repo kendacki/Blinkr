@@ -1,0 +1,40 @@
+---
+title: POST /api/auth/employer
+description: Wallet-signed message exchange for employer JWT.
+---
+
+## Purpose
+
+Mint HS256 JWT for employers operating dashboards (`Authorization` header on blink creation and funding routes).
+
+Implementation: `apps/web/app/api/auth/employer/route.ts`.
+
+## Request
+
+JSON validated by `employerAuthBodySchema`:
+
+| Field | Type | Notes |
+|-------|------|--------|
+| `walletAddress` | string | Solana base58 pubkey |
+| `message` | string | Opaque UTF-8 string that was signed |
+| `signatureBase58` | string | Detached signature, bs58 |
+
+## Behavior
+
+1. Parse body with Zod schema (`lib/schemas.ts`).
+2. `verifyWalletMessageSignature` (`lib/auth.ts`): decode pubkey + sig, verify Ed25519 over UTF-8 `message`.
+3. `signEmployerJwt(walletAddress)` — requires `JWT_SECRET`.
+
+## Response
+
+200 JSON:
+
+```json
+{ "token": "<jwt>", "expiresInSec": 604800 }
+```
+
+Errors funnel through `jsonError`: validation failures, failed verification (`401 UNAUTHORIZED`), missing `JWT_SECRET` (`500 CONFIG`).
+
+## Lifecycle impact
+
+None on `Blink` rows; subsequent routes embed employer identity via bearer token only.

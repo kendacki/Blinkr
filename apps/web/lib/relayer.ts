@@ -19,10 +19,15 @@ export function assertRelayerMatchesProgramConstant(kp: Keypair): void {
     return;
   }
   if (kp.publicKey.toBase58() !== expected) {
-    throw new Error("RELAYER_KEYPAIR public key does not match RELAYER_PUBKEY / on-chain EXPECTED_RELAYER");
+    throw new Error(
+      "RELAYER_KEYPAIR public key does not match RELAYER_PUBKEY / on-chain EXPECTED_RELAYER"
+    );
   }
 }
 
-export function signClaimAuthorizationMessage(secretKey: Uint8Array, message: Buffer): Buffer {
+export function signClaimAuthorizationMessage(
+  secretKey: Uint8Array,
+  message: Buffer
+): Buffer {
   return Buffer.from(nacl.sign.detached(message, secretKey));
 }

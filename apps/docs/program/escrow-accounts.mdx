@@ -1,0 +1,23 @@
+---
+title: Escrow accounts
+description: On-chain EscrowAccount layout and statuses versus Blink rows.
+---
+
+## EscrowAccount
+
+Defined in `programs/blinkremit/src/state/escrow.rs`:
+
+- `employer: Pubkey`
+- `usdc_mint`, `token_program`, `escrow_token_account`
+- `amount: u64`
+- `blink_id: [u8; 32]`
+- `credential_hash`, `claim_nonce`
+- `contractor_wallet: Option<Pubkey>`
+- `EscrowStatus`: `Pending | Claimed | Refunded`
+- Timestamps + bump
+
+Claim writes credential commitment fields enforced against relayer-signed payloads (`claim_escrow.rs`).
+
+## Blink rows
+
+Postgres mirrors payout UX (`Blink.status`): adds lifecycle stages (`OPENED`, `OFFRAMPED`, `EXPIRED`) that exist only off-chain. When auditing: reconcile DB `CLAIMED`/`REFUNDED` against escrow account status via RPC.

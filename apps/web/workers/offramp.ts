@@ -22,7 +22,7 @@ const worker = new Worker(
       data: { status: "processing", providerRef: "stub-worker" },
     });
   },
-  { connection },
+  { connection }
 );
 
 worker.on("failed", (job, err) => {

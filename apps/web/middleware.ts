@@ -36,7 +36,10 @@ export function middleware(req: NextRequest) {
       res.headers.set("Vary", "Origin");
     }
     res.headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-    res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization"
+    );
     if (req.method === "OPTIONS") {
       return new NextResponse(null, { status: 204, headers: res.headers });
     }

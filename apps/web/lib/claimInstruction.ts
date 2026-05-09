@@ -1,8 +1,14 @@
 import { Buffer } from "buffer";
-import { PublicKey, SYSVAR_INSTRUCTIONS_PUBKEY, TransactionInstruction } from "@solana/web3.js";
+import {
+  PublicKey,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
+  TransactionInstruction,
+} from "@solana/web3.js";
 
 /** Anchor `sha256("global:claim_escrow")[:8]` */
-const CLAIM_ESCROW_DISCRIMINATOR = Buffer.from([0xc8, 0x50, 0xb6, 0x9f, 0x3d, 0x4b, 0x09, 0xcd]);
+const CLAIM_ESCROW_DISCRIMINATOR = Buffer.from([
+  0xc8, 0x50, 0xb6, 0x9f, 0x3d, 0x4b, 0x09, 0xcd,
+]);
 
 function u64le(n: bigint): Buffer {
   const b = Buffer.allocUnsafe(8);
@@ -58,7 +64,11 @@ export function buildClaimEscrowInstruction(params: {
       { pubkey: params.usdcMint, isSigner: false, isWritable: false },
       { pubkey: params.escrowToken, isSigner: false, isWritable: true },
       { pubkey: params.contractorToken, isSigner: false, isWritable: true },
-      { pubkey: SYSVAR_INSTRUCTIONS_PUBKEY, isSigner: false, isWritable: false },
+      {
+        pubkey: SYSVAR_INSTRUCTIONS_PUBKEY,
+        isSigner: false,
+        isWritable: false,
+      },
       { pubkey: params.tokenProgram, isSigner: false, isWritable: false },
     ],
     data,

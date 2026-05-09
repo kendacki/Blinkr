@@ -1,0 +1,31 @@
+---
+title: Webhooks (Helius, Meso)
+description: Ingress endpoints for partner-signed webhook payloads.
+---
+
+## Helius
+
+**Path:** `POST /api/webhooks/helius`
+
+- Header: `Helius-Signature` (case variants accepted).
+- Secret env: `HELIUS_WEBHOOK_AUTH_HEADER` (shared HMAC key).
+- Raw body string must match signature (`webhookHmac.ts`).
+
+Updates Blink rows when parsed `type` strings contain CLAIM or REFUND patterns and `blinkId` can be extracted. See [Webhook flow](/architecture/webhook-flow).
+
+## Meso
+
+**Path:** `POST /api/webhooks/meso`
+
+- Header: `Meso-Signature`.
+- Secret env: `MESO_WEBHOOK_SECRET`.
+
+Updates `OfframpRequest`; completion drives Blink → `OFFRAMPED` plus email.
+
+## Operational checklist
+
+1. Configure secrets before exposing routes publicly.
+2. Run parsers behind HTTPS termination only.
+3. Log failures without echoing raw payloads into untrusted sinks.
+
+For lifecycle diagrams, see [Escrow lifecycle](/architecture/escrow-lifecycle).

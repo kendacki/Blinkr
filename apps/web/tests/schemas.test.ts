@@ -17,7 +17,7 @@ describe("createBlinkBodySchema", () => {
         contractorEmail: "a@b.com",
         amountUsdc: "10.1234567",
         employerWallet: "246VxdVvQkKDk51fxbAYaszJHsqoRQd8vdqbBy7LKjgx",
-      }),
+      })
     ).toThrow();
   });
 });

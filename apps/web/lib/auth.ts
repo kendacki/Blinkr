@@ -23,7 +23,11 @@ export function verifyWalletMessageSignature(input: {
   }
   const msg = new TextEncoder().encode(input.message);
   if (!nacl.sign.detached.verify(msg, sig, pub)) {
-    throw new ApiError(401, "UNAUTHORIZED", "Wallet signature verification failed");
+    throw new ApiError(
+      401,
+      "UNAUTHORIZED",
+      "Wallet signature verification failed"
+    );
   }
 }
 
@@ -42,10 +46,14 @@ export async function signEmployerJwt(walletAddress: string): Promise<string> {
 
 export async function verifyEmployerJwt(
   authorizationHeader: string | null,
-  expectedEmployerWallet: string,
+  expectedEmployerWallet: string
 ): Promise<jose.JWTPayload> {
   if (!authorizationHeader?.startsWith("Bearer ")) {
-    throw new ApiError(401, "UNAUTHORIZED", "Missing Authorization bearer token");
+    throw new ApiError(
+      401,
+      "UNAUTHORIZED",
+      "Missing Authorization bearer token"
+    );
   }
   const token = authorizationHeader.slice("Bearer ".length).trim();
   const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? "");
@@ -57,26 +65,38 @@ export async function verifyEmployerJwt(
     const verified = await jose.jwtVerify(token, secret);
     payload = verified.payload;
   } catch {
-    throw new ApiError(401, "UNAUTHORIZED", "Invalid or expired employer token");
+    throw new ApiError(
+      401,
+      "UNAUTHORIZED",
+      "Invalid or expired employer token"
+    );
   }
   const wallet =
     typeof payload.walletAddress === "string"
       ? payload.walletAddress
       : typeof payload.sub === "string"
-        ? payload.sub
-        : null;
+      ? payload.sub
+      : null;
   if (!wallet || wallet !== expectedEmployerWallet) {
-    throw new ApiError(403, "FORBIDDEN", "Token wallet does not match employerWallet");
+    throw new ApiError(
+      403,
+      "FORBIDDEN",
+      "Token wallet does not match employerWallet"
+    );
   }
   return payload;
 }
 
 export async function verifyContractorSession(
   authorizationHeader: string | null,
-  expectedBlinkId: string,
+  expectedBlinkId: string
 ): Promise<{ walletAddress: string }> {
   if (!authorizationHeader?.startsWith("Bearer ")) {
-    throw new ApiError(401, "UNAUTHORIZED", "Missing Authorization bearer token");
+    throw new ApiError(
+      401,
+      "UNAUTHORIZED",
+      "Missing Authorization bearer token"
+    );
   }
   const token = authorizationHeader.slice("Bearer ".length).trim();
   const secret = new TextEncoder().encode(process.env.SESSION_SECRET ?? "");
@@ -88,7 +108,11 @@ export async function verifyContractorSession(
     const verified = await jose.jwtVerify(token, secret);
     payload = verified.payload;
   } catch {
-    throw new ApiError(401, "UNAUTHORIZED", "Invalid or expired contractor session");
+    throw new ApiError(
+      401,
+      "UNAUTHORIZED",
+      "Invalid or expired contractor session"
+    );
   }
   if (payload.typ !== "contractor") {
     throw new ApiError(403, "FORBIDDEN", "Invalid session type");

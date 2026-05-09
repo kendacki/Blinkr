@@ -1,0 +1,40 @@
+---
+title: POST /api/blinks/create
+description: Creates Blink row PENDING, persists escrow PDA, returns blink URL.
+---
+
+## Auth
+
+`Authorization: Bearer <employer JWT>`. Body must include matching `employerWallet`; mismatch rejected (`403 FORBIDDEN`).
+
+Implementation: `apps/web/app/api/blinks/create/route.ts`.
+
+## Request body
+
+`createBlinkBodySchema`:
+
+| Field | Type | Notes |
+|-------|------|--------|
+| `contractorEmail` | email string | |
+| `amountUsdc` | decimal string | Regex `/^\d+(\.\d{1,6})?$/` — six fractional digits max |
+| `employerWallet` | string | Must equal JWT wallet |
+| `serializedTx` | optional string | Acknowledged in response only; no tx parsing |
+
+## Behavior
+
+Upserts `Employer`. Creates `Blink` `PENDING`, sets `expiresAt` (+7 days). Computes escrow PDA with program id env + employer pubkey + `blinkDbIdToBytes(id)`. Updates row `escrowPDA`.
+
+## Response
+
+```json
+{
+  "blinkId": "...",
+  "blinkUrl": "https://.../blink/<id>",
+  "escrowPDA": "...",
+  "serializedTxAcknowledged": false
+}
+```
+
+## Lifecycle impact
+
+New Blink starts `PENDING`. Funding TX preparation blocked unless employer JWT wallet aligns.

@@ -1,0 +1,16 @@
+---
+title: Common mistakes
+description: High-impact pitfalls reviewers flag immediately.
+---
+
+1. **Relayer drift**: Editing `.env` `RELAYER_PUBKEY` without touching program constant (`EXPECTED_RELAYER`) bricks claims instantly (`UnauthorizedRelayer`).
+
+2. **Mint mismatch**: `USDC_MINT_ADDRESS` not aligned with cluster/program constants yields ix/account rejects (`prepare-fund-tx`, on-chain mint assertions).
+
+3. **Bypassing state machine**: Mutating Blink statuses directly without respecting `assertBlinkTransition` invites invariant breakage versus webhook handlers.
+
+4. **Floating escrow hashing**: Changing blink DB identifier derivation algorithm requires synchronous Rust + TS deployment plus migration implications.
+
+5. **Webhook optimism**: Treating webhook payloads as truth without reconciling RPC escrow accounts duplicates statuses races versus `/claim`.
+
+Keep patches localized — reviewers prioritize correctness around escrow transitions.

@@ -5,11 +5,17 @@ import type {
 import { NextRequest } from "next/server";
 import { ApiError, jsonError, jsonOk } from "@/lib/http";
 import { ensureBlinkPasskeyAllowed } from "@/lib/blinkGuards";
-import { passkeyChallengeKey, type PasskeyChallengePayload } from "@/lib/passkeyChallenge";
+import {
+  passkeyChallengeKey,
+  type PasskeyChallengePayload,
+} from "@/lib/passkeyChallenge";
 import { prisma } from "@/lib/prisma";
 import { getRedis } from "@/lib/redis";
 import { passkeyRegisterBodySchema } from "@/lib/schemas";
-import { generateAuthenticationChallenge, generateRegistrationChallenge } from "@/lib/webauthn";
+import {
+  generateAuthenticationChallenge,
+  generateRegistrationChallenge,
+} from "@/lib/webauthn";
 
 export const runtime = "nodejs";
 
@@ -21,7 +27,9 @@ export async function POST(req: NextRequest) {
     const body = passkeyRegisterBodySchema.parse(json);
     const emailNorm = body.email.trim().toLowerCase();
 
-    const blink = await prisma.blink.findUnique({ where: { id: body.blinkId } });
+    const blink = await prisma.blink.findUnique({
+      where: { id: body.blinkId },
+    });
     if (!blink) {
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
@@ -35,14 +43,19 @@ export async function POST(req: NextRequest) {
     });
 
     const webauthnUserId = `blink:${body.blinkId}`;
-    let options: PublicKeyCredentialCreationOptionsJSON | PublicKeyCredentialRequestOptionsJSON;
+    let options:
+      | PublicKeyCredentialCreationOptionsJSON
+      | PublicKeyCredentialRequestOptionsJSON;
     let flow: PasskeyChallengePayload["flow"];
     if (existing) {
       flow = "authenticate";
       options = await generateAuthenticationChallenge([existing.credentialId]);
     } else {
       flow = "register";
-      options = await generateRegistrationChallenge(webauthnUserId, body.email.trim());
+      options = await generateRegistrationChallenge(
+        webauthnUserId,
+        body.email.trim()
+      );
     }
 
     const challenge = options.challenge;
@@ -55,7 +68,7 @@ export async function POST(req: NextRequest) {
     await getRedis().setex(
       passkeyChallengeKey(body.blinkId),
       CHALLENGE_TTL_SEC,
-      JSON.stringify(payload),
+      JSON.stringify(payload)
     );
 
     return jsonOk(options);

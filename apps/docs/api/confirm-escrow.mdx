@@ -1,0 +1,35 @@
+---
+title: POST /api/blinks/[blinkId]/confirm-escrow
+description: Records escrow funding signature after RPC confirmation.
+---
+
+## Auth
+
+Employer JWT for Blink owner.
+
+File: `apps/web/app/api/blinks/[blinkId]/confirm-escrow/route.ts`.
+
+## Request body
+
+Zod:
+
+```json
+{ "escrowTxSig": "<signature>" }
+```
+
+Length clamp `min(32) max(128)` at validation layer.
+
+## Behavior
+
+1. Fetch Blink + employer; verify JWT wallet matches employer.
+2. If `escrowTxSig` already set:
+   - Same sig → idempotent `200` `{ ok: true, idempotent: true }`.
+   - Different sig → `409 CONFLICT`.
+3. `connection.getTransaction(escrowTxSig, { commitment: "confirmed", maxSupportedTransactionVersion: 0 })`.
+4. Missing → `400 NOT_FOUND` (retry later).
+5. `meta.err` present → `400 TX_FAILED`.
+6. Persist `escrowTxSig` on Blink row.
+
+## Lifecycle note
+
+Does **not** advance Blink status. Typical ordering: funding confirms while Blink stays `PENDING` until contractor passkey verification moves to `OPENED`.

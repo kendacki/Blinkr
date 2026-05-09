@@ -14,7 +14,9 @@ export function amountToLamports(usdc: string): bigint {
   if (d.lt(0)) {
     throw new Error("amount must be non-negative");
   }
-  const lamports = d.mul(LAMPORTS_PER_USDC).toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
+  const lamports = d
+    .mul(LAMPORTS_PER_USDC)
+    .toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
   return BigInt(lamports.toFixed(0));
 }
 
@@ -34,19 +36,21 @@ export function blinkDbIdToBytes(blinkDbId: string): Buffer {
 export function getEscrowPDA(
   programId: PublicKey,
   employer: PublicKey,
-  blinkIdBytes: Buffer,
+  blinkIdBytes: Buffer
 ): [PublicKey, number] {
   return PublicKey.findProgramAddressSync(
     [ESCROW_SEED, employer.toBuffer(), blinkIdBytes],
-    programId,
+    programId
   );
 }
 
 /**
  * Placeholder for submitting employer-signed transactions (MVP seam).
  */
-export async function submitSerializedTransaction(_serializedTxBase64: string): Promise<string> {
+export async function submitSerializedTransaction(
+  _serializedTxBase64: string
+): Promise<string> {
   throw new Error(
-    "submitSerializedTransaction is not wired in MVP; employer client should submit via wallet.",
+    "submitSerializedTransaction is not wired in MVP; employer client should submit via wallet."
   );
 }

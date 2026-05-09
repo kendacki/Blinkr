@@ -1,0 +1,17 @@
+---
+title: Escrow PDA derivation
+description: Seeds for escrow program-derived addresses — parity between Anchor and TypeScript.
+---
+
+## Rust program
+
+`ESCROW_SEED` literal bytes `b"escrow"` in `programs/blinkremit/src/constants.rs`. Escrow account PDA seeds per Anchor contexts include `[ESCROW_SEED, employer.as_ref(), blink_id.as_ref()]` where `blink_id` is `[u8; 32]` stored on-chain.
+
+## TypeScript mirror
+
+`apps/web/lib/solana.ts`:
+
+- `blinkDbIdToBytes(blinkDbId)` → `sha256(utf8(blinkDbId))`, 32 bytes.
+- `getEscrowPDA(programId, employerPubkey, blinkIdBytes)` → `PublicKey.findProgramAddressSync([ESCROW_SEED buffer, employer, blinkIdBytes], programId)`.
+
+Any divergence between DB blink id hashing and instruction encoding implies mismatched PDAs and broken funding or claim paths (`prepare-fund-tx` asserts parity).

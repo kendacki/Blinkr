@@ -1,0 +1,13 @@
+{
+  "name": "@blinkr/docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "mint dev",
+    "build": "mint validate",
+    "validate": "mint validate"
+  },
+  "devDependencies": {
+    "mint": "^4.2.123"
+  }
+}

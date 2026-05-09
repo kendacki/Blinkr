@@ -1,0 +1,18 @@
+---
+title: Testing
+description: Anchor versus Vitest commands from repo root.
+---
+
+## Typescript / Vitest
+
+`yarn test:web` — executes Vitest suite (`apps/web/vitest.config.ts`). Covers encoding/schema/unit helpers around escrow builders without spinning Postgres unless tests introduce mocks.
+
+## Anchor tests
+
+`yarn test:anchor` — wraps `anchor test` (`Anchor.toml` script targets `tests/**/*.ts`). Requires toolchain availability matching Anchor CLI configuration.
+
+## Combined gate
+
+`yarn test` runs anchor suite then web suite sequentially (`package.json` at repo root).
+
+For narrowly scoped backend edits, prefer targeted Vitest paths locally (`yarn workspace @blinkr/web vitest run tests/schemas.test.ts`).

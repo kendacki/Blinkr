@@ -16,6 +16,10 @@ export async function assertStatusRateLimit(blinkId: string): Promise<void> {
     await redis.expire(key, STATUS_WINDOW_SEC * 2);
   }
   if (n > STATUS_LIMIT) {
-    throw new ApiError(429, "RATE_LIMIT", "Too many status requests for this Blink");
+    throw new ApiError(
+      429,
+      "RATE_LIMIT",
+      "Too many status requests for this Blink"
+    );
   }
 }

@@ -1,5 +1,8 @@
 import { Keypair } from "@solana/web3.js";
-import type { AuthenticationResponseJSON, RegistrationResponseJSON } from "@simplewebauthn/types";
+import type {
+  AuthenticationResponseJSON,
+  RegistrationResponseJSON,
+} from "@simplewebauthn/types";
 import { NextRequest } from "next/server";
 import { signContractorSessionToken } from "@/lib/auth";
 import { assertBlinkTransition } from "@/lib/blinkStateMachine";
@@ -13,7 +16,9 @@ import { verifyAuthentication, verifyRegistration } from "@/lib/webauthn";
 
 export const runtime = "nodejs";
 
-function isRegistrationCredential(cred: unknown): cred is RegistrationResponseJSON {
+function isRegistrationCredential(
+  cred: unknown
+): cred is RegistrationResponseJSON {
   if (!cred || typeof cred !== "object") {
     return false;
   }
@@ -32,7 +37,11 @@ export async function POST(req: NextRequest) {
 
     const raw = await getRedis().get(passkeyChallengeKey(body.blinkId));
     if (!raw) {
-      throw new ApiError(400, "CHALLENGE_EXPIRED", "Passkey challenge expired or missing");
+      throw new ApiError(
+        400,
+        "CHALLENGE_EXPIRED",
+        "Passkey challenge expired or missing"
+      );
     }
     const stored = JSON.parse(raw) as {
       challenge: string;
@@ -41,21 +50,38 @@ export async function POST(req: NextRequest) {
       webauthnUserId: string;
     };
 
-    const blink = await prisma.blink.findUnique({ where: { id: body.blinkId } });
+    const blink = await prisma.blink.findUnique({
+      where: { id: body.blinkId },
+    });
     if (!blink) {
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
     ensureBlinkPasskeyAllowed(blink);
     if (blink.contractorEmail.trim().toLowerCase() !== stored.email) {
-      throw new ApiError(403, "FORBIDDEN", "Challenge does not match this Blink");
+      throw new ApiError(
+        403,
+        "FORBIDDEN",
+        "Challenge does not match this Blink"
+      );
     }
 
     const credential = body.credential;
     if (stored.flow === "register" && !isRegistrationCredential(credential)) {
-      throw new ApiError(400, "INVALID_CREDENTIAL_TYPE", "Expected registration credential");
+      throw new ApiError(
+        400,
+        "INVALID_CREDENTIAL_TYPE",
+        "Expected registration credential"
+      );
     }
-    if (stored.flow === "authenticate" && isRegistrationCredential(credential)) {
-      throw new ApiError(400, "INVALID_CREDENTIAL_TYPE", "Expected authentication credential");
+    if (
+      stored.flow === "authenticate" &&
+      isRegistrationCredential(credential)
+    ) {
+      throw new ApiError(
+        400,
+        "INVALID_CREDENTIAL_TYPE",
+        "Expected authentication credential"
+      );
     }
 
     if (isRegistrationCredential(credential)) {
@@ -98,11 +124,15 @@ export async function POST(req: NextRequest) {
     if (!row || row.email !== stored.email) {
       throw new ApiError(403, "FORBIDDEN", "Unknown credential");
     }
-    const { newCounter } = await verifyAuthentication(authCred, stored.challenge, {
-      credentialId: row.credentialId,
-      publicKey: new Uint8Array(row.publicKey),
-      counter: row.counter,
-    });
+    const { newCounter } = await verifyAuthentication(
+      authCred,
+      stored.challenge,
+      {
+        credentialId: row.credentialId,
+        publicKey: new Uint8Array(row.publicKey),
+        counter: row.counter,
+      }
+    );
     await prisma.credential.update({
       where: { id: row.id },
       data: { counter: newCounter },

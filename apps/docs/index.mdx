@@ -1,0 +1,12 @@
+---
+title: Blinkr engineering docs
+description: Technical reference for the blinkremit program, Next.js API routes, and orchestration layer.
+---
+
+These docs describe **Blinkr / blinkremit**: employer-funded USDC escrows on Solana with WebAuthn for contractors and server-side relayer signing on claim.
+
+The Next.js app in `apps/web` owns HTTP APIs, Prisma persistence, Redis-backed challenges and queues, and Solana transaction construction. The Anchor program in `programs/blinkremit` owns escrow custody rules.
+
+Start with [Architecture](/architecture/system-overview), then [Escrow lifecycle](/architecture/escrow-lifecycle). Route-level detail lives under **HTTP API** and **Solana program**.
+
+If you deploy through Mintlify, set the repository docs directory to `apps/docs` (monorepo path; no trailing slash).

@@ -4,11 +4,16 @@ import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
-const TERMINAL_STATUSES = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"] as const;
+const TERMINAL_STATUSES = [
+  "CLAIMED",
+  "OFFRAMPED",
+  "REFUNDED",
+  "EXPIRED",
+] as const;
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { blinkId: string } },
+  { params }: { params: { blinkId: string } }
 ) {
   try {
     const blinkId = params.blinkId;
@@ -21,7 +26,7 @@ export async function GET(
     }
 
     const isTerminal = TERMINAL_STATUSES.includes(
-      blink.status as (typeof TERMINAL_STATUSES)[number],
+      blink.status as (typeof TERMINAL_STATUSES)[number]
     );
     if (blink.expiresAt.getTime() < Date.now() && !isTerminal) {
       throw new ApiError(410, "GONE", "This Blink has expired");

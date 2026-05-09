@@ -1,0 +1,20 @@
+---
+title: Auth flow
+description: Employer wallet JWT vs contractor WebAuthn session tokens.
+---
+
+## Employer
+
+`POST /api/auth/employer`: JSON body validated by `employerAuthBodySchema` (`walletAddress`, `message`, `signatureBase58`). `verifyWalletMessageSignature` (`lib/auth.ts`) verifies detached Ed25519 against the claimed pubkey. Success → HS256 JWT (`JWT_SECRET`), claims include `walletAddress`, exp ~7 days.
+
+Protected employer routes expect `Authorization: Bearer <token>` and `verifyEmployerJwt` compares payload wallet to the Blink’s employer row (e.g. create blink, prepare fund, confirm escrow).
+
+## Contractor
+
+Passkey flows use `@simplewebauthn/server` (`lib/webauthn.ts`). Challenges are stored in Redis keyed by blink (`passkeyChallenge.ts`). Successful `POST /api/passkey/verify` issues a contractor session JWT (`SESSION_SECRET`, `typ: contractor`, `blinkId`, `walletAddress`) via `signContractorSessionToken`.
+
+`POST /api/blinks/[blinkId]/claim` calls `verifyContractorSession` and checks session wallet matches `Blink.walletAddress`.
+
+## Guards
+
+`ensureBlinkPasskeyAllowed` (`lib/blinkGuards.ts`) rejects passkey operations when blink is terminal or past `expiresAt`.

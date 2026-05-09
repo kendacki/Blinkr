@@ -1,0 +1,29 @@
+---
+title: Blink state machine
+description: Allowed BlinkStatus transitions enforced in lib/blinkStateMachine.ts.
+---
+
+Source: `apps/web/lib/blinkStateMachine.ts`.
+
+## Statuses
+
+`PENDING` | `OPENED` | `CLAIMED` | `OFFRAMPED` | `EXPIRED` | `REFUNDED`
+
+Mirrors Prisma enum `BlinkStatus`.
+
+## Transitions
+
+| From | To |
+|------|-----|
+| PENDING | OPENED, EXPIRED, REFUNDED |
+| OPENED | CLAIMED, EXPIRED, REFUNDED |
+| CLAIMED | OFFRAMPED |
+| OFFRAMPED | _(terminal)_ |
+| EXPIRED | REFUNDED |
+| REFUNDED | _(terminal)_ |
+
+`assertBlinkTransition(from, to)` throws `ApiError` 409 `INVALID_STATE_TRANSITION` when illegal.
+
+`isTerminalBlinkStatus`: treats `CLAIMED`, `OFFRAMPED`, `REFUNDED` as terminal (used where UX should stop polling).
+
+Webhooks or cron may set statuses directly; they should respect the same invariants or risk divergence from user-visible API guarantees.

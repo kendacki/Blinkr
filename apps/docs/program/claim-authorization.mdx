@@ -1,0 +1,12 @@
+---
+title: Claim authorization payload
+description: Domain-separated message layout verified inside claim_escrow.
+---
+
+Inside `handle_claim_escrow` (`programs/blinkremit/src/instructions/claim_escrow.rs`), the program constructs an expected byte layout (`344 bytes` in comments) from escrow fields plus incoming contractor pubkey + credential hash + expiry slot.
+
+The backend reconstructs the identical ordering via `buildClaimAuthorizationMessage` (`apps/web/lib/claimMessage.ts`) before signing with relayer secret key (`signClaimAuthorizationMessage`). Instruction bundles standard Solana Ed25519 program verification ix referencing those bytes plus signature pubkey (`EXPECTED_RELAYER` checked via Anchor constraint).
+
+Invariant: message binds program id, escrow pubkey, blink id hash, employer, contractor wallet, amount, mint, token program, escrow token account, escrow `expires_at`, claim_nonce, credential_hash, expiry_slot window bound.
+
+Expiry guard: `Clock.slot <= expiry_slot` or transaction aborts (`AuthorizationExpired`).

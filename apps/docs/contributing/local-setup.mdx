@@ -1,0 +1,22 @@
+---
+title: Local setup
+description: Yarn workspaces, Anchor, env files — Blinkr contributor bootstrap.
+---
+
+Mirror root `CONTRIBUTING.md` with tooling specifics:
+
+1. Node 20+, Yarn classic at repo root.
+2. `yarn install` — installs `@blinkr/web`, Anchor TS tooling at root, and `@blinkr/docs`.
+3. `programs/blinkremit`: Anchor version pinned in `Anchor.toml`; `anchor build` from repo root (`yarn anchor:build`).
+4. Copy `apps/web/.env.example` → `.env.local`; fill Postgres + Redis + secrets (`JWT_SECRET`, `SESSION_SECRET`, `RELAYER_*`, RPC URLs).
+5. `yarn workspace @blinkr/web db:migrate:dev` once DB reachable.
+
+Solana wallet defaults via `Anchor.toml` (`~/.config/solana/id.json`) unless overridden by `ANCHOR_WALLET`.
+
+## Documentation preview
+
+```bash
+yarn docs:dev
+```
+
+Runs Mintlify CLI from `apps/docs`. Requires deps installed (`yarn install`).

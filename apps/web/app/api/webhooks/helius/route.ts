@@ -14,7 +14,11 @@ export async function POST(req: NextRequest) {
     const raw = await req.text();
     const secret = process.env.HELIUS_WEBHOOK_AUTH_HEADER ?? "";
     if (!secret) {
-      throw new ApiError(500, "CONFIG", "HELIUS_WEBHOOK_AUTH_HEADER is not configured");
+      throw new ApiError(
+        500,
+        "CONFIG",
+        "HELIUS_WEBHOOK_AUTH_HEADER is not configured"
+      );
     }
     const sig =
       req.headers.get("Helius-Signature") ??
@@ -23,7 +27,11 @@ export async function POST(req: NextRequest) {
     try {
       verifyHmacSha256Hex(secret, raw, sig);
     } catch {
-      throw new ApiError(401, "UNAUTHORIZED", "Invalid Helius webhook signature");
+      throw new ApiError(
+        401,
+        "UNAUTHORIZED",
+        "Invalid Helius webhook signature"
+      );
     }
 
     const payload = JSON.parse(raw) as Record<string, unknown>;
@@ -33,9 +41,10 @@ export async function POST(req: NextRequest) {
       const blinkId =
         typeof payload.blinkId === "string"
           ? payload.blinkId
-          : typeof (payload as { meta?: { blinkId?: string } }).meta?.blinkId === "string"
-            ? (payload as { meta?: { blinkId?: string } }).meta!.blinkId
-            : null;
+          : typeof (payload as { meta?: { blinkId?: string } }).meta
+              ?.blinkId === "string"
+          ? (payload as { meta?: { blinkId?: string } }).meta!.blinkId
+          : null;
       if (blinkId) {
         await prisma.blink.updateMany({
           where: { id: blinkId },
@@ -44,7 +53,8 @@ export async function POST(req: NextRequest) {
       }
     }
     if (type.includes("REFUND") || type.includes("EscrowRefunded")) {
-      const blinkId = typeof payload.blinkId === "string" ? payload.blinkId : null;
+      const blinkId =
+        typeof payload.blinkId === "string" ? payload.blinkId : null;
       if (blinkId) {
         await prisma.blink.updateMany({
           where: { id: blinkId },

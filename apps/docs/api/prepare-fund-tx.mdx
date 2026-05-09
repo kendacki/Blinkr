@@ -1,0 +1,37 @@
+---
+title: POST /api/blinks/[blinkId]/prepare-fund-tx
+description: Serialized partial transaction containing create_escrow for employer signing.
+---
+
+## Auth
+
+Employer JWT; wallet must match owning employer row.
+
+File: `apps/web/app/api/blinks/[blinkId]/prepare-fund-tx/route.ts`.
+
+## Preconditions
+
+- Blink exists.
+- `status === PENDING`.
+- Stored `escrowPDA` (if present) must equal derivation from current `(programId, employer, blinkIdBytes)` or handler throws `500 CONFIG`.
+
+## Behavior
+
+Resolves USDC mint (`USDC_MINT_ADDRESS`), fetches mint owner as SPL token program, derives employer + escrow ATAs, converts blink amount to lamports (`amountToLamports`), builds Anchor-compatible `create_escrow` ix (`buildCreateEscrowInstruction`). Recent blockhash from RPC (`confirmed`).
+
+## Response
+
+```json
+{
+  "serializedTxBase64": "...",
+  "escrowPDA": "...",
+  "blockhash": "...",
+  "lastValidBlockHeight": 123
+}
+```
+
+Employer wallet completes signatures client-side and submits to RPC.
+
+## Failure conditions
+
+`404 NOT_FOUND`, `400 INVALID_STATE` if not `PENDING`, ATA/program derivation failures surface as thrown errors normalized by `jsonError`.

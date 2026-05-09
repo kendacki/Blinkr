@@ -1,0 +1,22 @@
+---
+title: Queue workers
+description: Redis and BullMQ off-ramp worker process.
+---
+
+## Queue client
+
+`lib/queue.ts` exposes `getOfframpQueue()` — BullMQ `Queue` named `offramp`, backed by `REDIS_URL`. Throws if Redis URL unset.
+
+Producers enqueue jobs when off-ramp flow requires async settlement (see `POST /api/offramp/initiate` and related pieces).
+
+## Worker process
+
+`apps/web/workers/offramp.ts`: standalone Node entry using BullMQ `Worker` on the same queue name. Stub processor marks `OfframpRequest` rows from `initiated` → `processing` with `providerRef: stub-worker`.
+
+Run locally (from repo):
+
+```bash
+yarn workspace @blinkr/web worker:offramp
+```
+
+Requires `DATABASE_URL` and `REDIS_URL` in the environment for Prisma + Redis connections used by the worker file.

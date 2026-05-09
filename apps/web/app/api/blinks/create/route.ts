@@ -14,7 +14,10 @@ export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
     const body = createBlinkBodySchema.parse(json);
-    await verifyEmployerJwt(req.headers.get("authorization"), body.employerWallet);
+    await verifyEmployerJwt(
+      req.headers.get("authorization"),
+      body.employerWallet
+    );
 
     const employerRecord = await prisma.employer.upsert({
       where: { walletAddress: body.employerWallet },

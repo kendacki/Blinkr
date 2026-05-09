@@ -1,12 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { Keypair } from "@solana/web3.js";
-import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import { createHash } from "crypto";
-import { buildCreateEscrowInstruction, buildCreateEscrowInstructionData } from "@/lib/createEscrowInstruction";
+import {
+  buildCreateEscrowInstruction,
+  buildCreateEscrowInstructionData,
+} from "@/lib/createEscrowInstruction";
 
 describe("createEscrowInstruction", () => {
   it("encodes fixed-length instruction data", () => {
-    const blinkId = createHash("sha256").update("test-blink-id", "utf8").digest();
+    const blinkId = createHash("sha256")
+      .update("test-blink-id", "utf8")
+      .digest();
     const data = buildCreateEscrowInstructionData({
       blinkIdBytes: blinkId,
       amountLamports: 1_000_000n,

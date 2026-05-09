@@ -15,7 +15,11 @@ export async function GET(req: NextRequest) {
   try {
     const auth = req.headers.get("authorization");
     if (!auth?.startsWith("Bearer ")) {
-      throw new ApiError(401, "UNAUTHORIZED", "Missing Authorization bearer token");
+      throw new ApiError(
+        401,
+        "UNAUTHORIZED",
+        "Missing Authorization bearer token"
+      );
     }
     const token = auth.slice("Bearer ".length).trim();
     const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? "");
@@ -24,8 +28,8 @@ export async function GET(req: NextRequest) {
       typeof payload.walletAddress === "string"
         ? payload.walletAddress
         : typeof payload.sub === "string"
-          ? payload.sub
-          : null;
+        ? payload.sub
+        : null;
     if (!wallet) {
       throw new ApiError(401, "UNAUTHORIZED", "Invalid employer token");
     }
@@ -34,7 +38,10 @@ export async function GET(req: NextRequest) {
     const redis = getRedis();
     const cached = await redis.get(cacheKey);
     if (cached) {
-      const parsed = JSON.parse(cached) as { usdcBalance: string; usdcMint: string };
+      const parsed = JSON.parse(cached) as {
+        usdcBalance: string;
+        usdcMint: string;
+      };
       return jsonOk({ walletAddress: wallet, ...parsed });
     }
 

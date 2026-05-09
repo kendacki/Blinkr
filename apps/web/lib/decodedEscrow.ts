@@ -17,15 +17,21 @@ export interface EscrowClaimAuthFields {
   expiresAt: bigint;
 }
 
-export function decodeEscrowClaimAuthFields(accountData: Buffer): EscrowClaimAuthFields {
+export function decodeEscrowClaimAuthFields(
+  accountData: Buffer
+): EscrowClaimAuthFields {
   const base = ACCOUNT_DISCRIMINATOR_LEN;
   if (accountData.length < base + 232) {
     throw new Error("Escrow account data too short");
   }
   const employer = new PublicKey(accountData.subarray(base, base + 32));
   const usdcMint = new PublicKey(accountData.subarray(base + 32, base + 64));
-  const tokenProgram = new PublicKey(accountData.subarray(base + 64, base + 96));
-  const escrowTokenAccount = new PublicKey(accountData.subarray(base + 96, base + 128));
+  const tokenProgram = new PublicKey(
+    accountData.subarray(base + 64, base + 96)
+  );
+  const escrowTokenAccount = new PublicKey(
+    accountData.subarray(base + 96, base + 128)
+  );
   const amount = accountData.readBigUInt64LE(base + 128);
   const blinkId = Buffer.from(accountData.subarray(base + 136, base + 168));
   const claimNonce = Buffer.from(accountData.subarray(base + 200, base + 232));

@@ -12,9 +12,14 @@ export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
     const body = offrampInitiateBodySchema.parse(json);
-    await verifyContractorSession(req.headers.get("authorization"), body.blinkId);
+    await verifyContractorSession(
+      req.headers.get("authorization"),
+      body.blinkId
+    );
 
-    const blink = await prisma.blink.findUnique({ where: { id: body.blinkId } });
+    const blink = await prisma.blink.findUnique({
+      where: { id: body.blinkId },
+    });
     if (!blink) {
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
@@ -22,13 +27,23 @@ export async function POST(req: NextRequest) {
       throw new ApiError(403, "FORBIDDEN", "Wallet does not match Blink");
     }
     if (blink.status !== "CLAIMED") {
-      throw new ApiError(400, "INVALID_STATE", "Off-ramp is only available after the Blink is CLAIMED on-chain");
+      throw new ApiError(
+        400,
+        "INVALID_STATE",
+        "Off-ramp is only available after the Blink is CLAIMED on-chain"
+      );
     }
 
     const quote =
       body.provider === "meso"
-        ? await quoteMesoOfframp({ amountUsdc: blink.amountUsdc.toString(), currency: "USD" })
-        : await quoteMesoOfframp({ amountUsdc: blink.amountUsdc.toString(), currency: "USD" });
+        ? await quoteMesoOfframp({
+            amountUsdc: blink.amountUsdc.toString(),
+            currency: "USD",
+          })
+        : await quoteMesoOfframp({
+            amountUsdc: blink.amountUsdc.toString(),
+            currency: "USD",
+          });
 
     const offramp = await prisma.offrampRequest.create({
       data: {
@@ -49,7 +64,7 @@ export async function POST(req: NextRequest) {
         bankDetails: body.bankDetails,
         provider: body.provider,
       },
-      { removeOnComplete: true },
+      { removeOnComplete: true }
     );
 
     return jsonOk({

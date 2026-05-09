@@ -11,7 +11,10 @@ const bodySchema = z.object({
   escrowTxSig: z.string().min(32).max(128),
 });
 
-export async function POST(req: NextRequest, { params }: { params: { blinkId: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { blinkId: string } }
+) {
   try {
     const json = await req.json();
     const body = bodySchema.parse(json);
@@ -24,13 +27,24 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
 
-    await verifyEmployerJwt(req.headers.get("authorization"), blink.employer.walletAddress);
+    await verifyEmployerJwt(
+      req.headers.get("authorization"),
+      blink.employer.walletAddress
+    );
 
     if (blink.escrowTxSig) {
       if (blink.escrowTxSig === body.escrowTxSig) {
-        return jsonOk({ ok: true, escrowTxSig: blink.escrowTxSig, idempotent: true });
+        return jsonOk({
+          ok: true,
+          escrowTxSig: blink.escrowTxSig,
+          idempotent: true,
+        });
       }
-      throw new ApiError(409, "CONFLICT", "Blink already has a different escrow transaction recorded");
+      throw new ApiError(
+        409,
+        "CONFLICT",
+        "Blink already has a different escrow transaction recorded"
+      );
     }
 
     const connection = getConnection();
@@ -39,7 +53,11 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
       maxSupportedTransactionVersion: 0,
     });
     if (!landed) {
-      throw new ApiError(400, "NOT_FOUND", "Transaction not found yet; wait for confirmation and retry");
+      throw new ApiError(
+        400,
+        "NOT_FOUND",
+        "Transaction not found yet; wait for confirmation and retry"
+      );
     }
     if (landed.meta?.err) {
       throw new ApiError(400, "TX_FAILED", "On-chain transaction failed");

@@ -13,7 +13,10 @@ export function getProgramId(): PublicKey {
   return new PublicKey(process.env.PROGRAM_ID ?? "");
 }
 
-export function escrowPdaForBlink(employerWallet: string, blinkDbId: string): PublicKey {
+export function escrowPdaForBlink(
+  employerWallet: string,
+  blinkDbId: string
+): PublicKey {
   const programId = getProgramId();
   const employer = new PublicKey(employerWallet);
   const blinkBytes = blinkDbIdToBytes(blinkDbId);

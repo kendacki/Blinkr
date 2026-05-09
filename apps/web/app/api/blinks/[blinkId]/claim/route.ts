@@ -29,9 +29,15 @@ export const runtime = "nodejs";
 
 const SLOT_AUTH_WINDOW = 150n;
 
-export async function POST(req: NextRequest, { params }: { params: { blinkId: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { blinkId: string } }
+) {
   try {
-    const session = await verifyContractorSession(req.headers.get("authorization"), params.blinkId);
+    const session = await verifyContractorSession(
+      req.headers.get("authorization"),
+      params.blinkId
+    );
 
     const blink = await prisma.blink.findUnique({
       where: { id: params.blinkId },
@@ -41,17 +47,33 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
     if (blink.status === "CLAIMED" && blink.claimTxSig) {
-      return jsonOk({ claimTxSig: blink.claimTxSig, status: "CLAIMED" as const });
+      return jsonOk({
+        claimTxSig: blink.claimTxSig,
+        status: "CLAIMED" as const,
+      });
     }
-    if (blink.status !== "OPENED" || !blink.walletAddress || !blink.escrowPDA || !blink.credentialId) {
-      throw new ApiError(400, "INVALID_STATE", "Blink must be OPENED with wallet and credential before claim");
+    if (
+      blink.status !== "OPENED" ||
+      !blink.walletAddress ||
+      !blink.escrowPDA ||
+      !blink.credentialId
+    ) {
+      throw new ApiError(
+        400,
+        "INVALID_STATE",
+        "Blink must be OPENED with wallet and credential before claim"
+      );
     }
     if (!blink.credential) {
       throw new ApiError(500, "CONFIG", "Credential missing for Blink");
     }
 
     if (session.walletAddress !== blink.walletAddress) {
-      throw new ApiError(403, "FORBIDDEN", "Session wallet does not match Blink wallet");
+      throw new ApiError(
+        403,
+        "FORBIDDEN",
+        "Session wallet does not match Blink wallet"
+      );
     }
 
     const connection = getConnection();
@@ -64,14 +86,24 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
     if (!escrowInfo?.data) {
       throw new ApiError(404, "NOT_FOUND", "Escrow account not found on-chain");
     }
-    const escrowFields = decodeEscrowClaimAuthFields(Buffer.from(escrowInfo.data));
+    const escrowFields = decodeEscrowClaimAuthFields(
+      Buffer.from(escrowInfo.data)
+    );
     if (escrowFields.usdcMint.toBase58() !== usdcMint.toBase58()) {
-      throw new ApiError(500, "CONFIG", "USDC_MINT_ADDRESS does not match on-chain escrow mint");
+      throw new ApiError(
+        500,
+        "CONFIG",
+        "USDC_MINT_ADDRESS does not match on-chain escrow mint"
+      );
     }
 
     const blinkIdBytes = blinkDbIdToBytes(blink.id);
     if (!blinkIdBytes.equals(escrowFields.blinkId)) {
-      throw new ApiError(500, "CONFIG", "Blink id hash does not match on-chain escrow");
+      throw new ApiError(
+        500,
+        "CONFIG",
+        "Blink id hash does not match on-chain escrow"
+      );
     }
 
     const currentSlot = BigInt(await connection.getSlot("confirmed"));
@@ -98,19 +130,22 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
 
     const relayerKp = loadRelayerKeypair();
     assertRelayerMatchesProgramConstant(relayerKp);
-    const relayerSig = signClaimAuthorizationMessage(relayerKp.secretKey, message);
+    const relayerSig = signClaimAuthorizationMessage(
+      relayerKp.secretKey,
+      message
+    );
 
     const escrowToken = getAssociatedTokenAddressSync(
       usdcMint,
       escrowPk,
       true,
-      escrowFields.tokenProgram,
+      escrowFields.tokenProgram
     );
     const contractorToken = getAssociatedTokenAddressSync(
       usdcMint,
       contractor,
       false,
-      escrowFields.tokenProgram,
+      escrowFields.tokenProgram
     );
 
     const ixs: TransactionInstruction[] = [];
@@ -122,8 +157,8 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
           contractorToken,
           contractor,
           usdcMint,
-          escrowFields.tokenProgram,
-        ),
+          escrowFields.tokenProgram
+        )
       );
     }
 
@@ -132,7 +167,7 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
         publicKey: relayerKp.publicKey.toBytes(),
         message: Uint8Array.from(message),
         signature: Uint8Array.from(relayerSig),
-      }),
+      })
     );
 
     ixs.push(
@@ -148,11 +183,15 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
         expirySlot,
         relayerSig,
         tokenProgram: escrowFields.tokenProgram,
-      }),
+      })
     );
 
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
-    const tx = new Transaction({ feePayer: relayerKp.publicKey, recentBlockhash: blockhash });
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash("confirmed");
+    const tx = new Transaction({
+      feePayer: relayerKp.publicKey,
+      recentBlockhash: blockhash,
+    });
     tx.add(...ixs);
     tx.sign(relayerKp);
 
@@ -160,7 +199,10 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
       skipPreflight: false,
       preflightCommitment: "confirmed",
     });
-    await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, "confirmed");
+    await connection.confirmTransaction(
+      { signature: sig, blockhash, lastValidBlockHeight },
+      "confirmed"
+    );
 
     assertBlinkTransition(blink.status, "CLAIMED");
     await prisma.blink.update({

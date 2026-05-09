@@ -9,8 +9,27 @@ const categories = ["Funding escrows", "Passkey errors", "Webhook signatures", "
 
 export default function SupportPage() {
   const [query, setQuery] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const q = query.trim().toLowerCase();
   const filtered = q.length === 0 ? categories : categories.filter((c) => c.toLowerCase().includes(q));
+
+  if (submitted) {
+    return (
+      <div className="bg-white">
+        <section className="mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-12">
+            <h1 className="text-3xl font-bold text-slate-900">Message received.</h1>
+            <p className="mt-4 text-slate-600">
+              We&apos;ve received your request and our team will get back to you within 24 hours at the email provided.
+            </p>
+            <div className="mt-8">
+              <SecondaryButton href="/">Return home</SecondaryButton>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-slate-50">
@@ -89,7 +108,10 @@ export default function SupportPage() {
             <motion.p variants={fadeUp} className="mt-2 text-sm text-slate-600">
               Have a specific question? Send us a message and our support team will get back to you within 24 hours.
             </motion.p>
-            <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <form className="mt-6 space-y-4" onSubmit={(e) => {
+              e.preventDefault();
+              setSubmitted(true);
+            }}>
               <div>
                 <label htmlFor="name" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Name
@@ -97,6 +119,7 @@ export default function SupportPage() {
                 <input
                   id="name"
                   name="name"
+                  required
                   className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blinkr focus:ring-2 focus:ring-blinkr/25"
                   autoComplete="name"
                 />
@@ -109,6 +132,7 @@ export default function SupportPage() {
                   id="email"
                   name="email"
                   type="email"
+                  required
                   className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blinkr focus:ring-2 focus:ring-blinkr/25"
                   autoComplete="email"
                 />
@@ -121,6 +145,7 @@ export default function SupportPage() {
                   id="message"
                   name="message"
                   rows={4}
+                  required
                   className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blinkr focus:ring-2 focus:ring-blinkr/25"
                 />
               </div>
@@ -131,7 +156,7 @@ export default function SupportPage() {
                 >
                   Submit request
                 </button>
-                <SecondaryButton href="mailto:support@blinkr.example">support@blinkr.example</SecondaryButton>
+                <SecondaryButton href="mailto:support@blinkr.io">support@blinkr.io</SecondaryButton>
               </div>
             </form>
           </motion.div>

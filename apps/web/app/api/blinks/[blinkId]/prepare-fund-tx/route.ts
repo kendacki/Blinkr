@@ -1,4 +1,7 @@
-import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  getAssociatedTokenAddressSync,
+} from "@solana/spl-token";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { NextRequest } from "next/server";
 import { getConnection, getProgramId } from "@/lib/anchor";
@@ -11,7 +14,10 @@ import { getMintOwnerProgram } from "@/lib/tokenProgram";
 
 export const runtime = "nodejs";
 
-export async function POST(req: NextRequest, { params }: { params: { blinkId: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { blinkId: string } }
+) {
   try {
     const blink = await prisma.blink.findUnique({
       where: { id: params.blinkId },
@@ -21,10 +27,17 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
     if (blink.status !== "PENDING") {
-      throw new ApiError(400, "INVALID_STATE", "Fund transaction is only available while Blink is PENDING");
+      throw new ApiError(
+        400,
+        "INVALID_STATE",
+        "Fund transaction is only available while Blink is PENDING"
+      );
     }
 
-    await verifyEmployerJwt(req.headers.get("authorization"), blink.employer.walletAddress);
+    await verifyEmployerJwt(
+      req.headers.get("authorization"),
+      blink.employer.walletAddress
+    );
 
     const programId = getProgramId();
     const connection = getConnection();
@@ -42,14 +55,14 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
       employer,
       false,
       tokenProgram,
-      ASSOCIATED_TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
     );
     const escrowAta = getAssociatedTokenAddressSync(
       usdcMint,
       escrowPda,
       true,
       tokenProgram,
-      ASSOCIATED_TOKEN_PROGRAM_ID,
+      ASSOCIATED_TOKEN_PROGRAM_ID
     );
 
     const amountLamports = amountToLamports(blink.amountUsdc.toString());
@@ -68,11 +81,18 @@ export async function POST(req: NextRequest, { params }: { params: { blinkId: st
       expiresAtUnix,
     });
 
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
-    const tx = new Transaction({ feePayer: employer, recentBlockhash: blockhash });
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash("confirmed");
+    const tx = new Transaction({
+      feePayer: employer,
+      recentBlockhash: blockhash,
+    });
     tx.add(ix);
 
-    const serialized = tx.serialize({ requireAllSignatures: false, verifySignatures: false });
+    const serialized = tx.serialize({
+      requireAllSignatures: false,
+      verifySignatures: false,
+    });
     return jsonOk({
       serializedTxBase64: serialized.toString("base64"),
       escrowPDA: escrowPda.toBase58(),

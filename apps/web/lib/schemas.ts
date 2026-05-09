@@ -3,7 +3,10 @@ import { z } from "zod";
 /** String-encoded decimal for USDC (no floats in JSON). */
 export const decimalUsdcString = z
   .string()
-  .regex(/^\d+(\.\d{1,6})?$/, "amountUsdc must be a decimal string with up to 6 fractional digits");
+  .regex(
+    /^\d+(\.\d{1,6})?$/,
+    "amountUsdc must be a decimal string with up to 6 fractional digits"
+  );
 
 export const createBlinkBodySchema = z.object({
   contractorEmail: z.string().email(),

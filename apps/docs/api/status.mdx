@@ -1,0 +1,31 @@
+---
+title: GET /api/blinks/[blinkId]/status
+description: Pollable Blink status for dashboards and Blink UI.
+---
+
+## Auth
+
+None at handler level; rate limiting applies (`assertStatusRateLimit` / `lib/rateLimit.ts`).
+
+File: `apps/web/app/api/blinks/[blinkId]/status/route.ts`.
+
+## Response
+
+```json
+{
+  "status": "PENDING",
+  "claimTxSig": null,
+  "walletAddress": null,
+  "claimedAt": null
+}
+```
+
+`status` is Prisma `BlinkStatus` string. `claimedAt` ISO8601 when set.
+
+## Errors
+
+`404 NOT_FOUND` unknown blink id. Redis-backed polling cap: `429 RATE_LIMIT` after breaching per-minute fixed window (`lib/rateLimit.ts`).
+
+## Usage note
+
+Clients should stop polling when status is terminal (`isTerminalBlinkStatus` in `blinkStateMachine.ts`).
