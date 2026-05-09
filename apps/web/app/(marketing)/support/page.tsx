@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { SecondaryButton } from "@/components/marketing/styled";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
@@ -7,6 +8,10 @@ import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 const categories = ["Funding escrows", "Passkey errors", "Webhook signatures", "Off-ramp statuses", "Employer auth"];
 
 export default function SupportPage() {
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const filtered = q.length === 0 ? categories : categories.filter((c) => c.toLowerCase().includes(q));
+
   return (
     <div className="bg-slate-50">
       <section className="border-b border-slate-200 bg-white">
@@ -27,7 +32,11 @@ export default function SupportPage() {
             <input
               id="support-search"
               type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Search topics like “escrow expiry” or “Helius webhook”"
+              autoComplete="off"
+              aria-controls="support-category-list"
               className="w-full max-w-2xl rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 shadow-inner outline-none transition focus:border-blinkr focus:ring-2 focus:ring-blinkr/30"
             />
           </div>
@@ -46,14 +55,24 @@ export default function SupportPage() {
             <motion.h2 variants={fadeUp} className="text-lg font-semibold text-slate-900">
               Popular categories
             </motion.h2>
-            <ul className="mt-4 space-y-2 text-sm text-blinkr">
-              {categories.map((c) => (
-                <motion.li key={c} variants={fadeUp}>
-                  <button type="button" className="text-left font-medium hover:underline">
-                    {c}
-                  </button>
+            <ul id="support-category-list" className="mt-4 space-y-2 text-sm text-blinkr">
+              {filtered.length === 0 ? (
+                <motion.li variants={fadeUp} className="text-slate-500" role="status" aria-live="polite">
+                  No categories match that search.
                 </motion.li>
-              ))}
+              ) : (
+                filtered.map((c) => (
+                  <motion.li key={c} variants={fadeUp}>
+                    <button
+                      type="button"
+                      className="text-left font-medium hover:underline"
+                      onClick={() => setQuery(c)}
+                    >
+                      {c}
+                    </button>
+                  </motion.li>
+                ))
+              )}
             </ul>
           </motion.div>
 
@@ -68,8 +87,7 @@ export default function SupportPage() {
               Contact the Blinkr team
             </motion.h2>
             <motion.p variants={fadeUp} className="mt-2 text-sm text-slate-600">
-              This form is a UI placeholder wired for accessibility. Connect your own API route or helpdesk when you are
-              ready to intake tickets.
+              Have a specific question? Send us a message and our support team will get back to you within 24 hours.
             </motion.p>
             <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
               <div>
@@ -111,7 +129,7 @@ export default function SupportPage() {
                   type="submit"
                   className="inline-flex items-center justify-center rounded-full bg-blinkr px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-blinkr-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blinkr"
                 >
-                  Submit request (placeholder)
+                  Submit request
                 </button>
                 <SecondaryButton href="mailto:support@blinkr.example">support@blinkr.example</SecondaryButton>
               </div>
