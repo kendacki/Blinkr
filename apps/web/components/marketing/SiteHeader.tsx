@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogoMark } from "@/components/marketing/LogoMark";
-import { PrimaryButton, SecondaryButton } from "@/components/marketing/styled";
+import { PrimaryButton } from "@/components/marketing/styled";
 
 const nav = [
   { label: "Home", href: "/#hero" },
@@ -55,9 +55,8 @@ export function SiteHeader() {
 
         <div className="flex min-w-0 justify-end justify-self-end md:justify-self-end">
           <div className="hidden items-center gap-3 md:flex">
-            <SecondaryButton href="/dashboard/payroll">Log In</SecondaryButton>
             <PrimaryButton href="/dashboard/payroll" size="md">
-              Sign Up
+              Log In
             </PrimaryButton>
           </div>
 
@@ -98,12 +97,9 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
-              <div className="mt-2 grid grid-cols-2 gap-2">
-                <SecondaryButton href="/dashboard/payroll" className="justify-center" onClick={() => setOpen(false)}>
+              <div className="mt-2">
+                <PrimaryButton href="/dashboard/payroll" className="w-full justify-center" onClick={() => setOpen(false)}>
                   Log In
-                </SecondaryButton>
-                <PrimaryButton href="/dashboard/payroll" className="justify-center" onClick={() => setOpen(false)}>
-                  Sign Up
                 </PrimaryButton>
               </div>
             </div>
