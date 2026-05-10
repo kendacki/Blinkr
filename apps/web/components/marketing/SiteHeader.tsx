@@ -53,8 +53,8 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex min-w-0 justify-end justify-self-end md:justify-self-end">
-          <div className="hidden items-center gap-3 md:flex">
+        <div className="flex min-w-0 items-center justify-end justify-self-end md:justify-self-end">
+          <div className="ml-auto hidden items-center gap-3 md:flex">
             <PrimaryButton href="/dashboard/payroll" size="md">
               Log In
             </PrimaryButton>
