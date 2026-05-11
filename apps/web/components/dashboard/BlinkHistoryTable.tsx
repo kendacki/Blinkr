@@ -58,7 +58,7 @@ export function BlinkHistoryTable() {
       <div className="border-b border-slate-100 px-4 py-6 sm:px-6">
         <h2 className="text-xl font-semibold tracking-tight text-slate-900">Payment History</h2>
         <p className="mt-1 max-w-2xl text-sm text-slate-600">
-          Manage your recent payments. Fund pending transactions to activate them for your contractors.
+          Manage your recent payments. Fund pending transactions to activate them for the receiver.
         </p>
       </div>
 
