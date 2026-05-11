@@ -201,9 +201,7 @@ export function useDashboardData(): UseDashboardDataResult {
       },
       contractors: {
         value: String(contractors),
-        delta: `${contractors} unique payee email${contractors === 1 ? "" : "s"} · ${filteredTransactions.length} Blink${
-          filteredTransactions.length === 1 ? "" : "s"
-        } in range`,
+        delta: `${filteredTransactions.length} payment${filteredTransactions.length === 1 ? "" : "s"} in range`,
         spark: sparkContractors,
       },
     }),

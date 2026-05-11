@@ -154,10 +154,8 @@ export function countPendingAwaitingFund(txs: DashboardTransaction[]): number {
   return txs.filter(isPendingAwaitingFund).length;
 }
 
-/** Distinct contractor inboxes in range — one per payee email, not one per Blink. */
 export function uniqueContractorCount(txs: DashboardTransaction[]): number {
-  const keys = txs.map((t) => payeeEmailKey(t.contractorEmail)).filter((k) => k.length > 0);
-  return new Set(keys).size;
+  return new Set(txs.map((t) => t.contractorEmail.toLowerCase())).size;
 }
 
 /** Funded USDC as a percent of total in-range payroll volume (all Blink amounts). */
@@ -268,8 +266,7 @@ export function buildLast7DaySpark(
             const t = new Date(tx.createdAt).getTime();
             return t >= dayStart && t <= dayEnd;
           })
-          .map((tx) => payeeEmailKey(tx.contractorEmail))
-          .filter((k) => k.length > 0)
+          .map((tx) => tx.contractorEmail.toLowerCase())
       );
       y = set.size;
     }
