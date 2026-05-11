@@ -8,7 +8,7 @@ import { EmployerSessionProvider, useEmployerSession } from "@/components/dashbo
 function DashboardChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { jwt, wallet, balance, loading, connectPhantom, disconnect, refresh } = useEmployerSession();
+  const { jwt, balance, loading, connectPhantom, disconnect, refresh } = useEmployerSession();
 
   const handleDisconnect = () => {
     disconnect();
@@ -40,9 +40,6 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
             <div className="flex flex-wrap items-center gap-2">
               {jwt ? (
                 <>
-                  <span className="max-w-[200px] truncate rounded-full bg-slate-100 px-3 py-1.5 font-mono text-xs text-slate-700">
-                    {wallet}
-                  </span>
                   <span className="rounded-full bg-purple-100 px-3 py-1.5 text-xs font-semibold text-purple-700">
                     {balance ?? "—"} USDC
                   </span>
