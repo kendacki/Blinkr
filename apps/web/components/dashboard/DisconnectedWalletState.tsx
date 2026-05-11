@@ -138,8 +138,8 @@ export function DisconnectedWalletState() {
             Hello User,
           </h2>
           <p className="max-w-2xl text-base text-slate-600">
-            Welcome to your Blinkr dashboard. Connect your wallet to start sending payroll, creating
-            Blinks, and tracking payouts in real time.
+            Connect your wallet to start sending payroll, creating Blinks, and tracking payouts in
+            real time.
           </p>
           <p className="mt-5 text-xs text-slate-500">
             Non-custodial. Your keys never leave your wallet.
