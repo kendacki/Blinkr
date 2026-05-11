@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import Decimal from "decimal.js";
 import {
@@ -420,60 +420,72 @@ export function PayrollAnalyticsDashboard() {
   const [draftFrom, setDraftFrom] = useState("");
   const [draftTo, setDraftTo] = useState("");
 
-  if (isLoading && transactions.length === 0 && !isError) {
-    return <PayrollDashboardSkeleton />;
-  }
-
   useEffect(() => {
-    if (pickerOpen) {
-      setDraftFrom(dateRange.from.toISOString().slice(0, 10));
-      setDraftTo(dateRange.to.toISOString().slice(0, 10));
+    if (!pickerOpen) return;
+    const from = dateRange?.from;
+    const to = dateRange?.to;
+    if (from instanceof Date && !Number.isNaN(from.getTime())) {
+      setDraftFrom(from.toISOString().slice(0, 10));
     }
-  }, [pickerOpen, dateRange.from, dateRange.to]);
+    if (to instanceof Date && !Number.isNaN(to.getTime())) {
+      setDraftTo(to.toISOString().slice(0, 10));
+    }
+  }, [pickerOpen, dateRange?.from, dateRange?.to]);
+
+  const safeKpis = useMemo(
+    () =>
+      kpis ?? {
+        volume: { value: "$0.00", donutPct: 0, delta: "", spark: [] },
+        pending: { value: "$0.00", delta: "", spark: [] },
+        contractors: { value: "0", delta: "", spark: [] },
+      },
+    [kpis]
+  );
+  const safeRangeLabel = rangeLabel ?? "";
 
   const kpiCards: KpiCardData[] = useMemo(
     () => [
       {
         id: "volume",
         label: "Total Payroll Volume",
-        rangeLabel,
-        value: kpis.volume.value,
+        rangeLabel: safeRangeLabel,
+        value: safeKpis.volume.value,
         unit: "USDC",
-        delta: { value: kpis.volume.delta, positive: true },
+        delta: { value: safeKpis.volume.delta, positive: true },
         variant: "donut",
-        donutPct: kpis.volume.donutPct,
-        spark: kpis.volume.spark,
+        donutPct: safeKpis.volume.donutPct,
+        spark: safeKpis.volume.spark,
         onRangeClick: () => setPickerOpen(true),
       },
       {
         id: "pending",
         label: "Pending Escrow",
-        rangeLabel,
-        value: kpis.pending.value,
+        rangeLabel: safeRangeLabel,
+        value: safeKpis.pending.value,
         unit: "USDC",
         delta: {
-          value: kpis.pending.delta,
-          positive: kpis.pending.delta.startsWith("0 awaiting"),
+          value: safeKpis.pending.delta,
+          positive: (safeKpis.pending.delta ?? "").startsWith("0 awaiting"),
         },
         variant: "spark",
-        spark: kpis.pending.spark,
+        spark: safeKpis.pending.spark,
         onRangeClick: () => setPickerOpen(true),
       },
       {
         id: "contractors",
         label: "Active Contractors",
-        rangeLabel,
-        value: kpis.contractors.value,
-        delta: { value: kpis.contractors.delta, positive: true },
+        rangeLabel: safeRangeLabel,
+        value: safeKpis.contractors.value,
+        delta: { value: safeKpis.contractors.delta, positive: true },
         variant: "spark",
-        spark: kpis.contractors.spark,
+        spark: safeKpis.contractors.spark,
         onRangeClick: () => setPickerOpen(true),
       },
     ],
-    [kpis, rangeLabel]
+    [safeKpis, safeRangeLabel]
   );
 
-  const applyDraftRange = () => {
+  const applyDraftRange = useCallback(() => {
     const from = new Date(draftFrom);
     const to = new Date(draftTo);
     if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return;
@@ -482,7 +494,11 @@ export function PayrollAnalyticsDashboard() {
     if (from > to) return;
     setDateRange({ from, to });
     setPickerOpen(false);
-  };
+  }, [draftFrom, draftTo, setDateRange]);
+
+  if (isLoading && (transactions?.length ?? 0) === 0 && !isError) {
+    return <PayrollDashboardSkeleton />;
+  }
 
   return (
     <motion.section
@@ -631,15 +647,19 @@ export function PayrollAnalyticsDashboard() {
         </div>
 
         <div className="md:col-span-12 lg:col-span-8">
-          <MonthlyVolumeChart data={monthlyVolume} />
+          <MonthlyVolumeChart data={monthlyVolume ?? []} />
         </div>
 
         <div className="md:col-span-12 lg:col-span-6">
-          <RecentPayeesCard payees={recentPayees} stats={payeeStats} extraCount={extraPayeeCount} />
+          <RecentPayeesCard
+            payees={recentPayees ?? []}
+            stats={payeeStats ?? { sendUsdc: "$0.00", receiveUsdc: "$0.00", totalUsdc: "$0.00" }}
+            extraCount={extraPayeeCount ?? 0}
+          />
         </div>
 
         <div className="md:col-span-12 lg:col-span-6">
-          <WeeklyActivityCard data={weeklyActivity} />
+          <WeeklyActivityCard data={weeklyActivity ?? []} />
         </div>
       </div>
     </motion.section>
