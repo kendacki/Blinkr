@@ -356,7 +356,7 @@ function WeeklyActivityCard({ data }: { data: { day: string; send: number; recei
       className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm sm:p-6"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-slate-900">Weekly Escrow Activity</h3>
+        <h3 className="text-base font-semibold text-slate-900">Weekly Activity</h3>
         <div className="flex items-center gap-3 text-xs">
           <span className="inline-flex items-center gap-1.5 text-slate-500">
             <span className="h-2 w-2 rounded-full bg-purple-200" aria-hidden="true" />
