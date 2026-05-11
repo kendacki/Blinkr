@@ -61,10 +61,12 @@ export function mapBlinkToTransaction(b: BlinkRow): DashboardTransaction {
 }
 
 /**
- * Schema has no `FUNDED` — treat as funded when escrow landed on-chain, or when payout
- * progressed past escrow (OPENED-only rows without a sig still count as not funded).
+ * Schema has no `FUNDED` — funded once escrow landed on-chain or payout completed (CLAIMED /
+ * OFFRAMPED). Refunded escrows no longer count: `REFUNDED` wins even if `escrowTxSig` is still
+ * stored, so charts and KPIs only drop after an expiry path returns funds.
  */
 export function isFunded(tx: DashboardTransaction): boolean {
+  if (tx.status === "REFUNDED") return false;
   if (Boolean(tx.escrowTxSig)) return true;
   if (tx.status === "CLAIMED" || tx.status === "OFFRAMPED") return true;
   return false;
