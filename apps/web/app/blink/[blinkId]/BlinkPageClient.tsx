@@ -35,6 +35,14 @@ function ButtonSpinner() {
   );
 }
 
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-5 w-5" strokeWidth={2}>
+      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function ExternalArrowIcon() {
   return (
     <svg
@@ -224,6 +232,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [claimSig, setClaimSig] = useState<string | null>(null);
+  const [claimModalDismissed, setClaimModalDismissed] = useState(false);
 
   const explorerEscrow = useMemo(
     () => (meta?.escrowPDA ? solanaAddressExplorerUrl(meta.escrowPDA) : null),
@@ -253,6 +262,36 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
     const id = window.setInterval(() => void refreshMeta(), 5000);
     return () => window.clearInterval(id);
   }, [meta, refreshMeta]);
+
+  useEffect(() => {
+    if (!meta) {
+      setClaimModalDismissed(false);
+      return;
+    }
+    const expired = new Date(meta.expiresAt).getTime() < Date.now();
+    const done = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status);
+    const eligible =
+      meta.status === "OPENED" && Boolean(sessionToken) && !done && !expired;
+    if (!eligible) setClaimModalDismissed(false);
+  }, [meta, sessionToken]);
+
+  useEffect(() => {
+    if (!meta) return undefined;
+    const expired = new Date(meta.expiresAt).getTime() < Date.now();
+    const done = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status);
+    const overlayOpen =
+      meta.status === "OPENED" &&
+      Boolean(sessionToken) &&
+      !done &&
+      !expired &&
+      !claimModalDismissed;
+    if (!overlayOpen) return undefined;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setClaimModalDismissed(true);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [meta, sessionToken, claimModalDismissed]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !meta) return;
@@ -449,6 +488,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   const claimFlowDone = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status);
   const showClaimModal =
     meta.status === "OPENED" && Boolean(sessionToken) && !claimFlowDone && !expired;
+  const claimModalOpen = showClaimModal && !claimModalDismissed;
   const codeDigits = code.replace(/\D/g, "").slice(0, 6);
   const claimTxLink = (claimSig ?? meta.claimTxSig)
     ? solanaTxExplorerUrl((claimSig ?? meta.claimTxSig) as string)
@@ -666,6 +706,25 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
               </p>
             ) : null}
 
+            {showClaimModal && claimModalDismissed ? (
+              <section className="rounded-2xl border border-purple-200/80 bg-purple-50/60 p-5 shadow-sm sm:p-6">
+                <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+                  Finish claiming your USDC
+                </h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  You closed the claim window. Open it again when you are ready to submit the
+                  claim to your Blinkr wallet.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setClaimModalDismissed(false)}
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all hover:-translate-y-px hover:bg-purple-600"
+                >
+                  Open claim
+                </button>
+              </section>
+            ) : null}
+
             {meta.status === "CLAIMED" && sessionToken ? (
               <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm sm:p-8">
                 <h2 className="text-xl font-semibold tracking-tight text-slate-900">
@@ -695,7 +754,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
               </section>
             ) : null}
 
-            {actionError && !showClaimModal ? (
+            {actionError && !claimModalOpen ? (
               <p
                 className="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-800"
                 role="alert"
@@ -707,7 +766,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
         </div>
       </main>
 
-      {showClaimModal ? (
+      {claimModalOpen ? (
         <div
           className="fixed inset-0 z-[200] flex items-end justify-center bg-black/40 p-4 backdrop-blur-sm sm:items-center"
           role="presentation"
@@ -716,11 +775,20 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="claim-usdc-modal-title"
-            className="font-[var(--font-poppins)] w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl ring-1 ring-slate-200/80 sm:p-8"
+            className="font-[var(--font-poppins)] relative w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl ring-1 ring-slate-200/80 sm:p-8"
+            onMouseDown={(e) => e.stopPropagation()}
           >
+            <button
+              type="button"
+              onClick={() => setClaimModalDismissed(true)}
+              className="absolute right-4 top-4 rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 sm:right-5 sm:top-5"
+              aria-label="Close"
+            >
+              <CloseIcon />
+            </button>
             <h2
               id="claim-usdc-modal-title"
-              className="text-xl font-semibold tracking-tight text-slate-900"
+              className="pr-12 text-xl font-semibold tracking-tight text-slate-900"
             >
               Claim your USDC
             </h2>
