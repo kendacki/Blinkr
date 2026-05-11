@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Download, FileText } from "lucide-react";
 import type { BlinkRow } from "@/components/dashboard/EmployerSession";
 import { useEmployerSession } from "@/components/dashboard/EmployerSession";
-import { useDashboardDemo } from "@/components/dashboard/DashboardDemoContext";
 import { FundBlinkButton } from "@/components/dashboard/FundBlinkButton";
 import { dicebearInitialsUrl, formatBlinkDateTime, truncateMiddle } from "@/lib/blinkDisplayFormat";
 import { downloadBlinkInvoicePdf, downloadBlinkReceiptPdf } from "@/lib/pdf/blinkPdfDocuments";
@@ -30,15 +29,8 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-type ListEntry = { row: BlinkRow; isMock: boolean };
-
-function mergeAndSort(blinks: BlinkRow[], mockBlinks: BlinkRow[]): ListEntry[] {
-  const merged: ListEntry[] = [
-    ...blinks.map((row) => ({ row, isMock: false })),
-    ...mockBlinks.map((row) => ({ row, isMock: true })),
-  ];
-  merged.sort((a, b) => new Date(b.row.createdAt).getTime() - new Date(a.row.createdAt).getTime());
-  return merged;
+function sortBlinksDesc(blinks: BlinkRow[]): BlinkRow[] {
+  return [...blinks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
 function InvoiceModal({
@@ -188,12 +180,11 @@ function InvoiceModal({
 
 export function BlinkHistoryTable() {
   const { blinks } = useEmployerSession();
-  const { mockBlinks } = useDashboardDemo();
   const baseUrl = (process.env.NEXT_PUBLIC_URL ?? "").replace(/\/$/, "");
   const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-  const rows = useMemo(() => mergeAndSort(blinks, mockBlinks), [blinks, mockBlinks]);
+  const rows = useMemo(() => sortBlinksDesc(blinks), [blinks]);
 
   const onDownloadReceipt = useCallback(async (row: BlinkRow) => {
     setDownloadingId(row.id);
@@ -229,7 +220,7 @@ export function BlinkHistoryTable() {
 
       <InvoiceModal open={invoiceOpen} onClose={() => setInvoiceOpen(false)} />
 
-      {rows.length === 0 ? (
+      {blinks.length === 0 ? (
         <div className="px-4 py-16 text-center sm:px-6">
           <div className="mx-auto flex max-w-md flex-col items-center gap-3">
             <div
@@ -246,10 +237,10 @@ export function BlinkHistoryTable() {
         </div>
       ) : (
         <ul className="divide-y divide-slate-100">
-          {rows.map(({ row: b, isMock }) => {
+          {rows.map((b) => {
             const { dateLine, timeLine } = formatBlinkDateTime(b.createdAt);
             const avatarSrc = dicebearInitialsUrl(b.contractorEmail);
-            const canFund = b.status === "PENDING" && !b.escrowTxSig && !isMock;
+            const canFund = b.status === "PENDING" && !b.escrowTxSig;
             return (
               <li key={b.id}>
                 <div className="flex flex-col gap-4 px-4 py-5 sm:px-6 md:flex-row md:items-center md:gap-6">
@@ -266,11 +257,6 @@ export function BlinkHistoryTable() {
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="truncate text-sm font-semibold text-slate-900">{b.contractorEmail}</p>
-                      {isMock ? (
-                        <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                          Mock
-                        </span>
-                      ) : null}
                     </div>
                     <p className="font-mono text-xs text-slate-500">Ref · {refLabel(b)}</p>
                     <p className="text-xs text-slate-500">
@@ -299,18 +285,14 @@ export function BlinkHistoryTable() {
                       {downloadingId === b.id ? "Preparing…" : "Download"}
                     </button>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium">
-                      {!isMock ? (
-                        <Link
-                          href={`${baseUrl}/blink/${b.id}`}
-                          className="text-purple-600 hover:text-purple-800 hover:underline"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Contractor link
-                        </Link>
-                      ) : (
-                        <span className="text-slate-400">Contractor link (demo)</span>
-                      )}
+                      <Link
+                        href={`${baseUrl}/blink/${b.id}`}
+                        className="text-purple-600 hover:text-purple-800 hover:underline"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Contractor link
+                      </Link>
                       {canFund ? <FundBlinkButton blinkId={b.id} /> : null}
                       {b.escrowPDA ? (
                         <a

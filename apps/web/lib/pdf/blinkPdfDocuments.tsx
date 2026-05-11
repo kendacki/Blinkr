@@ -8,10 +8,12 @@ import {
   Path,
   Rect,
   Circle,
+  Image as PdfImage,
   pdf,
 } from "@react-pdf/renderer";
 import type { BlinkRow } from "@/components/dashboard/EmployerSession";
 import { formatBlinkDateTime, truncateMiddle } from "@/lib/blinkDisplayFormat";
+import { fetchBlinkrLogoPngDataUri } from "@/lib/pdf/fetchBlinkrLogoPng";
 
 const receiptStyles = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: "#0f172a", padding: 0 },
@@ -22,12 +24,15 @@ const receiptStyles = StyleSheet.create({
     paddingHorizontal: 36,
   },
   heroTitle: { color: "#ffffff", fontSize: 22, fontWeight: 700, marginBottom: 4 },
-  heroSub: { color: "#c4b5fd", fontSize: 10, marginBottom: 12 },
   body: { paddingHorizontal: 36, paddingTop: 22, paddingBottom: 28 },
   row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8, borderBottomWidth: 0.5, borderBottomColor: "#e2e8f0", paddingBottom: 6 },
   label: { color: "#64748b", fontSize: 9, width: "38%" },
   value: { color: "#0f172a", fontSize: 10, fontWeight: 600, width: "60%", textAlign: "right" },
   footer: { marginTop: 18, fontSize: 8, color: "#94a3b8", textAlign: "center" },
+  brandRow: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
+  brandFallback: { color: "#c4b5fd", fontSize: 11, fontWeight: 700 },
+  brandSuffix: { color: "#c4b5fd", fontSize: 10, marginLeft: 6 },
+  brandImage: { width: 88, height: 28, objectFit: "contain" },
 });
 
 function ReceiptHeroIllustration() {
@@ -48,7 +53,13 @@ function ReceiptHeroIllustration() {
   );
 }
 
-export function BlinkReceiptPdfDocument({ blink }: { blink: BlinkRow }) {
+export function BlinkReceiptPdfDocument({
+  blink,
+  logoPngDataUri,
+}: {
+  blink: BlinkRow;
+  logoPngDataUri?: string;
+}) {
   const { dateLine, timeLine } = formatBlinkDateTime(blink.createdAt);
   const refSig = blink.escrowTxSig ?? blink.claimTxSig ?? blink.id;
   return (
@@ -56,7 +67,14 @@ export function BlinkReceiptPdfDocument({ blink }: { blink: BlinkRow }) {
       <Page size="A4" style={receiptStyles.page}>
         <View style={receiptStyles.hero}>
           <Text style={receiptStyles.heroTitle}>Payment receipt</Text>
-          <Text style={receiptStyles.heroSub}>Blinkr · Solana USDC</Text>
+          <View style={receiptStyles.brandRow}>
+            {logoPngDataUri ? (
+              <PdfImage src={logoPngDataUri} style={receiptStyles.brandImage} />
+            ) : (
+              <Text style={receiptStyles.brandFallback}>Blinkr</Text>
+            )}
+            <Text style={receiptStyles.brandSuffix}>· Solana USDC</Text>
+          </View>
           <ReceiptHeroIllustration />
         </View>
         <View style={receiptStyles.body}>
@@ -105,7 +123,9 @@ export function BlinkReceiptPdfDocument({ blink }: { blink: BlinkRow }) {
 const invoiceStyles = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: "#0f172a", padding: 40 },
   accentBar: { height: 6, backgroundColor: "#9333ea", marginBottom: 24, borderRadius: 3 },
+  brandRow: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
   brand: { fontSize: 20, fontWeight: 700, color: "#581c87", marginBottom: 4 },
+  brandImage: { width: 112, height: 34, objectFit: "contain" },
   tag: { fontSize: 9, color: "#64748b", marginBottom: 28 },
   h1: { fontSize: 16, fontWeight: 700, marginBottom: 16, color: "#0f172a" },
   block: { marginBottom: 14 },
@@ -136,12 +156,19 @@ export function BlinkInvoicePdfDocument({
   billedToEmail,
   description,
   amountUsdc,
-}: InvoicePdfInput) {
+  logoPngDataUri,
+}: InvoicePdfInput & { logoPngDataUri?: string }) {
   return (
     <Document>
       <Page size="A4" style={invoiceStyles.page}>
         <View style={invoiceStyles.accentBar} />
-        <Text style={invoiceStyles.brand}>Blinkr</Text>
+        <View style={invoiceStyles.brandRow}>
+          {logoPngDataUri ? (
+            <PdfImage src={logoPngDataUri} style={invoiceStyles.brandImage} />
+          ) : (
+            <Text style={invoiceStyles.brand}>Blinkr</Text>
+          )}
+        </View>
         <Text style={invoiceStyles.tag}>Solana-native payroll · USDC</Text>
         <Text style={invoiceStyles.h1}>Invoice</Text>
         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 20 }}>
@@ -182,7 +209,8 @@ export function BlinkInvoicePdfDocument({
 }
 
 export async function downloadBlinkReceiptPdf(blink: BlinkRow) {
-  const blob = await pdf(<BlinkReceiptPdfDocument blink={blink} />).toBlob();
+  const logoPngDataUri = await fetchBlinkrLogoPngDataUri();
+  const blob = await pdf(<BlinkReceiptPdfDocument blink={blink} logoPngDataUri={logoPngDataUri} />).toBlob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -192,7 +220,8 @@ export async function downloadBlinkReceiptPdf(blink: BlinkRow) {
 }
 
 export async function downloadBlinkInvoicePdf(input: InvoicePdfInput) {
-  const blob = await pdf(<BlinkInvoicePdfDocument {...input} />).toBlob();
+  const logoPngDataUri = await fetchBlinkrLogoPngDataUri();
+  const blob = await pdf(<BlinkInvoicePdfDocument {...input} logoPngDataUri={logoPngDataUri} />).toBlob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
