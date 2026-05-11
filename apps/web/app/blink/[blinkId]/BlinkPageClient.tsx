@@ -16,15 +16,6 @@ const STATUS_LABEL: Record<string, string> = {
   REFUNDED: "Refunded",
 };
 
-const STATUS_TONE: Record<string, string> = {
-  PENDING: "bg-amber-50 text-amber-700",
-  OPENED: "bg-sky-50 text-sky-700",
-  CLAIMED: "bg-emerald-50 text-emerald-700",
-  OFFRAMPED: "bg-purple-50 text-purple-700",
-  EXPIRED: "bg-slate-100 text-slate-700",
-  REFUNDED: "bg-rose-50 text-rose-700",
-};
-
 function ButtonSpinner() {
   return (
     <svg
@@ -728,19 +719,6 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                 </button>
               </section>
             ) : null}
-
-            <div
-              className={`rounded-2xl border px-5 py-4 text-xs ${
-                STATUS_TONE[meta.status] ?? "bg-slate-50 text-slate-700"
-              } border-transparent`}
-            >
-              <p className="font-semibold uppercase tracking-wide">
-                Status · {STATUS_LABEL[meta.status] ?? meta.status}
-              </p>
-              <p className="mt-1 text-[11px] opacity-80">
-                This page updates automatically every few seconds.
-              </p>
-            </div>
 
             {actionError ? (
               <p
