@@ -7,11 +7,11 @@ description: Layers of Blinkr — Solana program, Next.js orchestration, persist
 
 **Solana program** (`programs/blinkremit`): escrow PDAs, `create_escrow`, `claim_escrow`, `refund_escrow`. Enforces mint, token program, relayer pubkey, and ed25519-based authorization payload verified inside `claim_escrow`.
 
-**API / orchestration** (`apps/web/app/api`, `apps/web/lib`): builds serialized transactions for employers and relayer-paid claim txs; verifies wallet-signed employer JWT mint flow (`JWT_SECRET`) and contractor session JWT (`SESSION_SECRET`, WebAuthn after Redis-backed challenges).
+**API / orchestration** (`apps/web/app/api`, `apps/web/lib`): builds serialized transactions for employers and relayer-paid claim txs; verifies wallet-signed employer JWT mint flow (`JWT_SECRET`) and contractor session JWT (`SESSION_SECRET`, after email OTP verification stored in Redis).
 
-**Persistence**: Postgres via Prisma — `Employer`, `Blink`, `Credential`, `OfframpRequest`. Blink rows carry `status`, optional `escrowPDA`, `escrowTxSig`, `claimTxSig`, passkey-linked wallet + credential.
+**Persistence**: Postgres via Prisma — `Employer`, `Blink`, `Credential`, `OfframpRequest`. Blink rows carry `status`, optional `escrowPDA`, `escrowTxSig`, `claimTxSig`, contractor wallet + credential (off-chain claim secret for relayer authorization).
 
-**Async**: Redis for BullMQ queue `offramp` (`lib/queue.ts`, `workers/offramp.ts`), Redis for passkey challenge storage (`lib/redis.ts`), cron routes gated by `CRON_SECRET`.
+**Async**: Redis for BullMQ queue `offramp` (`lib/queue.ts`, `workers/offramp.ts`), Redis for contractor OTP and queues (`lib/redis.ts`), cron routes gated by `CRON_SECRET`.
 
 **Webhooks**: Helius and Meso routes verify HMAC on raw bodies (`lib/webhookHmac.ts`), then patch DB rows conservatively.
 

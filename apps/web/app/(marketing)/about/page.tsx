@@ -12,7 +12,7 @@ const values = [
   },
   {
     title: "Human-grade ceremonies",
-    body: "Passkeys reduce phishing and seed mishandling. We invest in clear UX copy, timers, and error states so contractors know what each step does.",
+    body: "Email codes keep contractors off seed phrases while staying familiar. We invest in clear UX copy, timers, and error states so people know what each step does.",
   },
   {
     title: "Partner-aware off-ramps",
@@ -43,7 +43,7 @@ export default function AboutPage() {
             </motion.h1>
             <motion.p variants={fadeUp} className="text-lg text-slate-600">
               Blinkr started from a simple frustration: global teams still depend on slow correspondent banking while their
-              products ship in minutes. Our mission is to pair Solana settlement with passkey-grade identity so
+              products ship in minutes. Our mission is to pair Solana settlement with practical inbox verification so
               employers can fund once and contractors can claim with confidence anywhere on Earth.
             </motion.p>
             <motion.div variants={fadeUp}>

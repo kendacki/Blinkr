@@ -24,6 +24,7 @@ model Employer {
   createdAt     DateTime @default(now())
 }
 
+/// Off-chain claim identity: `credentialId` is an opaque string hashed into on-chain `credential_hash` at claim time.
 model Credential {
   id             String   @id @default(cuid())
   credentialId   String   @unique

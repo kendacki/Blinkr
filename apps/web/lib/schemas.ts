@@ -15,14 +15,13 @@ export const createBlinkBodySchema = z.object({
   serializedTx: z.string().min(1).optional(),
 });
 
-export const passkeyRegisterBodySchema = z.object({
-  blinkId: z.string().min(1),
+export const contractorSendCodeBodySchema = z.object({
   email: z.string().email(),
 });
 
-export const passkeyVerifyBodySchema = z.object({
-  blinkId: z.string().min(1),
-  credential: z.unknown(),
+export const contractorVerifyCodeBodySchema = z.object({
+  email: z.string().email(),
+  code: z.string().regex(/^\d{6}$/, "code must be a 6-digit string"),
 });
 
 export const employerAuthBodySchema = z.object({

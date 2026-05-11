@@ -8,8 +8,8 @@ const tiers = [
   {
     name: "Starter",
     price: "Free to try",
-    blurb: "Spin up Blink links, fund test escrows on devnet, and validate passkey ceremonies with your own team.",
-    bullets: ["Guided Blink templates", "Passkey registration flows", "Developer webhooks in sandbox"],
+    blurb: "Spin up Blink links, fund test escrows on devnet, and validate contractor email flows with your own team.",
+    bullets: ["Guided Blink templates", "Email OTP verification", "Developer webhooks in sandbox"],
     cta: "Download app",
     href: "/download",
     variant: "secondary" as const,

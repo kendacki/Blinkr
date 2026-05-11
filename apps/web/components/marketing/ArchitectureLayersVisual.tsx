@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const layers = [
   { n: 1, title: "Employer dashboard", detail: "Phantom, JWT session, /dashboard/*", accent: "bg-sky-500/15 text-sky-100 border-sky-400/30" },
-  { n: 2, title: "Contractor Blink widget", detail: "Public /blink/[id], WebAuthn only, strict CSP", accent: "bg-blinkr/20 text-sky-50 border-blinkr/40" },
+  { n: 2, title: "Contractor Blink widget", detail: "Public /blink/[id], email OTP, strict CSP", accent: "bg-blinkr/20 text-sky-50 border-blinkr/40" },
   { n: 3, title: "BlinkRemit API", detail: "Next.js routes, Zod, Prisma, BullMQ", accent: "bg-violet-500/15 text-violet-100 border-violet-400/25" },
   { n: 4, title: "On-chain programs", detail: "Escrow PDAs, SPL Token, Ed25519 verify", accent: "bg-amber-500/15 text-amber-100 border-amber-400/25" },
   { n: 5, title: "External services", detail: "Helius, Meso, Redis, Postgres, Resend", accent: "bg-slate-500/20 text-slate-100 border-slate-400/25" },

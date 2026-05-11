@@ -1,6 +1,6 @@
 ---
 title: Escrow lifecycle
-description: Order of operations from blink creation through funding, passkeys, claim, refund, and off-ramp.
+description: Order of operations from blink creation through funding, email verification, claim, refund, and off-ramp.
 ---
 
 This describes the **intended** flow encoded in `apps/web` routes and Prisma `Blink` statuses (`PENDING`, `OPENED`, `CLAIMED`, `OFFRAMPED`, `EXPIRED`, `REFUNDED`). On-chain escrow state (`programs/blinkremit`) uses its own `EscrowStatus` (Pending / Claimed / Refunded); DB updates must stay coherent with chain outcomes.
@@ -15,11 +15,11 @@ This describes the **intended** flow encoded in `apps/web` routes and Prisma `Bl
 
 ## 3. Confirm escrow landed
 
-`POST /api/blinks/[blinkId]/confirm-escrow`: employer JWT; body `{ escrowTxSig }`. Loads transaction from RPC; on success records `escrowTxSig`. **Does not** flip status by itself — Blink may remain `PENDING` until contractor completes passkey flow.
+`POST /api/blinks/[blinkId]/confirm-escrow`: employer JWT; body `{ escrowTxSig }`. Loads transaction from RPC; on success records `escrowTxSig`. **Does not** flip status by itself — Blink may remain `PENDING` until the contractor completes email verification.
 
-## 4. Contractor passkey (OPENED)
+## 4. Contractor email code (OPENED)
 
-Redis stores challenge from register/verify flows. `POST /api/passkey/verify`: after successful WebAuthn verification, transitions `PENDING` → `OPENED` (via `assertBlinkTransition`), attaches newly allocated Solana address + `Credential` row for first registration, issues contractor session JWT.
+Redis stores a short-lived OTP. `POST /api/blinks/[blinkId]/contractor/verify-code`: after a valid code, transitions `PENDING` → `OPENED` (via `assertBlinkTransition`) when needed, attaches a Solana address + `Credential` row for that contractor email, issues contractor session JWT.
 
 Claim prerequisites per `claim/route.ts`: DB must be `OPENED` with `walletAddress`, `escrowPDA`, `credentialId`, and live escrow account data matching mint/blink id hash.
 
@@ -42,7 +42,7 @@ Employer JWT -> create Blink (PENDING)
            -> prepare-fund-tx -> wallet submits create_escrow
            -> confirm-escrow (escrowTxSig recorded)
 
-Contractor -> passkey verify -> OPENED
+Contractor -> email OTP verify -> OPENED
 
 Contractor session -> claim -> relayer tx -> CLAIMED
 

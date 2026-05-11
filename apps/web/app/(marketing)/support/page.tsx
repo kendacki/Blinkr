@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { SecondaryButton } from "@/components/marketing/styled";
 import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 
-const categories = ["Funding escrows", "Passkey errors", "Webhook signatures", "Off-ramp statuses", "Employer auth"];
+const categories = ["Funding escrows", "Email verification", "Webhook signatures", "Off-ramp statuses", "Employer auth"];
 
 export default function SupportPage() {
   const [query, setQuery] = useState("");
@@ -40,7 +40,7 @@ export default function SupportPage() {
               Help center for Blinkr operators
             </motion.h1>
             <motion.p variants={fadeUp} className="text-lg text-slate-600">
-              Search guides on funding flows, passkey recovery, and partner webhooks. If you are blocked in production,
+              Search guides on funding flows, contractor email codes, and partner webhooks. If you are blocked in production,
               email support with your blink ID and recent transaction signatures so we can trace the relayer path.
             </motion.p>
           </motion.div>

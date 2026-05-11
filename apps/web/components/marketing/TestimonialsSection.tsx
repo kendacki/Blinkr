@@ -10,7 +10,7 @@ const testimonials = [
     name: "Maya Collins",
     title: "Freelance Graphic Designer",
     quote:
-      "I got paid the same day for the first time. I tapped the link, used FaceID, and cashed out to my bank without installing anything.",
+      "I got paid the same day for the first time. I tapped the link, confirmed my email with a code, and cashed out to my bank without installing anything.",
     avatar:
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=160&h=160&q=80",
   },
@@ -18,7 +18,7 @@ const testimonials = [
     name: "Daniel Price",
     title: "Small Business Owner",
     quote:
-      "Blinkr turned international payroll from a weekly headache into a two-minute flow. USDC in, passkey claim, done.",
+      "Blinkr turned international payroll from a weekly headache into a two-minute flow. USDC in, verified claim, done.",
     avatar:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&h=160&q=80",
   },

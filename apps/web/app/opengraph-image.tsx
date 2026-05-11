@@ -78,7 +78,7 @@ export default function OpenGraphImage() {
             Solana-native cross-border payroll
           </div>
           <div style={{ fontSize: 22, color: "rgba(255,255,255,0.86)", maxWidth: 640, lineHeight: 1.4 }}>
-            USDC escrows, passkey-secured claims, and webhook-driven reconciliation for global teams.
+            USDC escrows, email-verified claims, and webhook-driven reconciliation for global teams.
           </div>
         </div>
         <LogoMark />

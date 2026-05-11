@@ -22,8 +22,6 @@
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "@sentry/node": "^8.55.1",
-    "@simplewebauthn/browser": "^9.0.1",
-    "@simplewebauthn/server": "^9.0.3",
     "@solana/spl-token": "^0.4.9",
     "@solana/web3.js": "^1.95.4",
     "@stitches/react": "^1.2.8",

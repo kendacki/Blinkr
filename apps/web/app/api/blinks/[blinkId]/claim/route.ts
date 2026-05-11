@@ -61,7 +61,7 @@ export async function POST(
       throw new ApiError(
         400,
         "INVALID_STATE",
-        "Blink must be OPENED with wallet and credential before claim"
+        "Blink must be OPENED with wallet and claim identity before claim"
       );
     }
     if (!blink.credential) {

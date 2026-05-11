@@ -7,7 +7,7 @@ import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 const faqs = [
   {
     q: "Is Blinkr secure for production payroll?",
-    a: "Yes. Hardware-level security with instant verification. Your biometric data never leaves your device. Our system simply confirms your identity through a secure digital handshake, instantly unlocking your funds. Everything is settled directly on the blockchain for total transparency.",
+    a: "Yes. Contractors prove control of the inbox your team already invited, using short-lived codes instead of seed phrases. Claims are still backed by on-chain escrow rules and relayer-checked authorization so settlement stays transparent.",
   },
   {
     q: "How fast do payouts settle?",
@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     q: "Can contractors use multiple devices?",
-    a: "Contractors can sign in with their device's built-in security (like a fingerprint) and add backup devices so they never get locked out. For employers, we've added \"smart verification\" that triggers only when needed. Plus, because our payment pages are standard web links, you can open them on any device, anywhere.",
+    a: "Contractors can open the same Blink link on any device and request a fresh email code when they need a new session. Because payment pages are standard web links, there is no special app install required.",
   },
   {
     q: "Is there a free version?",

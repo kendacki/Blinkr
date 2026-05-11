@@ -9,13 +9,13 @@ import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 const platforms = [
   {
     name: "iOS",
-    detail: "TestFlight builds for passkey flows on Face ID and Touch ID devices.",
+    detail: "TestFlight builds for Blink pages and employer tools on modern iOS devices.",
     action: "Notify me",
     href: "/support",
   },
   {
     name: "Android",
-    detail: "Chrome-first experience with biometric WebAuthn and deep links into wallet clients.",
+    detail: "Chrome-first Blink pages with deep links into wallet clients where needed.",
     action: "Notify me",
     href: "/support",
   },

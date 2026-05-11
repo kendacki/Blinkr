@@ -23,7 +23,7 @@ const steps = [
   {
     n: "Step 3",
     title: "Biometric Claim",
-    body: "Contractor authenticates via WebAuthn/FaceID to their smart wallet.",
+    body: "Contractor confirms their email with a one-time code to unlock their Blinkr wallet.",
     icon: Fingerprint,
     side: "right",
   },
@@ -47,7 +47,7 @@ export function HowItWorksSection() {
             How it works
           </motion.h2>
           <motion.p variants={fadeUp} className="mt-4 text-base text-slate-600">
-            A simple three step flow from USDC funding to passkey claim. Built for teams that want global payouts without
+            A simple three step flow from USDC funding to verified claim. Built for teams that want global payouts without
             Hassle.
           </motion.p>
         </motion.div>

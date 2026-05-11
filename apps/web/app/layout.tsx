@@ -31,11 +31,11 @@ export const metadata: Metadata = {
     template: "%s | Blinkr",
   },
   description:
-    "Blinkr helps teams run USDC payroll on Solana with passkey-secured claims, Blink-native links, and webhook-driven status for finance operators.",
+    "Blinkr helps teams run USDC payroll on Solana with email-verified claims, Blink-native links, and webhook-driven status for finance operators.",
   openGraph: {
     title: "Blinkr — Solana-native cross-border payroll",
     description:
-      "Fund escrows, verify contractors with WebAuthn, and settle globally with Blinkr's Solana-first payroll stack.",
+      "Fund escrows, verify contractors by email, and settle globally with Blinkr's Solana-first payroll stack.",
     url: siteUrl,
     siteName: "Blinkr",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Blinkr" }],
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Blinkr — Solana-native cross-border payroll",
     description:
-      "USDC escrows, passkey claims, and partner-ready off-ramps for teams that need modern global payouts.",
+      "USDC escrows, verified claims, and partner-ready off-ramps for teams that need modern global payouts.",
   },
 };
 

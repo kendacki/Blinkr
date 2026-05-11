@@ -42,7 +42,7 @@ export function FeatureSplitSection() {
                   Built for high-assurance payroll
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                  Global payments with a click. We use passkeys to keep your money safe and accessible only to you. You get
+                  Global payments with a click. We use inbox-delivered codes so only the invited contractor can move funds. You get
                   the speed of modern apps with the unshakeable security of the blockchain.
                 </p>
               </div>

@@ -1,6 +1,6 @@
 ---
 title: Auth flow
-description: Employer wallet JWT vs contractor WebAuthn session tokens.
+description: Employer wallet JWT vs contractor email OTP session tokens.
 ---
 
 ## Employer
@@ -11,10 +11,10 @@ Protected employer routes expect `Authorization: Bearer <token>` and `verifyEmpl
 
 ## Contractor
 
-Passkey flows use `@simplewebauthn/server` (`lib/webauthn.ts`). Challenges are stored in Redis keyed by blink (`passkeyChallenge.ts`). Successful `POST /api/passkey/verify` issues a contractor session JWT (`SESSION_SECRET`, `typ: contractor`, `blinkId`, `walletAddress`) via `signContractorSessionToken`.
+Email verification uses short-lived OTP codes stored in Redis (`lib/contractorOtp.ts`), keyed by Blink id. `POST /api/blinks/[blinkId]/contractor/send-code` validates the email matches the Blink’s `contractorEmail` and sends a code via Resend (`lib/email.ts`). `POST /api/blinks/[blinkId]/contractor/verify-code` checks the code, allocates or reuses a `Credential` row and Solana wallet for that email, transitions `PENDING` → `OPENED` when appropriate, and issues a contractor session JWT (`SESSION_SECRET`, `typ: contractor`, `blinkId`, `walletAddress`) via `signContractorSessionToken`.
 
 `POST /api/blinks/[blinkId]/claim` calls `verifyContractorSession` and checks session wallet matches `Blink.walletAddress`.
 
 ## Guards
 
-`ensureBlinkPasskeyAllowed` (`lib/blinkGuards.ts`) rejects passkey operations when blink is terminal or past `expiresAt`.
+`ensureBlinkContractorAllowed` (`lib/blinkGuards.ts`) rejects contractor actions when the Blink is terminal or past `expiresAt`.

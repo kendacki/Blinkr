@@ -9,7 +9,7 @@ Blinkr: employer-funded USDC escrows on Solana (devnet in repo defaults), with a
 ## Stack
 
 - **On-chain:** Anchor 1.0, program `blinkremit` in `programs/blinkremit/`.
-- **Web:** Next.js 14, Prisma 5, Tailwind 4, Vitest, BullMQ, Redis, Resend, SimpleWebAuthn, Next.js Metadata (Robots/Sitemap).
+- **Web:** Next.js 14, Prisma 5, Tailwind 4, Vitest, BullMQ, Redis, Resend, Next.js Metadata (Robots/Sitemap).
 - **Integrations:** Helius webhooks, Meso/Moonpay placeholders, Sentry optional, Resend for support tickets.
 
 ## Critical config

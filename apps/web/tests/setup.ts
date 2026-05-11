@@ -13,7 +13,6 @@ process.env.RELAYER_PUBKEY = "B6m9QCBw4q6wrvrE4JXKPtFdihFFgFwpAdp4nZcRa3x7";
 process.env.CRON_SECRET = "test-cron-secret-at-least-16-chars";
 process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/test";
 process.env.REDIS_URL = "redis://localhost:6379";
-process.env.RP_ID = "localhost";
 process.env.NEXT_PUBLIC_URL = "http://localhost:3000";
 process.env.JWT_SECRET = "test-jwt-secret-at-least-32-characters-long";
 process.env.SESSION_SECRET = "test-session-secret-at-least-32-chars";

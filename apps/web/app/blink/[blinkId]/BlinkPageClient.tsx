@@ -1,10 +1,5 @@
 "use client";
 
-import { startAuthentication, startRegistration } from "@simplewebauthn/browser";
-import type {
-  PublicKeyCredentialCreationOptionsJSON,
-  PublicKeyCredentialRequestOptionsJSON,
-} from "@simplewebauthn/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BlinkStatusBar } from "@/components/product/BlinkStatusBar";
 import { solanaAddressExplorerUrl, solanaTxExplorerUrl } from "@/lib/explorer";
@@ -36,6 +31,8 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   const [meta, setMeta] = useState<BlinkMeta | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [codeSent, setCodeSent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
@@ -75,34 +72,43 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
     setSessionToken(token);
   };
 
-  const runPasskey = async () => {
+  const sendCode = async () => {
     setActionError(null);
     setBusy(true);
     try {
-      const reg = await fetch("/api/passkey/register", {
+      const res = await fetch(`/api/blinks/${blinkId}/contractor/send-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blinkId, email: email.trim() }),
+        body: JSON.stringify({ email: email.trim() }),
       });
-      const optionsJSON = await readJson<unknown>(reg);
-      const isRegistration =
-        typeof optionsJSON === "object" &&
-        optionsJSON !== null &&
-        "user" in (optionsJSON as PublicKeyCredentialCreationOptionsJSON);
-      const credential = isRegistration
-        ? await startRegistration(optionsJSON as PublicKeyCredentialCreationOptionsJSON)
-        : await startAuthentication(optionsJSON as PublicKeyCredentialRequestOptionsJSON);
-      const v = await fetch("/api/passkey/verify", {
+      await readJson<{ ok: true }>(res);
+      setCodeSent(true);
+      setCode("");
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Could not send code");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const verifyCode = async () => {
+    setActionError(null);
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/blinks/${blinkId}/contractor/verify-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blinkId, credential }),
+        body: JSON.stringify({
+          email: email.trim(),
+          code: code.trim().replace(/\D/g, "").slice(0, 6),
+        }),
       });
-      const out = await readJson<{ sessionToken: string; claimTxSig?: string | null }>(v);
+      const out = await readJson<{ sessionToken: string; claimTxSig?: string | null }>(res);
       persistSession(out.sessionToken);
       if (out.claimTxSig) setClaimSig(out.claimTxSig);
       await refreshMeta();
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : "Passkey flow failed");
+      setActionError(e instanceof Error ? e.message : "Verification failed");
     } finally {
       setBusy(false);
     }
@@ -110,7 +116,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
 
   const runClaim = async () => {
     if (!sessionToken) {
-      setActionError("Sign in with your passkey first.");
+      setActionError("Verify your email with the code first.");
       return;
     }
     setActionError(null);
@@ -149,6 +155,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
 
   const expired = new Date(meta.expiresAt).getTime() < Date.now();
   const terminal = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status);
+  const codeDigits = code.replace(/\D/g, "").slice(0, 6);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -222,9 +229,10 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
         {!terminal && !expired && (
           <>
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold">1. Confirm your email</h2>
+              <h2 className="text-lg font-semibold">Confirm your email</h2>
               <p className="mt-1 text-sm text-slate-600">
-                Use the same email the employer entered for this Blink. Your device passkey replaces seed phrases.
+                Use the same email the employer entered for this Blink. We will send a short verification code — no app
+                install or device biometrics required.
               </p>
               <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="em">
                 Email
@@ -241,16 +249,45 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
               <button
                 type="button"
                 disabled={busy || !email.trim()}
-                onClick={() => void runPasskey()}
+                onClick={() => void sendCode()}
                 className="mt-4 w-full rounded-xl bg-blinkr py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blinkr-dark disabled:opacity-50"
               >
-                {busy ? "Working…" : "2. Continue with passkey"}
+                {busy ? "Working…" : codeSent ? "Resend code" : "Email me a code"}
               </button>
             </section>
 
+            {codeSent && (
+              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-lg font-semibold">Enter the code</h2>
+                <p className="mt-1 text-sm text-slate-600">Check your inbox for a 6-digit code. It expires in ten minutes.</p>
+                <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="otp">
+                  Code
+                </label>
+                <input
+                  id="otp"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={codeDigits}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-lg tracking-widest outline-none focus:border-blinkr focus:ring-2 focus:ring-blinkr/25"
+                  placeholder="000000"
+                />
+                <button
+                  type="button"
+                  disabled={busy || codeDigits.length !== 6}
+                  onClick={() => void verifyCode()}
+                  className="mt-4 w-full rounded-xl border border-blinkr bg-blinkr-muted py-3 text-sm font-semibold text-blinkr-dark transition hover:bg-blinkr/20 disabled:opacity-50"
+                >
+                  {busy ? "Verifying…" : "Verify and continue"}
+                </button>
+              </section>
+            )}
+
             {meta.status === "OPENED" && sessionToken && (
               <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold">3. Claim USDC</h2>
+                <h2 className="text-lg font-semibold">Claim USDC</h2>
                 <p className="mt-1 text-sm text-slate-600">
                   Submit the relayer-signed claim transaction. Keep this tab open until confirmation.
                 </p>
@@ -267,7 +304,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
 
             {meta.status === "OPENED" && !sessionToken && (
               <p className="text-sm text-slate-600">
-                Passkey verified on another device? Enter your email and run the passkey step again to refresh your
+                Signed in on another device? Enter your email, request a new code, and verify again to refresh your
                 session.
               </p>
             )}

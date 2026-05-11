@@ -42,7 +42,7 @@ export function SiteFooter() {
             <LogoMark href="/" size={36} linkClassName="text-white" wordmarkClassName="text-white" />
             <p className="text-sm leading-relaxed text-white/80">
               Blinkr is a Solana native global payroll protocol. Fund in USDC, send a link, recipients claim with
-              passkeys, then cash out to their local bank.
+              email verification, then cash out to their local bank.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">

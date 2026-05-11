@@ -8,7 +8,7 @@ export type BlinkStatus =
   | "EXPIRED"
   | "REFUNDED";
 
-export function ensureBlinkPasskeyAllowed(blink: {
+export function ensureBlinkContractorAllowed(blink: {
   status: BlinkStatus;
   expiresAt: Date;
 }): void {

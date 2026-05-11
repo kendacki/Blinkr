@@ -9,7 +9,7 @@ import { fadeUp, stagger, viewportOnce } from "@/components/marketing/motion";
 const items = [
   {
     title: "Zero Crypto Complexity",
-    body: "No wallets or passwords required. Claim your funds in seconds using just FaceID or preferred Authentication.",
+    body: "No seed phrases or extra wallets to install. Claim your funds in seconds with email and a short verification code.",
     kind: "plain",
     span: "third",
     icon: ToggleLeft,
@@ -56,7 +56,7 @@ export function FeatureGridSection() {
               Key benefits
             </motion.h2>
             <motion.p variants={fadeUp} className="mt-4 text-base text-slate-600">
-              Fast settlement, passkey claims, and local cash out. Built for modern payroll operations.
+              Fast settlement, verified claims, and local cash out. Built for modern payroll operations.
             </motion.p>
           </motion.div>
 
@@ -138,7 +138,7 @@ export function FeatureGridSection() {
                     <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:flex-row md:items-stretch md:gap-1">
                       {[
                         { k: "Fund", v: "USDC Assets" },
-                        { k: "Claim", v: "Passkey verified" },
+                        { k: "Claim", v: "Email verified" },
                         { k: "Settle", v: "Fiat Deposits" },
                       ].flatMap((b, idx) => {
                         const card = (
