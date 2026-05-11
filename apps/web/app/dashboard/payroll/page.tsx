@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useEmployerSession } from "@/components/dashboard/EmployerSession";
+import { DisconnectedWalletState } from "@/components/dashboard/DisconnectedWalletState";
 
 export default function PayrollPage() {
   const { jwt, wallet, loading, error, notice, setError, setNotice, refresh } = useEmployerSession();
@@ -145,9 +146,7 @@ export default function PayrollPage() {
           </div>
         </section>
       ) : (
-        <p className="text-sm text-slate-600">
-          Connect Phantom to sign a short message. The server issues a JWT for creating Blinks and reading balances.
-        </p>
+        <DisconnectedWalletState />
       )}
     </>
   );
