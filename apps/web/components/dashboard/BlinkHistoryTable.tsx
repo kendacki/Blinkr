@@ -6,20 +6,20 @@ import type { BlinkRow } from "@/components/dashboard/EmployerSession";
 import { useEmployerSession } from "@/components/dashboard/EmployerSession";
 import { solanaAddressExplorerUrl, solanaTxExplorerUrl } from "@/lib/explorer";
 
-const STATUS_STYLES: Record<string, string> = {
-  PENDING: "bg-amber-50 text-amber-700 ring-amber-200",
-  OPENED: "bg-sky-50 text-sky-700 ring-sky-200",
-  CLAIMED: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  OFFRAMPED: "bg-purple-50 text-purple-700 ring-purple-200",
-  EXPIRED: "bg-slate-100 text-slate-700 ring-slate-200",
-  REFUNDED: "bg-rose-50 text-rose-700 ring-rose-200",
+const STATUS_TEXT_STYLES: Record<string, string> = {
+  PENDING: "text-amber-700",
+  OPENED: "text-sky-700",
+  CLAIMED: "text-emerald-700",
+  OFFRAMPED: "text-purple-700",
+  EXPIRED: "text-slate-700",
+  REFUNDED: "text-rose-700",
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const styles = STATUS_STYLES[status] ?? "bg-slate-100 text-slate-700 ring-slate-200";
+  const textColor = STATUS_TEXT_STYLES[status] ?? "text-slate-700";
   return (
     <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ring-1 ring-inset ${styles}`}
+      className={`text-xs font-semibold uppercase tracking-wide ${textColor}`}
     >
       {status.toLowerCase()}
     </span>
