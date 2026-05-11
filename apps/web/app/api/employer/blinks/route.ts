@@ -32,17 +32,28 @@ async function walletFromEmployerJwt(
   return wallet;
 }
 
+const DEFAULT_LIMIT = 100;
+const MAX_LIMIT = 1000;
+
+function parseLimit(raw: string | null): number {
+  if (!raw) return DEFAULT_LIMIT;
+  const n = Number.parseInt(raw, 10);
+  if (!Number.isFinite(n) || n <= 0) return DEFAULT_LIMIT;
+  return Math.min(MAX_LIMIT, n);
+}
+
 export async function GET(req: NextRequest) {
   try {
     const wallet = await walletFromEmployerJwt(
       req.headers.get("authorization")
     );
+    const take = parseLimit(req.nextUrl.searchParams.get("limit"));
     const employer = await prisma.employer.findUnique({
       where: { walletAddress: wallet },
       include: {
         blinks: {
           orderBy: { createdAt: "desc" },
-          take: 100,
+          take,
         },
       },
     });

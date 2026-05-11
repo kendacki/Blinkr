@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import type { DateRangePreset } from "@/lib/dashboardAnalytics";
+import { PayrollDashboardSkeleton } from "@/components/dashboard/PayrollDashboardSkeleton";
 
 type SparkPoint = { x: number; y: number };
 
@@ -409,7 +410,11 @@ export function PayrollAnalyticsDashboard() {
     dateRange,
     setDateRange,
     applyPreset,
-    loading,
+    isLoading,
+    isError,
+    errorMessage,
+    refetch,
+    transactions,
     monthlyVolume,
     weeklyActivity,
     recentPayees,
@@ -422,6 +427,10 @@ export function PayrollAnalyticsDashboard() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [draftFrom, setDraftFrom] = useState("");
   const [draftTo, setDraftTo] = useState("");
+
+  if (isLoading && transactions.length === 0 && !isError) {
+    return <PayrollDashboardSkeleton />;
+  }
 
   useEffect(() => {
     if (pickerOpen) {
@@ -488,7 +497,7 @@ export function PayrollAnalyticsDashboard() {
       initial="hidden"
       animate="show"
       variants={containerVariants}
-      className={`mb-8 font-[var(--font-poppins)] ${loading ? "opacity-90" : ""}`}
+      className="mb-8 font-[var(--font-poppins)]"
     >
       <motion.header
         variants={itemVariants}
@@ -550,6 +559,26 @@ export function PayrollAnalyticsDashboard() {
           </button>
         </div>
       </motion.header>
+
+      {isError ? (
+        <motion.div
+          variants={itemVariants}
+          role="alert"
+          className="mb-5 flex flex-col gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
+            <p className="font-semibold">Could not load dashboard data</p>
+            <p className="text-red-700">{errorMessage}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="inline-flex items-center justify-center self-start rounded-full border border-red-200 bg-white px-4 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 sm:self-auto"
+          >
+            Retry
+          </button>
+        </motion.div>
+      ) : null}
 
       {pickerOpen ? (
         <motion.div
