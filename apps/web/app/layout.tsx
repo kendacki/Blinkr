@@ -27,8 +27,8 @@ const metadataBase = (() => {
   }
 })();
 
-/** Same artwork as `HeroSection` (first homepage container) for link previews. */
-const defaultOgImage = "/images/hero-cosmic.png";
+/** Dedicated social preview asset (full hero screenshot) for Open Graph / Twitter cards. */
+const defaultOgImage = "/images/blinkr-og-share.png";
 
 const shareDescription =
   "Fund. Verify.  Settle globally. Meet Blinkr, the Solana-first payroll stack for modern teams.";
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: defaultOgImage,
-        alt: "Blinkr — Pay your global team instantly with USDC payroll on Solana",
+        alt: "Blinkr — Pay your global team instantly. USDC payroll on Solana.",
       },
     ],
     type: "website",
