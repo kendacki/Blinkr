@@ -576,8 +576,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                 <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                   {meta.status === "CLAIMED" ? (
                     <p>
-                      USDC has been claimed to your Blinkr wallet on devnet. You can simulate
-                      moving it to a bank with Stripe test mode below (no real money).
+                      Payment complete. The USDC is now available in your Blinkr wallet.
                     </p>
                   ) : null}
                   {meta.status === "OFFRAMPED" ? (
