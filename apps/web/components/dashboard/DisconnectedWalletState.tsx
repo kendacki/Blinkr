@@ -1,7 +1,3 @@
-"use client";
-
-import { useEmployerSession } from "@/components/dashboard/EmployerSession";
-
 type FeatureCard = {
   title: string;
   body: string;
@@ -134,8 +130,6 @@ const CARDS: FeatureCard[] = [
 ];
 
 export function DisconnectedWalletState() {
-  const { connectPhantom, loading } = useEmployerSession();
-
   return (
     <section className="font-[var(--font-poppins)]">
       <div className="rounded-3xl border border-slate-200/70 bg-white p-6 shadow-sm sm:p-10">
@@ -147,34 +141,9 @@ export function DisconnectedWalletState() {
             Welcome to your Blinkr dashboard. Connect your wallet to start sending payroll, creating
             Blinks, and tracking payouts in real time.
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => void connectPhantom()}
-              disabled={loading}
-              className="inline-flex items-center gap-2 rounded-full bg-purple-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-purple-700 disabled:opacity-50"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-                className="h-4 w-4"
-              >
-                <path
-                  d="M5 12h14M13 6l6 6-6 6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              {loading ? "Connecting…" : "Connect Phantom Wallet"}
-            </button>
-            <span className="text-xs text-slate-500">
-              Non-custodial. Your keys never leave your wallet.
-            </span>
-          </div>
+          <p className="mt-5 text-xs text-slate-500">
+            Non-custodial. Your keys never leave your wallet.
+          </p>
         </div>
       </div>
 
