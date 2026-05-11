@@ -158,10 +158,6 @@ function monthKey(d: Date): string {
   return `${y}-${m}`;
 }
 
-function monthShortLabel(d: Date): string {
-  return d.toLocaleDateString("en-US", { month: "short" });
-}
-
 export function eachMonthInRange(from: Date, to: Date): Date[] {
   let a = new Date(from);
   let b = new Date(to);
@@ -209,8 +205,10 @@ export function buildMonthlyVolumePoints(
     const pending = (byMonthPending.get(key) ?? new Decimal(0))
       .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
       .toNumber();
+    // Unique label per bucket (avoids duplicate "Jan" across years breaking Recharts categories)
+    const month = m.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
     return {
-      month: monthShortLabel(m),
+      month,
       current: funded,
       previous: pending,
     };

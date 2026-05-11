@@ -17,7 +17,7 @@ import {
   YAxis,
 } from "recharts";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import type { DateRangePreset } from "@/lib/dashboardAnalytics";
+import type { DateRangePreset, MonthlyVolumePoint } from "@/lib/dashboardAnalytics";
 import { PayrollDashboardSkeleton } from "@/components/dashboard/PayrollDashboardSkeleton";
 
 type SparkPoint = { x: number; y: number };
@@ -71,15 +71,21 @@ function avatarUrl(name: string) {
   return `https://ui-avatars.com/api/?${params.toString()}`;
 }
 
-const Y_AXIS_TICKS = [0, 100, 1000, 5000, 10000, 50000];
-const Y_AXIS_MAX = Y_AXIS_TICKS[Y_AXIS_TICKS.length - 1];
+const MONTHLY_CHART_Y_TICKS = [0, 100, 1000, 5000, 10000, 50000, 100000] as const;
+const MONTHLY_CHART_Y_MAX = 100_000;
 
-function formatUsdAxis(value: number): string {
-  if (!Number.isFinite(value) || value <= 0) return "$0";
-  if (value < 1000) return `$${value}`;
-  const k = value / 1000;
-  const rounded = Math.round(k * 10) / 10;
-  return Number.isInteger(rounded) ? `$${rounded.toFixed(0)}K` : `$${rounded.toFixed(1)}K`;
+/** Tick labels for the bounded monthly volume Y-axis (non-uniform tick spacing, linear domain). */
+function formatMonthlyChartYAxisTick(value: number): string {
+  const labels: Record<number, string> = {
+    0: "$0",
+    100: "$100",
+    1000: "$1000",
+    5000: "$5K",
+    10000: "$10K",
+    50000: "$50K",
+    100000: "$100K",
+  };
+  return labels[value] ?? `$${value}`;
 }
 
 function formatUsdTooltip(value: number | undefined, name: string) {
@@ -199,7 +205,7 @@ function KpiCard({ kpi }: { kpi: KpiCardData }) {
   );
 }
 
-function MonthlyVolumeChart({ data }: { data: { month: string; current: number; previous: number }[] }) {
+function MonthlyVolumeChart({ filteredData }: { filteredData: MonthlyVolumePoint[] }) {
   return (
     <motion.section
       variants={itemVariants}
@@ -229,40 +235,59 @@ function MonthlyVolumeChart({ data }: { data: { month: string; current: number; 
       </div>
 
       <div className="mt-5 h-64 w-full sm:h-72">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} barGap={6} barCategoryGap={20}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#EEF2F6" vertical={false} />
-            <XAxis
-              dataKey="month"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#64748B", fontSize: 12, fontFamily: "var(--font-poppins)" }}
-            />
-            <YAxis
-              orientation="right"
-              axisLine={false}
-              tickLine={false}
-              domain={[0, Y_AXIS_MAX]}
-              ticks={Y_AXIS_TICKS}
-              tickFormatter={formatUsdAxis}
-              tick={{ fill: "#94A3B8", fontSize: 11, fontFamily: "var(--font-poppins)" }}
-              width={48}
-              allowDataOverflow
-            />
-            <Tooltip
-              cursor={{ fill: "rgba(168, 85, 247, 0.06)" }}
-              contentStyle={{
-                borderRadius: 12,
-                border: "1px solid #E2E8F0",
-                fontSize: 12,
-                fontFamily: "var(--font-poppins)",
-              }}
-              formatter={(value, name) => formatUsdTooltip(value as number, String(name))}
-            />
-            <Bar dataKey="previous" name="Pending (USDC)" radius={[8, 8, 8, 8]} fill={PURPLE_SOFT} />
-            <Bar dataKey="current" name="Funded (USDC)" radius={[8, 8, 8, 8]} fill={PURPLE} />
-          </BarChart>
-        </ResponsiveContainer>
+        {filteredData.length === 0 ? (
+          <div className="flex h-full min-h-[14rem] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 text-center text-sm text-gray-500">
+            No transactions found for this period.
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={filteredData} barGap={6} barCategoryGap={20}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#EEF2F6" vertical={false} />
+              <XAxis
+                dataKey="month"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#64748B", fontSize: 12, fontFamily: "var(--font-poppins)" }}
+              />
+              <YAxis
+                orientation="right"
+                axisLine={false}
+                tickLine={false}
+                type="number"
+                domain={[0, MONTHLY_CHART_Y_MAX]}
+                ticks={[...MONTHLY_CHART_Y_TICKS]}
+                tickFormatter={formatMonthlyChartYAxisTick}
+                tick={{ fill: "#94A3B8", fontSize: 11, fontFamily: "var(--font-poppins)" }}
+                width={52}
+                allowDataOverflow
+              />
+              <Tooltip
+                cursor={{ fill: "rgba(168, 85, 247, 0.06)" }}
+                contentStyle={{
+                  borderRadius: 12,
+                  border: "1px solid #E2E8F0",
+                  fontSize: 12,
+                  fontFamily: "var(--font-poppins)",
+                }}
+                formatter={(value, name) => formatUsdTooltip(value as number, String(name))}
+              />
+              <Bar
+                dataKey="previous"
+                name="Pending (USDC)"
+                minPointSize={4}
+                radius={[4, 4, 0, 0]}
+                fill={PURPLE_SOFT}
+              />
+              <Bar
+                dataKey="current"
+                name="Funded (USDC)"
+                minPointSize={4}
+                radius={[4, 4, 0, 0]}
+                fill={PURPLE}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </motion.section>
   );
@@ -647,7 +672,7 @@ export function PayrollAnalyticsDashboard() {
         </div>
 
         <div className="md:col-span-12 lg:col-span-8">
-          <MonthlyVolumeChart data={monthlyVolume ?? []} />
+          <MonthlyVolumeChart filteredData={monthlyVolume ?? []} />
         </div>
 
         <div className="md:col-span-12 lg:col-span-6">
