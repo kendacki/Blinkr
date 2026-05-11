@@ -82,6 +82,12 @@ export default function PayrollPage() {
           {error}
         </p>
       )}
+      {notice && (
+        <p className="mb-5 whitespace-pre-wrap rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm text-emerald-900">
+          {notice}
+        </p>
+      )}
+
       {jwt ? <PayrollAnalyticsDashboard /> : null}
 
       {jwt ? (
@@ -153,12 +159,6 @@ export default function PayrollPage() {
       ) : (
         <DisconnectedWalletState />
       )}
-
-      {jwt && notice ? (
-        <p className="mt-5 whitespace-pre-wrap rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm text-emerald-900">
-          {notice}
-        </p>
-      ) : null}
     </>
   );
 }
