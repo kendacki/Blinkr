@@ -83,10 +83,13 @@ export function BlinkHistoryTable() {
             const { dateLine, timeLine } = formatBlinkDateTime(b.createdAt);
             const avatarSrc = dicebearInitialsUrl(b.contractorEmail);
             const canFund = b.status === "PENDING" && !b.escrowTxSig;
+            const linkClass =
+              "block w-full text-left text-xs font-medium text-slate-600 underline-offset-2 transition-colors hover:text-purple-700 hover:underline lg:w-auto lg:text-right";
+            const linkPrimary = `${linkClass} text-purple-700 hover:text-purple-800`;
             return (
               <li key={b.id}>
-                <div className="flex flex-col gap-4 px-4 py-5 sm:px-6 md:flex-row md:items-center md:gap-6">
-                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-purple-50 ring-2 ring-purple-100">
+                <div className="grid grid-cols-[48px_1fr] gap-x-4 gap-y-4 px-4 py-5 sm:px-6 lg:grid-cols-[48px_minmax(0,1fr)_10.5rem_12.5rem] lg:items-center lg:gap-x-6 lg:gap-y-0">
+                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-purple-50 ring-2 ring-purple-100 lg:self-center">
                     <Image
                       src={avatarSrc}
                       alt=""
@@ -96,10 +99,9 @@ export function BlinkHistoryTable() {
                       unoptimized
                     />
                   </div>
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate text-sm font-semibold text-slate-900">{b.contractorEmail}</p>
-                    </div>
+
+                  <div className="min-w-0 space-y-1 lg:self-center">
+                    <p className="truncate text-sm font-semibold text-slate-900">{b.contractorEmail}</p>
                     <p className="font-mono text-xs text-slate-500">Ref · {refLabel(b)}</p>
                     <p className="text-xs text-slate-500">
                       <span className="font-semibold text-slate-700">{dateLine}</span>
@@ -108,38 +110,47 @@ export function BlinkHistoryTable() {
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3 md:flex-col md:items-end md:gap-2">
-                    <p className="text-lg font-bold tabular-nums text-slate-900">
+                  <div className="col-span-2 flex items-center justify-between gap-4 border-t border-slate-100 pt-4 sm:justify-start sm:gap-6 lg:col-span-1 lg:flex-col lg:items-end lg:justify-center lg:border-l lg:border-t-0 lg:border-slate-100 lg:pt-0 lg:pl-6">
+                    <p className="whitespace-nowrap text-lg font-bold tabular-nums tracking-tight text-slate-900 lg:text-right">
                       {b.amountUsdc}
-                      <span className="ml-1 text-sm font-semibold text-purple-600">USDC</span>
+                      <span className="ml-1.5 text-sm font-semibold text-purple-600">USDC</span>
                     </p>
-                    <StatusBadge status={b.status} />
+                    <div className="shrink-0">
+                      <StatusBadge status={b.status} />
+                    </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-slate-100 pt-4 md:w-52 md:shrink-0 md:border-t-0 md:pt-0 md:items-end">
+                  <div className="col-span-2 flex flex-col gap-3 lg:col-span-1 lg:border-l lg:border-slate-100 lg:pl-6">
                     <button
                       type="button"
                       disabled={downloadingId === b.id}
                       onClick={() => void onDownloadReceipt(b)}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition-colors hover:border-purple-300 hover:bg-purple-50/60 hover:text-purple-900 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition-colors hover:border-purple-300 hover:bg-purple-50/70 hover:text-purple-900 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      <Download className="h-4 w-4 text-purple-600" aria-hidden />
+                      <Download className="h-4 w-4 shrink-0 text-purple-600" aria-hidden />
                       {downloadingId === b.id ? "Preparing…" : "Download"}
                     </button>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium">
+                    {canFund ? (
+                      <div className="flex justify-end">
+                        <FundBlinkButton blinkId={b.id} />
+                      </div>
+                    ) : null}
+                    <nav
+                      className="flex flex-col gap-2 border-t border-slate-100 pt-3 lg:items-end lg:gap-1.5"
+                      aria-label={`Links for ${b.contractorEmail}`}
+                    >
                       <Link
                         href={`${baseUrl}/blink/${b.id}`}
-                        className="text-purple-600 hover:text-purple-800 hover:underline"
+                        className={linkPrimary}
                         target="_blank"
                         rel="noreferrer"
                       >
                         Contractor link
                       </Link>
-                      {canFund ? <FundBlinkButton blinkId={b.id} /> : null}
                       {b.escrowPDA ? (
                         <a
                           href={solanaAddressExplorerUrl(b.escrowPDA)}
-                          className="text-slate-500 hover:text-slate-800 hover:underline"
+                          className={linkClass}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -149,7 +160,7 @@ export function BlinkHistoryTable() {
                       {b.escrowTxSig ? (
                         <a
                           href={solanaTxExplorerUrl(b.escrowTxSig)}
-                          className="text-slate-500 hover:text-slate-800 hover:underline"
+                          className={linkClass}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -159,14 +170,14 @@ export function BlinkHistoryTable() {
                       {b.claimTxSig ? (
                         <a
                           href={solanaTxExplorerUrl(b.claimTxSig)}
-                          className="text-slate-500 hover:text-slate-800 hover:underline"
+                          className={linkClass}
                           target="_blank"
                           rel="noreferrer"
                         >
                           Claim tx
                         </a>
                       ) : null}
-                    </div>
+                    </nav>
                   </div>
                 </div>
               </li>
