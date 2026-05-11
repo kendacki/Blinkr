@@ -1,13 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LogoMark } from "@/components/marketing/LogoMark";
 import { EmployerSessionProvider, useEmployerSession } from "@/components/dashboard/EmployerSession";
 
 function DashboardChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { jwt, wallet, balance, loading, connectPhantom, disconnect, refresh } = useEmployerSession();
+
+  const handleDisconnect = () => {
+    disconnect();
+    router.push("/dashboard/payroll");
+  };
 
   const link = (href: string, label: string) => {
     const active = pathname === href;
@@ -49,7 +55,7 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
                   </button>
                   <button
                     type="button"
-                    onClick={disconnect}
+                    onClick={handleDisconnect}
                     className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                   >
                     Sign out
