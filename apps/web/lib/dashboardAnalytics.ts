@@ -47,6 +47,11 @@ export function parseAmountUsdc(raw: string): Decimal {
   }
 }
 
+/** Normalize payee inbox (payment link / invite is addressed here). */
+export function payeeEmailKey(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 export function mapBlinkToTransaction(b: BlinkRow): DashboardTransaction {
   return {
     id: b.id,
@@ -149,8 +154,10 @@ export function countPendingAwaitingFund(txs: DashboardTransaction[]): number {
   return txs.filter(isPendingAwaitingFund).length;
 }
 
+/** Distinct contractor inboxes in range — one per payee email, not one per Blink. */
 export function uniqueContractorCount(txs: DashboardTransaction[]): number {
-  return new Set(txs.map((t) => t.contractorEmail.toLowerCase())).size;
+  const keys = txs.map((t) => payeeEmailKey(t.contractorEmail)).filter((k) => k.length > 0);
+  return new Set(keys).size;
 }
 
 /** Funded USDC as a percent of total in-range payroll volume (all Blink amounts). */
@@ -261,7 +268,8 @@ export function buildLast7DaySpark(
             const t = new Date(tx.createdAt).getTime();
             return t >= dayStart && t <= dayEnd;
           })
-          .map((tx) => tx.contractorEmail.toLowerCase())
+          .map((tx) => payeeEmailKey(tx.contractorEmail))
+          .filter((k) => k.length > 0)
       );
       y = set.size;
     }
@@ -321,10 +329,12 @@ export function buildRecentPayees(filtered: DashboardTransaction[]): {
 } {
   const byEmail = new Map<string, { email: string; last: string }>();
   for (const tx of filtered) {
-    const key = tx.contractorEmail.toLowerCase();
+    const key = payeeEmailKey(tx.contractorEmail);
+    if (!key) continue;
     const prev = byEmail.get(key);
+    const display = tx.contractorEmail.trim();
     if (!prev || new Date(tx.createdAt) > new Date(prev.last)) {
-      byEmail.set(key, { email: tx.contractorEmail, last: tx.createdAt });
+      byEmail.set(key, { email: display, last: tx.createdAt });
     }
   }
   const sorted = [...byEmail.values()].sort(
