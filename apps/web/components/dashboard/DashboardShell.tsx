@@ -69,7 +69,7 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
           </div>
           <nav className="flex flex-wrap gap-2" aria-label="Dashboard sections">
             {link("/dashboard/payroll", "Payroll")}
-            {link("/dashboard/history", "History")}
+            {jwt ? link("/dashboard/history", "History") : null}
           </nav>
         </div>
       </header>
