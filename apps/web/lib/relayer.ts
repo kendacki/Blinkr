@@ -18,9 +18,12 @@ export function assertRelayerMatchesProgramConstant(kp: Keypair): void {
   if (!expected) {
     return;
   }
-  if (kp.publicKey.toBase58() !== expected) {
+  const actual = kp.publicKey.toBase58();
+  if (actual !== expected) {
     throw new Error(
-      "RELAYER_KEYPAIR public key does not match RELAYER_PUBKEY / on-chain EXPECTED_RELAYER"
+      `RELAYER_KEYPAIR pubkey (${actual}) does not match RELAYER_PUBKEY (${expected}). ` +
+        "Use the same keypair file for RELAYER_KEYPAIR as the pubkey in RELAYER_PUBKEY, and ensure " +
+        "RELAYER_PUBKEY matches EXPECTED_RELAYER in programs/blinkremit/src/constants.rs for the deployed program."
     );
   }
 }
