@@ -71,9 +71,19 @@ function avatarUrl(name: string) {
   return `https://ui-avatars.com/api/?${params.toString()}`;
 }
 
-function formatKTooltipThousands(value: number | undefined, name: string) {
+const Y_AXIS_TICKS = [0, 100, 1000, 5000, 10000, 50000];
+const Y_AXIS_MAX = Y_AXIS_TICKS[Y_AXIS_TICKS.length - 1];
+
+function formatUsdAxis(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return "$0";
+  if (value < 1000) return `$${value}`;
+  const k = value / 1000;
+  const rounded = Math.round(k * 10) / 10;
+  return Number.isInteger(rounded) ? `$${rounded.toFixed(0)}K` : `$${rounded.toFixed(1)}K`;
+}
+
+function formatUsdTooltip(value: number | undefined, name: string) {
   const v = Number(value) || 0;
-  const usd = new Decimal(v).times(1000);
   const label = name.includes("Funded") ? "Funded" : "Pending queue";
   return [
     new Intl.NumberFormat("en-US", {
@@ -81,7 +91,7 @@ function formatKTooltipThousands(value: number | undefined, name: string) {
       currency: "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(usd.toNumber()),
+    }).format(v),
     label,
   ];
 }
@@ -208,33 +218,12 @@ function MonthlyVolumeChart({ data }: { data: { month: string; current: number; 
           </svg>
           Assistant
         </button>
-        {[
-          { d: "M5 3h7l3 3v11H5z" },
-          { d: "M4 6h12v8H4z M4 6c0-1 1-2 2-2h8c1 0 2 1 2 2" },
-          { d: "M4 5h12v10H4z M8 8h4v4H8z" },
-          { d: "M5 4l4 4 4-4M5 16l4-4 4 4" },
-          { d: "M4 6h12M4 10h12M4 14h7" },
-        ].map((icon, i) => (
-          <button
-            key={i}
-            type="button"
-            aria-label={`Quick action ${i + 1}`}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-colors hover:border-purple-300 hover:text-purple-600"
-          >
-            <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
-              <path d={icon.d} stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        ))}
       </div>
 
-      <div className="mt-4 flex items-start gap-3 rounded-full border border-purple-100 bg-purple-50/40 px-4 py-2 text-sm text-slate-700">
-        <span className="text-base text-purple-600" aria-hidden="true">
-          ✦
-        </span>
+      <div className="mt-4 rounded-full border border-purple-100 bg-purple-50/40 px-4 py-2 text-sm text-slate-700">
         <p>
-          Display the <span className="font-medium text-purple-600">earnings report</span> for the{" "}
-          <span className="font-medium text-purple-600">present quarter</span> and produce a{" "}
+          Display the <span className="font-medium text-purple-600">earnings report</span> for the
+          present quarter and produce a{" "}
           <span className="font-medium text-purple-600">financial statement</span>.
         </p>
       </div>
@@ -253,9 +242,12 @@ function MonthlyVolumeChart({ data }: { data: { month: string; current: number; 
               orientation="right"
               axisLine={false}
               tickLine={false}
-              tickFormatter={(v: number) => `$${v}k`}
+              domain={[0, Y_AXIS_MAX]}
+              ticks={Y_AXIS_TICKS}
+              tickFormatter={formatUsdAxis}
               tick={{ fill: "#94A3B8", fontSize: 11, fontFamily: "var(--font-poppins)" }}
-              width={36}
+              width={48}
+              allowDataOverflow
             />
             <Tooltip
               cursor={{ fill: "rgba(168, 85, 247, 0.06)" }}
@@ -265,10 +257,10 @@ function MonthlyVolumeChart({ data }: { data: { month: string; current: number; 
                 fontSize: 12,
                 fontFamily: "var(--font-poppins)",
               }}
-              formatter={(value, name) => formatKTooltipThousands(value as number, String(name))}
+              formatter={(value, name) => formatUsdTooltip(value as number, String(name))}
             />
-            <Bar dataKey="previous" name="Pending (k USDC)" radius={[8, 8, 8, 8]} fill={PURPLE_SOFT} />
-            <Bar dataKey="current" name="Funded (k USDC)" radius={[8, 8, 8, 8]} fill={PURPLE} />
+            <Bar dataKey="previous" name="Pending (USDC)" radius={[8, 8, 8, 8]} fill={PURPLE_SOFT} />
+            <Bar dataKey="current" name="Funded (USDC)" radius={[8, 8, 8, 8]} fill={PURPLE} />
           </BarChart>
         </ResponsiveContainer>
       </div>

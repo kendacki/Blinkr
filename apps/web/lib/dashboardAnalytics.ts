@@ -203,10 +203,16 @@ export function buildMonthlyVolumePoints(
 
   return months.map((m) => {
     const key = monthKey(m);
+    const funded = (byMonthFunded.get(key) ?? new Decimal(0))
+      .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+      .toNumber();
+    const pending = (byMonthPending.get(key) ?? new Decimal(0))
+      .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+      .toNumber();
     return {
       month: monthShortLabel(m),
-      current: formatThousandsK(byMonthFunded.get(key) ?? new Decimal(0)),
-      previous: formatThousandsK(byMonthPending.get(key) ?? new Decimal(0)),
+      current: funded,
+      previous: pending,
     };
   });
 }
