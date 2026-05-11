@@ -513,7 +513,9 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
 
             <div className="px-6 pb-8 pt-2 sm:px-8">
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                Your payment is ready!
+                {meta.status === "CLAIMED" || meta.status === "OFFRAMPED"
+                  ? "Successfully Claimed!"
+                  : "Your payment is ready!"}
               </h1>
 
               <div className="mt-6 rounded-2xl bg-slate-50 px-5 py-5">
