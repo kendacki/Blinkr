@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useEmployerSession } from "@/components/dashboard/EmployerSession";
 import { DisconnectedWalletState } from "@/components/dashboard/DisconnectedWalletState";
 import { PayrollAnalyticsDashboard } from "@/components/dashboard/PayrollAnalyticsDashboard";
+import { SuccessModal } from "@/components/dashboard/SuccessModal";
 
 export default function PayrollPage() {
   const { jwt, wallet, loading, error, notice, setError, setNotice, refresh } = useEmployerSession();
@@ -13,6 +14,9 @@ export default function PayrollPage() {
   const [sending, setSending] = useState(false);
   const [lastBlinkId, setLastBlinkId] = useState<string | null>(null);
   const [lastContractorEmail, setLastContractorEmail] = useState<string | null>(null);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [successLinkUrl, setSuccessLinkUrl] = useState("");
+  const [successAmount, setSuccessAmount] = useState("");
 
   const createBlink = async () => {
     if (!jwt || !wallet) return;
@@ -32,18 +36,16 @@ export default function PayrollPage() {
       const body = (await res.json()) as { blinkId?: string; blinkUrl?: string; error?: { message?: string } };
       if (!res.ok) throw new Error(body.error?.message ?? "Create Blink failed");
       const createdBlinkId = body.blinkId ?? null;
+      const amountSnapshot = amount.trim();
       setLastBlinkId(createdBlinkId);
       setLastContractorEmail(email.trim() || null);
       setEmail("");
       setAmount("");
       await refresh();
       if (body.blinkUrl) {
-        if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(body.blinkUrl);
-          setNotice(`Blink created. Contractor link copied:\n${body.blinkUrl}`);
-        } else {
-          setNotice(`Blink created. Share this link:\n${body.blinkUrl}`);
-        }
+        setSuccessLinkUrl(body.blinkUrl);
+        setSuccessAmount(amountSnapshot);
+        setSuccessModalOpen(true);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Create failed");
@@ -74,6 +76,12 @@ export default function PayrollPage() {
 
   return (
     <>
+      <SuccessModal
+        isOpen={successModalOpen}
+        onClose={() => setSuccessModalOpen(false)}
+        linkUrl={successLinkUrl}
+        amount={successAmount}
+      />
       {error && (
         <p
           className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-800"
