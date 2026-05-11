@@ -541,7 +541,7 @@ export function PayrollAnalyticsDashboard() {
             Payroll Overview
           </h1>
           <p className="mt-1 text-sm text-slate-600">
-            Overseeing payroll operations and contractor payouts at a glance.
+            {`Keep track of your team's payroll and payouts effortlessly.`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
