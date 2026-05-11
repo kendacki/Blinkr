@@ -47,18 +47,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const inflight = await prisma.offrampRequest.findFirst({
+    const processingInflight = await prisma.offrampRequest.findFirst({
       where: {
         blinkId: blink.id,
-        status: { in: ["initiated", "processing"] },
+        status: "processing",
       },
     });
-    if (inflight) {
+    if (processingInflight) {
       throw new ApiError(
         409,
         "CONFLICT",
         "An off-ramp is already in progress for this Blink"
       );
+    }
+
+    if (body.provider === "stripe_sim") {
+      await prisma.offrampRequest.deleteMany({
+        where: {
+          blinkId: blink.id,
+          provider: "stripe_sim",
+          status: "initiated",
+        },
+      });
+    } else {
+      const inflight = await prisma.offrampRequest.findFirst({
+        where: {
+          blinkId: blink.id,
+          status: { in: ["initiated", "processing"] },
+        },
+      });
+      if (inflight) {
+        throw new ApiError(
+          409,
+          "CONFLICT",
+          "An off-ramp is already in progress for this Blink"
+        );
+      }
     }
 
     if (body.provider === "stripe_sim") {
