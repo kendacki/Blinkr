@@ -16,11 +16,22 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const siteUrl =
+const siteUrlRaw =
   process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000";
+const siteUrl = siteUrlRaw.replace(/\/$/, "");
+const metadataBase = (() => {
+  try {
+    return new URL(siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`);
+  } catch {
+    return new URL("http://localhost:3000");
+  }
+})();
+
+/** Same artwork as `HeroSection` (first homepage container) for link previews. */
+const defaultOgImage = "/images/hero-cosmic.png";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase,
   icons: {
     icon: [{ url: "/images/blinkr-logo.webp", type: "image/webp" }],
     shortcut: ["/images/blinkr-logo.webp"],
@@ -38,7 +49,12 @@ export const metadata: Metadata = {
       "Fund escrows, verify contractors by email, and settle globally with Blinkr's Solana-first payroll stack.",
     url: siteUrl,
     siteName: "Blinkr",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Blinkr" }],
+    images: [
+      {
+        url: defaultOgImage,
+        alt: "Blinkr — Pay your global team instantly with USDC payroll on Solana",
+      },
+    ],
     type: "website",
   },
   twitter: {
@@ -46,6 +62,7 @@ export const metadata: Metadata = {
     title: "Blinkr — Solana-native cross-border payroll",
     description:
       "USDC escrows, verified claims, and partner-ready off-ramps for teams that need modern global payouts.",
+    images: [defaultOgImage],
   },
 };
 
