@@ -538,16 +538,6 @@ export function PayrollAnalyticsDashboard() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            aria-label="Search"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-colors hover:border-purple-300 hover:text-purple-600"
-          >
-            <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
-              <circle cx="9" cy="9" r="5" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M13 13l4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
-          </button>
-          <button
-            type="button"
             onClick={() => setPickerOpen((v) => !v)}
             aria-expanded={pickerOpen}
             className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800"
