@@ -447,6 +447,8 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   const expired = new Date(meta.expiresAt).getTime() < Date.now();
   /** Stops email / claim flow (but CLAIMED still shows cash-out). */
   const claimFlowDone = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status);
+  const showClaimModal =
+    meta.status === "OPENED" && Boolean(sessionToken) && !claimFlowDone && !expired;
   const codeDigits = code.replace(/\D/g, "").slice(0, 6);
   const claimTxLink = (claimSig ?? meta.claimTxSig)
     ? solanaTxExplorerUrl((claimSig ?? meta.claimTxSig) as string)
@@ -657,33 +659,6 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
               </section>
             ) : null}
 
-            {meta.status === "OPENED" && sessionToken && !claimFlowDone && !expired ? (
-              <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm sm:p-8">
-                <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-                  Claim your USDC
-                </h2>
-                <p className="mt-1 text-sm text-slate-600">
-                  Almost there! Submitting your claim. Please keep this tab open until it&apos;s
-                  confirmed.
-                </p>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void runClaim()}
-                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all hover:-translate-y-px hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
-                >
-                  {busy ? (
-                    <>
-                      <ButtonSpinner />
-                      Submitting claim…
-                    </>
-                  ) : (
-                    "Claim to my Blinkr wallet"
-                  )}
-                </button>
-              </section>
-            ) : null}
-
             {meta.status === "OPENED" && !sessionToken && !claimFlowDone && !expired ? (
               <p className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-sm">
                 Signed in on another device? Enter your email, request a new code, and verify
@@ -720,7 +695,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
               </section>
             ) : null}
 
-            {actionError ? (
+            {actionError && !showClaimModal ? (
               <p
                 className="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-800"
                 role="alert"
@@ -731,6 +706,54 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
           </div>
         </div>
       </main>
+
+      {showClaimModal ? (
+        <div
+          className="fixed inset-0 z-[200] flex items-end justify-center bg-black/40 p-4 backdrop-blur-sm sm:items-center"
+          role="presentation"
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="claim-usdc-modal-title"
+            className="font-[var(--font-poppins)] w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl ring-1 ring-slate-200/80 sm:p-8"
+          >
+            <h2
+              id="claim-usdc-modal-title"
+              className="text-xl font-semibold tracking-tight text-slate-900"
+            >
+              Claim your USDC
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Almost there! Submitting your claim. Please keep this tab open until it&apos;s
+              confirmed.
+            </p>
+            {actionError ? (
+              <p
+                className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+                role="alert"
+              >
+                {actionError}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void runClaim()}
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all hover:-translate-y-px hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+            >
+              {busy ? (
+                <>
+                  <ButtonSpinner />
+                  Submitting claim…
+                </>
+              ) : (
+                "Claim to my Blinkr wallet"
+              )}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
