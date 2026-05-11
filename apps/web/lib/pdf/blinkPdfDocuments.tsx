@@ -73,7 +73,7 @@ export function BlinkReceiptPdfDocument({
             ) : (
               <Text style={receiptStyles.brandFallback}>Blinkr</Text>
             )}
-            <Text style={receiptStyles.brandSuffix}>· Solana USDC</Text>
+            <Text style={receiptStyles.brandSuffix}>Powered by Solana</Text>
           </View>
           <ReceiptHeroIllustration />
         </View>
