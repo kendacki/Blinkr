@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, type Variants } from "framer-motion";
+import Decimal from "decimal.js";
 import {
   Bar,
   BarChart,
@@ -15,6 +16,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import type { DateRangePreset } from "@/lib/dashboardAnalytics";
 
 type SparkPoint = { x: number; y: number };
 
@@ -28,115 +31,7 @@ type KpiCardData = {
   variant: "donut" | "spark";
   donutPct?: number;
   spark?: SparkPoint[];
-};
-
-type MonthlyVolumePoint = {
-  month: string;
-  current: number;
-  previous: number;
-};
-
-type RecentPayee = {
-  id: string;
-  name: string;
-  email: string;
-};
-
-type WeeklyActivityPoint = {
-  day: string;
-  send: number;
-  receive: number;
-};
-
-type DashboardData = {
-  asOfLabel: string;
-  kpis: KpiCardData[];
-  monthlyVolume: MonthlyVolumePoint[];
-  payeeStats: { sendUsdc: string; receiveUsdc: string; totalUsdc: string };
-  recentPayees: RecentPayee[];
-  weeklyActivity: WeeklyActivityPoint[];
-};
-
-const mockDashboardData: DashboardData = {
-  asOfLabel: "6 March 2026",
-  kpis: [
-    {
-      id: "volume",
-      label: "Total Payroll Volume",
-      rangeLabel: "Mar 2026",
-      value: "$12,726.20",
-      unit: "USDC",
-      delta: { value: "+18.4%", positive: true },
-      variant: "donut",
-      donutPct: 58,
-    },
-    {
-      id: "pending",
-      label: "Pending Escrow",
-      rangeLabel: "Mar 2026",
-      value: "$2,480.50",
-      unit: "USDC",
-      delta: { value: "3 awaiting fund", positive: false },
-      variant: "spark",
-      spark: [
-        { x: 1, y: 12 },
-        { x: 2, y: 18 },
-        { x: 3, y: 15 },
-        { x: 4, y: 22 },
-        { x: 5, y: 19 },
-        { x: 6, y: 28 },
-        { x: 7, y: 24 },
-      ],
-    },
-    {
-      id: "contractors",
-      label: "Active Contractors",
-      rangeLabel: "Mar 2026",
-      value: "18",
-      delta: { value: "+2 this week", positive: true },
-      variant: "spark",
-      spark: [
-        { x: 1, y: 10 },
-        { x: 2, y: 12 },
-        { x: 3, y: 11 },
-        { x: 4, y: 14 },
-        { x: 5, y: 15 },
-        { x: 6, y: 17 },
-        { x: 7, y: 18 },
-      ],
-    },
-  ],
-  monthlyVolume: [
-    { month: "Jan", current: 22, previous: 14 },
-    { month: "Feb", current: 28, previous: 18 },
-    { month: "Mar", current: 17, previous: 12 },
-    { month: "Apr", current: 41, previous: 24 },
-    { month: "May", current: 36, previous: 22 },
-    { month: "Jun", current: 33, previous: 27 },
-    { month: "Jul", current: 38, previous: 30 },
-    { month: "Aug", current: 12, previous: 14 },
-  ],
-  payeeStats: {
-    sendUsdc: "$42,938",
-    receiveUsdc: "$69,372",
-    totalUsdc: "$112,310",
-  },
-  recentPayees: [
-    { id: "p1", name: "Ada Lovelace", email: "ada@example.com" },
-    { id: "p2", name: "Satoshi N", email: "sat@example.com" },
-    { id: "p3", name: "Grace Hopper", email: "grace@example.com" },
-    { id: "p4", name: "Kendrick A", email: "ken@example.com" },
-    { id: "p5", name: "Maya Lin", email: "maya@example.com" },
-  ],
-  weeklyActivity: [
-    { day: "Mon", send: 14, receive: 22 },
-    { day: "Tue", send: 18, receive: 26 },
-    { day: "Wed", send: 9, receive: 12 },
-    { day: "Thu", send: 22, receive: 30 },
-    { day: "Fri", send: 12, receive: 19 },
-    { day: "Sat", send: 16, receive: 24 },
-    { day: "Sun", send: 8, receive: 11 },
-  ],
+  onRangeClick?: () => void;
 };
 
 const PURPLE = "#A855F7";
@@ -156,6 +51,14 @@ const itemVariants: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
 };
 
+const PRESETS: { id: DateRangePreset; label: string }[] = [
+  { id: "last30", label: "Last 30 days" },
+  { id: "last90", label: "Last 90 days" },
+  { id: "thisMonth", label: "This month" },
+  { id: "ytd", label: "Year to date" },
+  { id: "all", label: "All time" },
+];
+
 function avatarUrl(name: string) {
   const params = new URLSearchParams({
     name,
@@ -167,9 +70,24 @@ function avatarUrl(name: string) {
   return `https://ui-avatars.com/api/?${params.toString()}`;
 }
 
+function formatKTooltipThousands(value: number | undefined, name: string) {
+  const v = Number(value) || 0;
+  const usd = new Decimal(v).times(1000);
+  const label = name.includes("Funded") ? "Funded" : "Pending queue";
+  return [
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(usd.toNumber()),
+    label,
+  ];
+}
+
 function KpiCard({ kpi }: { kpi: KpiCardData }) {
   const donutData = useMemo(
-    () => [{ name: kpi.id, value: kpi.donutPct ?? 0, fill: PURPLE_DEEP }],
+    () => [{ name: kpi.id, value: Math.min(100, Math.max(0, kpi.donutPct ?? 0)), fill: PURPLE_DEEP }],
     [kpi.id, kpi.donutPct]
   );
 
@@ -179,7 +97,11 @@ function KpiCard({ kpi }: { kpi: KpiCardData }) {
       className="relative flex flex-col gap-5 rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm"
     >
       <div className="flex items-center justify-between">
-        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+        <button
+          type="button"
+          onClick={kpi.onRangeClick}
+          className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-purple-50 hover:text-purple-700"
+        >
           {kpi.rangeLabel}
           <svg viewBox="0 0 20 20" className="h-3 w-3 text-slate-500" fill="none" aria-hidden="true">
             <path
@@ -190,7 +112,7 @@ function KpiCard({ kpi }: { kpi: KpiCardData }) {
               strokeLinejoin="round"
             />
           </svg>
-        </span>
+        </button>
         <button
           type="button"
           aria-label="Expand card"
@@ -266,7 +188,7 @@ function KpiCard({ kpi }: { kpi: KpiCardData }) {
   );
 }
 
-function MonthlyVolumeChart({ data }: { data: MonthlyVolumePoint[] }) {
+function MonthlyVolumeChart({ data }: { data: { month: string; current: number; previous: number }[] }) {
   return (
     <motion.section
       variants={itemVariants}
@@ -342,10 +264,10 @@ function MonthlyVolumeChart({ data }: { data: MonthlyVolumePoint[] }) {
                 fontSize: 12,
                 fontFamily: "var(--font-poppins)",
               }}
-              formatter={(value) => [`$${Number(value) || 0}k USDC`, ""]}
+              formatter={(value, name) => formatKTooltipThousands(value as number, String(name))}
             />
-            <Bar dataKey="previous" radius={[8, 8, 8, 8]} fill={PURPLE_SOFT} />
-            <Bar dataKey="current" radius={[8, 8, 8, 8]} fill={PURPLE} />
+            <Bar dataKey="previous" name="Pending (k USDC)" radius={[8, 8, 8, 8]} fill={PURPLE_SOFT} />
+            <Bar dataKey="current" name="Funded (k USDC)" radius={[8, 8, 8, 8]} fill={PURPLE} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -356,9 +278,11 @@ function MonthlyVolumeChart({ data }: { data: MonthlyVolumePoint[] }) {
 function RecentPayeesCard({
   payees,
   stats,
+  extraCount,
 }: {
-  payees: RecentPayee[];
-  stats: DashboardData["payeeStats"];
+  payees: { id: string; name: string; email: string }[];
+  stats: { sendUsdc: string; receiveUsdc: string; totalUsdc: string };
+  extraCount: number;
 }) {
   return (
     <motion.section
@@ -384,20 +308,26 @@ function RecentPayeesCard({
         </button>
       </div>
 
-      <div className="mt-5 flex items-center -space-x-3">
-        {payees.map((payee) => (
-          <Image
-            key={payee.id}
-            src={avatarUrl(payee.name)}
-            alt={payee.name}
-            width={44}
-            height={44}
-            className="h-11 w-11 rounded-full border-2 border-white object-cover shadow-sm"
-          />
-        ))}
-        <span className="ml-3 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white bg-slate-100 text-xs font-semibold text-slate-600 shadow-sm">
-          +12
-        </span>
+      <div className="mt-5 flex min-h-[2.75rem] flex-wrap items-center gap-1 -space-x-3">
+        {payees.length === 0 ? (
+          <p className="w-full pl-1 text-sm text-slate-500">No payees in this date range.</p>
+        ) : (
+          payees.map((payee) => (
+            <Image
+              key={payee.id}
+              src={avatarUrl(payee.name)}
+              alt={payee.name}
+              width={44}
+              height={44}
+              className="h-11 w-11 rounded-full border-2 border-white object-cover shadow-sm"
+            />
+          ))
+        )}
+        {extraCount > 0 ? (
+          <span className="ml-3 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white bg-slate-100 text-xs font-semibold text-slate-600 shadow-sm">
+            +{extraCount}
+          </span>
+        ) : null}
       </div>
 
       <dl className="mt-6 grid grid-cols-3 gap-4 text-sm">
@@ -418,7 +348,7 @@ function RecentPayeesCard({
   );
 }
 
-function WeeklyActivityCard({ data }: { data: WeeklyActivityPoint[] }) {
+function WeeklyActivityCard({ data }: { data: { day: string; send: number; receive: number }[] }) {
   return (
     <motion.section
       variants={itemVariants}
@@ -455,6 +385,14 @@ function WeeklyActivityCard({ data }: { data: WeeklyActivityPoint[] }) {
                 fontSize: 12,
                 fontFamily: "var(--font-poppins)",
               }}
+              formatter={(value) =>
+                new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(Number(value) || 0)
+              }
             />
             <Bar dataKey="send" radius={[10, 10, 10, 10]} fill={PURPLE_SOFT} />
             <Bar dataKey="receive" radius={[10, 10, 10, 10]} fill={PURPLE} />
@@ -465,19 +403,92 @@ function WeeklyActivityCard({ data }: { data: WeeklyActivityPoint[] }) {
   );
 }
 
-export function PayrollAnalyticsDashboard({
-  data = mockDashboardData,
-}: {
-  data?: DashboardData;
-}) {
-  const [rangeOpen, setRangeOpen] = useState(false);
+export function PayrollAnalyticsDashboard() {
+  const {
+    rangeLabel,
+    dateRange,
+    setDateRange,
+    applyPreset,
+    loading,
+    monthlyVolume,
+    weeklyActivity,
+    recentPayees,
+    extraPayeeCount,
+    payeeStats,
+    kpis,
+    handleExportReport,
+  } = useDashboardData();
+
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [draftFrom, setDraftFrom] = useState("");
+  const [draftTo, setDraftTo] = useState("");
+
+  useEffect(() => {
+    if (pickerOpen) {
+      setDraftFrom(dateRange.from.toISOString().slice(0, 10));
+      setDraftTo(dateRange.to.toISOString().slice(0, 10));
+    }
+  }, [pickerOpen, dateRange.from, dateRange.to]);
+
+  const kpiCards: KpiCardData[] = useMemo(
+    () => [
+      {
+        id: "volume",
+        label: "Total Payroll Volume",
+        rangeLabel,
+        value: kpis.volume.value,
+        unit: "USDC",
+        delta: { value: kpis.volume.delta, positive: true },
+        variant: "donut",
+        donutPct: kpis.volume.donutPct,
+        spark: kpis.volume.spark,
+        onRangeClick: () => setPickerOpen(true),
+      },
+      {
+        id: "pending",
+        label: "Pending Escrow",
+        rangeLabel,
+        value: kpis.pending.value,
+        unit: "USDC",
+        delta: {
+          value: kpis.pending.delta,
+          positive: kpis.pending.delta.startsWith("0 awaiting"),
+        },
+        variant: "spark",
+        spark: kpis.pending.spark,
+        onRangeClick: () => setPickerOpen(true),
+      },
+      {
+        id: "contractors",
+        label: "Active Contractors",
+        rangeLabel,
+        value: kpis.contractors.value,
+        delta: { value: kpis.contractors.delta, positive: true },
+        variant: "spark",
+        spark: kpis.contractors.spark,
+        onRangeClick: () => setPickerOpen(true),
+      },
+    ],
+    [kpis, rangeLabel]
+  );
+
+  const applyDraftRange = () => {
+    const from = new Date(draftFrom);
+    const to = new Date(draftTo);
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return;
+    from.setHours(0, 0, 0, 0);
+    to.setHours(23, 59, 59, 999);
+    if (from > to) return;
+    setDateRange({ from, to });
+    setPickerOpen(false);
+  };
 
   return (
     <motion.section
       initial="hidden"
       animate="show"
       variants={containerVariants}
-      className="mb-8"
+      className={`mb-8 font-[var(--font-poppins)] ${loading ? "opacity-90" : ""}`}
     >
       <motion.header
         variants={itemVariants}
@@ -504,8 +515,8 @@ export function PayrollAnalyticsDashboard({
           </button>
           <button
             type="button"
-            onClick={() => setRangeOpen((v) => !v)}
-            aria-expanded={rangeOpen}
+            onClick={() => setPickerOpen((v) => !v)}
+            aria-expanded={pickerOpen}
             className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800"
           >
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-purple-500">
@@ -519,7 +530,7 @@ export function PayrollAnalyticsDashboard({
                 />
               </svg>
             </span>
-            {data.asOfLabel}
+            {rangeLabel}
             <svg viewBox="0 0 20 20" fill="none" className="h-3 w-3" aria-hidden="true">
               <path
                 d="M5 8l5 5 5-5"
@@ -532,6 +543,7 @@ export function PayrollAnalyticsDashboard({
           </button>
           <button
             type="button"
+            onClick={handleExportReport}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:border-purple-300 hover:text-purple-700"
           >
             Export Report
@@ -539,23 +551,74 @@ export function PayrollAnalyticsDashboard({
         </div>
       </motion.header>
 
+      {pickerOpen ? (
+        <motion.div
+          variants={itemVariants}
+          className="mb-5 rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm"
+        >
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Date range</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {PRESETS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => {
+                  applyPreset(p.id);
+                  setPickerOpen(false);
+                }}
+                className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:border-purple-300 hover:bg-purple-50 hover:text-purple-800"
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+            <label className="flex flex-1 flex-col gap-1 text-xs text-slate-600">
+              From
+              <input
+                type="date"
+                value={draftFrom}
+                onChange={(e) => setDraftFrom(e.target.value)}
+                className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+              />
+            </label>
+            <label className="flex flex-1 flex-col gap-1 text-xs text-slate-600">
+              To
+              <input
+                type="date"
+                value={draftTo}
+                onChange={(e) => setDraftTo(e.target.value)}
+                className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => applyDraftRange()}
+              className="rounded-full bg-purple-500 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-600"
+            >
+              Apply
+            </button>
+          </div>
+        </motion.div>
+      ) : null}
+
       <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
         <div className="flex flex-col gap-5 md:col-span-12 lg:col-span-4">
-          {data.kpis.map((kpi) => (
+          {kpiCards.map((kpi) => (
             <KpiCard key={kpi.id} kpi={kpi} />
           ))}
         </div>
 
         <div className="md:col-span-12 lg:col-span-8">
-          <MonthlyVolumeChart data={data.monthlyVolume} />
+          <MonthlyVolumeChart data={monthlyVolume} />
         </div>
 
         <div className="md:col-span-12 lg:col-span-6">
-          <RecentPayeesCard payees={data.recentPayees} stats={data.payeeStats} />
+          <RecentPayeesCard payees={recentPayees} stats={payeeStats} extraCount={extraPayeeCount} />
         </div>
 
         <div className="md:col-span-12 lg:col-span-6">
-          <WeeklyActivityCard data={data.weeklyActivity} />
+          <WeeklyActivityCard data={weeklyActivity} />
         </div>
       </div>
     </motion.section>

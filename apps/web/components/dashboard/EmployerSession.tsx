@@ -13,6 +13,7 @@ export type BlinkRow = {
   claimTxSig: string | null;
   expiresAt: string;
   createdAt: string;
+  claimedAt: string | null;
 };
 
 const JWT_KEY = "blinkr_employer_jwt";
