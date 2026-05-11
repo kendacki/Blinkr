@@ -730,10 +730,8 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                   Cash out to bank (demo)
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Opens Stripe Checkout in <strong>setup mode</strong> (test cards only). After
-                  you finish, we move your devnet USDC from this Blink&apos;s wallet to the
-                  treasury so your on-chain balance clears — this is a simulation, not a real
-                  bank transfer of USDC.
+                  Test the withdrawal process with Stripe. This clears your test USDC to simulate
+                  a bank transfer (no real funds are moved).
                 </p>
                 <button
                   type="button"
