@@ -103,7 +103,7 @@ export default function PayrollPage() {
                 className="text-xs font-semibold uppercase tracking-wide text-slate-500"
                 htmlFor="ce"
               >
-                Contractor email
+                E-mail
               </label>
               <input
                 id="ce"
