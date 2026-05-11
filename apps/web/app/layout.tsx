@@ -30,6 +30,9 @@ const metadataBase = (() => {
 /** Same artwork as `HeroSection` (first homepage container) for link previews. */
 const defaultOgImage = "/images/hero-cosmic.png";
 
+const shareDescription =
+  "Fund. Verify.  Settle globally. Meet Blinkr, the Solana-first payroll stack for modern teams.";
+
 export const metadata: Metadata = {
   metadataBase,
   icons: {
@@ -45,8 +48,7 @@ export const metadata: Metadata = {
     "Blinkr helps teams run USDC payroll on Solana with email-verified claims, Blink-native links, and webhook-driven status for finance operators.",
   openGraph: {
     title: "Blinkr — Solana-native cross-border payroll",
-    description:
-      "Fund escrows, verify contractors by email, and settle globally with Blinkr's Solana-first payroll stack.",
+    description: shareDescription,
     url: siteUrl,
     siteName: "Blinkr",
     images: [
@@ -60,8 +62,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Blinkr — Solana-native cross-border payroll",
-    description:
-      "USDC escrows, verified claims, and partner-ready off-ramps for teams that need modern global payouts.",
+    description: shareDescription,
     images: [defaultOgImage],
   },
 };
