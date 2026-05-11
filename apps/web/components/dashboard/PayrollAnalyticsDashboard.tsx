@@ -372,7 +372,7 @@ function WeeklyActivityCard({ data }: { data: { day: string; send: number; recei
           </span>
           <span className="inline-flex items-center gap-1.5 text-slate-700">
             <span className="h-2 w-2 rounded-full bg-purple-500" aria-hidden="true" />
-            Receive
+            Confirmed
           </span>
         </div>
       </div>
@@ -403,8 +403,8 @@ function WeeklyActivityCard({ data }: { data: { day: string; send: number; recei
                 }).format(Number(value) || 0)
               }
             />
-            <Bar dataKey="send" radius={[10, 10, 10, 10]} fill={PURPLE_SOFT} />
-            <Bar dataKey="receive" radius={[10, 10, 10, 10]} fill={PURPLE} />
+            <Bar dataKey="send" name="Send" radius={[10, 10, 10, 10]} fill={PURPLE_SOFT} />
+            <Bar dataKey="receive" name="Confirmed" radius={[10, 10, 10, 10]} fill={PURPLE} />
           </BarChart>
         </ResponsiveContainer>
       </div>
