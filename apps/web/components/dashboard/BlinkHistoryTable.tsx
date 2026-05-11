@@ -32,7 +32,7 @@ export function BlinkHistoryTable() {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm">
-      <div className="border-b border-slate-100 px-8 py-6">
+      <div className="border-b border-slate-100 px-6 py-6">
         <h2 className="text-xl font-semibold tracking-tight text-slate-900">Payment History</h2>
         <p className="mt-1 text-sm text-slate-600">
           Manage your recent payments. Fund pending transactions to activate them for your
