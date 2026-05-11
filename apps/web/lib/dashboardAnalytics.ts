@@ -341,11 +341,14 @@ export function buildRecentPayees(filtered: DashboardTransaction[]): {
     (a, b) => new Date(b.last).getTime() - new Date(a.last).getTime()
   );
   const top = sorted.slice(0, 5);
-  const payees: RecentPayee[] = top.map((p) => ({
-    id: p.email,
-    name: p.email.split("@")[0]?.replace(/\./g, " ") ?? p.email,
-    email: p.email,
-  }));
+  const payees: RecentPayee[] = top.map((p) => {
+    const key = payeeEmailKey(p.email);
+    return {
+      id: key,
+      name: p.email.split("@")[0]?.replace(/\./g, " ") ?? p.email,
+      email: p.email,
+    };
+  });
   return { payees, extraCount: Math.max(0, sorted.length - payees.length) };
 }
 

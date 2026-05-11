@@ -17,6 +17,7 @@ import {
   YAxis,
 } from "recharts";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { dicebearInitialsUrl } from "@/lib/blinkDisplayFormat";
 import type { DateRangePreset, MonthlyVolumePoint } from "@/lib/dashboardAnalytics";
 import { PayrollDashboardSkeleton } from "@/components/dashboard/PayrollDashboardSkeleton";
 
@@ -59,17 +60,6 @@ const PRESETS: { id: DateRangePreset; label: string }[] = [
   { id: "ytd", label: "Year to date" },
   { id: "all", label: "All time" },
 ];
-
-function avatarUrl(name: string) {
-  const params = new URLSearchParams({
-    name,
-    background: "A855F7",
-    color: "fff",
-    bold: "true",
-    size: "128",
-  });
-  return `https://ui-avatars.com/api/?${params.toString()}`;
-}
 
 const MONTHLY_CHART_Y_TICKS = [0, 100, 1000, 5000, 10000, 50000, 100000] as const;
 const MONTHLY_CHART_Y_MAX = 100_000;
@@ -333,11 +323,12 @@ function RecentPayeesCard({
           payees.map((payee) => (
             <Image
               key={payee.id}
-              src={avatarUrl(payee.name)}
-              alt={payee.name}
+              src={dicebearInitialsUrl(payee.id)}
+              alt=""
               width={44}
               height={44}
               className="h-11 w-11 rounded-full border-2 border-white object-cover shadow-sm"
+              unoptimized
             />
           ))
         )}
