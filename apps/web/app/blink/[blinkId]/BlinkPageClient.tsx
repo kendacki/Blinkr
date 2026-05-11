@@ -727,7 +727,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
             {meta.status === "CLAIMED" && sessionToken ? (
               <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm sm:p-8">
                 <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-                  Cash out to bank (demo)
+                  Withdrawal
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
                   Test the withdrawal process with Stripe. This clears your test USDC to simulate
