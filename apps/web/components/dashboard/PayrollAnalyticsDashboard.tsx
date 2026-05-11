@@ -324,14 +324,14 @@ function MonthlyVolumeChart({ data }: { data: MonthlyVolumePoint[] }) {
               dataKey="month"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#64748B", fontSize: 12 }}
+              tick={{ fill: "#64748B", fontSize: 12, fontFamily: "var(--font-poppins)" }}
             />
             <YAxis
               orientation="right"
               axisLine={false}
               tickLine={false}
               tickFormatter={(v: number) => `$${v}k`}
-              tick={{ fill: "#94A3B8", fontSize: 11 }}
+              tick={{ fill: "#94A3B8", fontSize: 11, fontFamily: "var(--font-poppins)" }}
               width={36}
             />
             <Tooltip
@@ -445,7 +445,7 @@ function WeeklyActivityCard({ data }: { data: WeeklyActivityPoint[] }) {
               dataKey="day"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#94A3B8", fontSize: 11 }}
+              tick={{ fill: "#94A3B8", fontSize: 11, fontFamily: "var(--font-poppins)" }}
             />
             <Tooltip
               cursor={{ fill: "rgba(168, 85, 247, 0.06)" }}
