@@ -745,7 +745,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                       Starting…
                     </>
                   ) : (
-                    "Start Stripe cash-out simulation"
+                    "Stripe Cash-out"
                   )}
                 </button>
               </section>
