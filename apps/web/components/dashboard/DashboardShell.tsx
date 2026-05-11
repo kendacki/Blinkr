@@ -60,7 +60,7 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
                   type="button"
                   onClick={() => void connectPhantom()}
                   disabled={loading}
-                  className="rounded-full bg-purple-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-purple-700 disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-purple-500 px-6 py-3 font-[var(--font-poppins)] text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all hover:-translate-y-px hover:bg-purple-600 disabled:opacity-50 disabled:hover:translate-y-0"
                 >
                   {loading ? "Connecting…" : "Connect Phantom"}
                 </button>
