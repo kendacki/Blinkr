@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useEmployerSession } from "@/components/dashboard/EmployerSession";
 import { DisconnectedWalletState } from "@/components/dashboard/DisconnectedWalletState";
+import { PayrollAnalyticsDashboard } from "@/components/dashboard/PayrollAnalyticsDashboard";
 
 export default function PayrollPage() {
   const { jwt, wallet, loading, error, notice, setError, setNotice, refresh } = useEmployerSession();
@@ -86,6 +87,8 @@ export default function PayrollPage() {
           {notice}
         </p>
       )}
+
+      {jwt ? <PayrollAnalyticsDashboard /> : null}
 
       {jwt ? (
         <section className="rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm sm:p-10">
