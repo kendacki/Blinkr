@@ -1,8 +1,9 @@
 import { randomBytes, timingSafeEqual } from "crypto";
-import { Keypair } from "@solana/web3.js";
 import { NextRequest } from "next/server";
 import { signContractorSessionToken } from "@/lib/auth";
 import { assertBlinkTransition } from "@/lib/blinkStateMachine";
+import { deriveContractorWalletKeypair } from "@/lib/deriveContractorWallet";
+import { migrateCredentialToDerivedWalletIfSafe } from "@/lib/migrateCredentialToDerivedWallet";
 import { ensureBlinkContractorAllowed } from "@/lib/blinkGuards";
 import {
   contractorOtpPayloadKey,
@@ -85,7 +86,17 @@ export async function POST(
       where: { email: emailNorm },
     });
     if (!row) {
-      const wallet = Keypair.generate().publicKey.toBase58();
+      let kp;
+      try {
+        kp = deriveContractorWalletKeypair(emailNorm);
+      } catch {
+        throw new ApiError(
+          500,
+          "CONFIG",
+          "Server is missing CONTRACTOR_WALLET_DERIVATION_SECRET (min 32 chars). See .env.example."
+        );
+      }
+      const wallet = kp.publicKey.toBase58();
       const claimSecret = randomBytes(32).toString("base64url");
       row = await prisma.credential.create({
         data: {
@@ -96,6 +107,14 @@ export async function POST(
           counter: 0,
         },
       });
+    }
+
+    await migrateCredentialToDerivedWalletIfSafe(row.id, emailNorm);
+    const refreshedCred = await prisma.credential.findUnique({
+      where: { id: row.id },
+    });
+    if (refreshedCred) {
+      row = refreshedCred;
     }
 
     if (blink.status === "PENDING") {

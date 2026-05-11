@@ -27,6 +27,9 @@ async function readJson<T>(res: Response): Promise<T> {
   return body as T;
 }
 
+/** Dedupe React Strict Mode double-invoke for the same Stripe return URL. */
+const stripeCompleteInflight = new Set<string>();
+
 export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   const [meta, setMeta] = useState<BlinkMeta | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -62,10 +65,74 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
 
   useEffect(() => {
     if (!meta) return undefined;
-    if (["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status)) return undefined;
+    if (["OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status)) return undefined;
     const id = window.setInterval(() => void refreshMeta(), 5000);
     return () => window.clearInterval(id);
   }, [meta, refreshMeta]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !meta) return;
+    const sp = new URLSearchParams(window.location.search);
+    const flag = sp.get("offramp");
+    if (flag === "cancel") {
+      setActionError("Bank setup was cancelled. You can try cash out again when ready.");
+      window.history.replaceState({}, "", `/blink/${blinkId}`);
+      return;
+    }
+    if (flag !== "complete") {
+      return;
+    }
+
+    const sessionId = sp.get("session_id");
+    if (!sessionId) {
+      setActionError(null);
+      window.history.replaceState({}, "", `/blink/${blinkId}`);
+      void refreshMeta();
+      return;
+    }
+
+    if (!sessionToken) {
+      return;
+    }
+
+    const inflightKey = `${blinkId}:${sessionId}`;
+    if (stripeCompleteInflight.has(inflightKey)) {
+      return;
+    }
+    stripeCompleteInflight.add(inflightKey);
+
+    setActionError(null);
+    let cancelled = false;
+    (async () => {
+      setBusy(true);
+      try {
+        const res = await fetch("/api/offramp/stripe-complete", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({ blinkId, sessionId }),
+        });
+        await readJson<{ ok: true }>(res);
+      } catch (e) {
+        if (!cancelled) {
+          setActionError(e instanceof Error ? e.message : "Could not finalize payout");
+        }
+      } finally {
+        stripeCompleteInflight.delete(inflightKey);
+        if (!cancelled) {
+          setBusy(false);
+          window.history.replaceState({}, "", `/blink/${blinkId}`);
+          void refreshMeta();
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [blinkId, meta, refreshMeta, sessionToken]);
 
   const persistSession = (token: string) => {
     window.sessionStorage.setItem(sessionKey(blinkId), token);
@@ -136,6 +203,34 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
     }
   };
 
+  const startStripeCashOut = async () => {
+    if (!sessionToken) {
+      setActionError("Verify your email with the code first.");
+      return;
+    }
+    setActionError(null);
+    setBusy(true);
+    try {
+      const res = await fetch("/api/offramp/initiate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({
+          blinkId,
+          provider: "stripe_sim",
+        }),
+      });
+      const out = await readJson<{ checkoutUrl: string }>(res);
+      window.location.href = out.checkoutUrl;
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Could not start cash out");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (loadError && !meta) {
     return (
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
@@ -154,7 +249,8 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   }
 
   const expired = new Date(meta.expiresAt).getTime() < Date.now();
-  const terminal = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status);
+  /** Stops email / claim flow (but CLAIMED still shows cash-out). */
+  const claimFlowDone = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status);
   const codeDigits = code.replace(/\D/g, "").slice(0, 6);
 
   return (
@@ -202,15 +298,30 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
           </dl>
         </section>
 
-        {expired && !terminal && (
+        {expired && !claimFlowDone && (
           <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             This Blink has expired. Contact the employer if you still need to be paid.
           </p>
         )}
 
-        {terminal && (
+        {claimFlowDone && (
           <div className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-800">
-            <p>This Blink is complete ({meta.status}).</p>
+            {meta.status === "CLAIMED" && (
+              <p>
+                USDC has been claimed to your Blinkr wallet on devnet. You can simulate moving it to a bank with Stripe
+                test mode below (no real money).
+              </p>
+            )}
+            {meta.status === "OFFRAMPED" && (
+              <p>
+                Simulated bank payout finished. For newer wallets we sweep devnet USDC into the platform treasury; if
+                this Blink used a legacy claim address we could not sign on-chain, your USDC may still show at that
+                address in a block explorer even though this Blink is marked complete here.
+              </p>
+            )}
+            {meta.status !== "CLAIMED" && meta.status !== "OFFRAMPED" && (
+              <p>This Blink is complete ({meta.status}).</p>
+            )}
             {(claimSig ?? meta.claimTxSig) && (
               <p className="mt-2">
                 <a
@@ -226,7 +337,26 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
           </div>
         )}
 
-        {!terminal && !expired && (
+        {meta.status === "CLAIMED" && sessionToken && (
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold">Cash out to bank (demo)</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Opens Stripe Checkout in <strong>setup mode</strong> (test cards only). After you finish, we move your
+              devnet USDC from this Blink&apos;s wallet to the treasury so your on-chain balance clears — this is a
+              simulation, not a real bank transfer of USDC.
+            </p>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void startStripeCashOut()}
+              className="mt-4 w-full rounded-xl bg-blinkr py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blinkr-dark disabled:opacity-50"
+            >
+              {busy ? "Starting…" : "Start Stripe cash-out simulation"}
+            </button>
+          </section>
+        )}
+
+        {!claimFlowDone && !expired && (
           <>
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-semibold">Confirm your email</h2>

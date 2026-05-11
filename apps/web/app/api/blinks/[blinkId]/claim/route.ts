@@ -23,6 +23,7 @@ import {
   loadRelayerKeypair,
   signClaimAuthorizationMessage,
 } from "@/lib/relayer";
+import { migrateCredentialToDerivedWalletIfSafe } from "@/lib/migrateCredentialToDerivedWallet";
 import { blinkDbIdToBytes } from "@/lib/solana";
 
 export const runtime = "nodejs";
@@ -39,7 +40,7 @@ export async function POST(
       params.blinkId
     );
 
-    const blink = await prisma.blink.findUnique({
+    let blink = await prisma.blink.findUnique({
       where: { id: params.blinkId },
       include: { employer: true, credential: true },
     });
@@ -74,6 +75,22 @@ export async function POST(
         "FORBIDDEN",
         "Session wallet does not match Blink wallet"
       );
+    }
+
+    await migrateCredentialToDerivedWalletIfSafe(
+      blink.credentialId,
+      blink.contractorEmail.trim().toLowerCase()
+    );
+    const reloaded = await prisma.blink.findUnique({
+      where: { id: params.blinkId },
+      include: { employer: true, credential: true },
+    });
+    if (reloaded) {
+      blink = reloaded;
+    }
+
+    if (!blink.walletAddress || !blink.escrowPDA || !blink.credential) {
+      throw new ApiError(500, "CONFIG", "Blink missing wallet, escrow, or credential after migration");
     }
 
     const connection = getConnection();

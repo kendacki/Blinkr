@@ -32,7 +32,14 @@ export const employerAuthBodySchema = z.object({
 
 export const offrampInitiateBodySchema = z.object({
   blinkId: z.string().min(1),
-  walletAddress: z.string().min(32).max(64),
-  bankDetails: z.record(z.string(), z.unknown()),
-  provider: z.enum(["meso", "moonpay"]),
+  /** Deprecated for server-side verification: wallet is taken from the contractor session JWT. */
+  walletAddress: z.string().min(32).max(64).optional(),
+  bankDetails: z.record(z.string(), z.unknown()).optional(),
+  provider: z.enum(["meso", "moonpay", "stripe_sim"]),
+});
+
+/** After Stripe redirects back with `session_id`, finalize sweep without relying on webhooks (e.g. localhost). */
+export const stripeOfframpCompleteBodySchema = z.object({
+  blinkId: z.string().min(1),
+  sessionId: z.string().min(1),
 });
