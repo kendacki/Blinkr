@@ -9,7 +9,10 @@ export default function HistoryPage() {
   return (
     <>
       {error && (
-        <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+        <p
+          className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-800"
+          role="alert"
+        >
           {error}
         </p>
       )}

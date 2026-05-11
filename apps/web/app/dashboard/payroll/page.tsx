@@ -74,27 +74,32 @@ export default function PayrollPage() {
   return (
     <>
       {error && (
-        <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+        <p
+          className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-800"
+          role="alert"
+        >
           {error}
         </p>
       )}
       {notice && (
-        <p className="mb-4 whitespace-pre-wrap rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+        <p className="mb-5 whitespace-pre-wrap rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm text-emerald-900">
           {notice}
         </p>
       )}
 
       {jwt ? (
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold">Create payroll Blink</h2>
+        <section className="rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm sm:p-10">
+          <h2 className="text-xl font-semibold tracking-tight text-slate-900">Create a Payment</h2>
           <p className="mt-1 text-sm text-slate-600">
-            Creates the database row and escrow PDA. Next, open <strong>History</strong> and click{" "}
-            <strong>Fund escrow</strong> to sign <code className="text-xs">create_escrow</code> with Phantom (locks
-            USDC on-chain).
+            Set up a new payment link. Once created, head over to the History tab to securely fund
+            it.
           </p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2">
             <div>
-              <label className="text-xs font-semibold uppercase text-slate-500" htmlFor="ce">
+              <label
+                className="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                htmlFor="ce"
+              >
                 Contractor email
               </label>
               <input
@@ -102,12 +107,15 @@ export default function PayrollPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blinkr"
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-shadow focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
                 placeholder="payee@example.com"
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase text-slate-500" htmlFor="amt">
+              <label
+                className="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                htmlFor="amt"
+              >
                 Amount (USDC)
               </label>
               <input
@@ -115,35 +123,35 @@ export default function PayrollPage() {
                 inputMode="decimal"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blinkr"
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition-shadow focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
                 placeholder="100.00"
               />
             </div>
           </div>
-          <button
-            type="button"
-            disabled={submitting || loading || !email.trim() || !amount.trim()}
-            onClick={() => void createBlink()}
-            className="mt-4 rounded-xl bg-blinkr px-5 py-2.5 text-sm font-semibold text-white hover:bg-blinkr-dark disabled:opacity-50"
-          >
-            Create Blink
-          </button>
-
-          <div className="mt-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              disabled={submitting || loading || !email.trim() || !amount.trim()}
+              onClick={() => void createBlink()}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all hover:-translate-y-px hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+            >
+              {submitting ? "Creating…" : "Create Blink"}
+            </button>
             <button
               type="button"
               disabled={sending || loading || !lastBlinkId}
               onClick={() => void sendBlinkLinkEmail()}
-              className="rounded-xl border border-blinkr bg-white px-5 py-2.5 text-sm font-semibold text-blinkr hover:bg-blinkr/10 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-purple-200 bg-white px-6 py-3 text-sm font-semibold text-purple-700 transition-all hover:-translate-y-px hover:border-purple-500 hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
             >
-              Send link to receiver email
+              {sending ? "Sending…" : "Send link to receiver email"}
             </button>
-            {lastBlinkId && (
-              <p className="mt-2 text-xs text-slate-600">
-                Sends the most recently created Blink link{lastContractorEmail ? ` to ${lastContractorEmail}` : ""}.
-              </p>
-            )}
           </div>
+          {lastBlinkId && (
+            <p className="mt-3 text-xs text-slate-500">
+              Sends the most recently created Blink link
+              {lastContractorEmail ? ` to ${lastContractorEmail}` : ""}.
+            </p>
+          )}
         </section>
       ) : (
         <DisconnectedWalletState />

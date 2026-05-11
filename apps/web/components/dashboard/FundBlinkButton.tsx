@@ -78,7 +78,7 @@ export function FundBlinkButton({ blinkId }: { blinkId: string }) {
       type="button"
       disabled={busy}
       onClick={() => void run()}
-      className="rounded-lg bg-blinkr px-2 py-1 text-xs font-semibold text-white hover:bg-blinkr-dark disabled:opacity-50"
+      className="inline-flex items-center justify-center rounded-full bg-purple-500 px-3 py-1 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {busy ? "Signing…" : "Fund escrow"}
     </button>
