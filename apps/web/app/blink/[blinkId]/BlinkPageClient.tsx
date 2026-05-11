@@ -663,8 +663,8 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                   Claim your USDC
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Submit the relayer-signed claim transaction. Keep this tab open until
-                  confirmation.
+                  Almost there! Submitting your claim. Please keep this tab open until it&apos;s
+                  confirmed.
                 </p>
                 <button
                   type="button"
