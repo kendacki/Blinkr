@@ -17,6 +17,8 @@ export default function PayrollPage() {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [successLinkUrl, setSuccessLinkUrl] = useState("");
   const [successAmount, setSuccessAmount] = useState("");
+  const [emailSentModalOpen, setEmailSentModalOpen] = useState(false);
+  const [emailSentRecipient, setEmailSentRecipient] = useState("");
 
   const createBlink = async () => {
     if (!jwt || !wallet) return;
@@ -66,7 +68,10 @@ export default function PayrollPage() {
       });
       const body = (await res.json()) as { sent?: boolean; to?: string; error?: { message?: string } };
       if (!res.ok) throw new Error(body.error?.message ?? "Send email failed");
-      setNotice(`Sent Blink link to ${body.to ?? lastContractorEmail ?? "receiver"}.`);
+      const to = (body.to ?? lastContractorEmail ?? "").trim();
+      setEmailSentRecipient(to);
+      setSuccessModalOpen(false);
+      setEmailSentModalOpen(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Send email failed");
     } finally {
@@ -81,6 +86,15 @@ export default function PayrollPage() {
         onClose={() => setSuccessModalOpen(false)}
         linkUrl={successLinkUrl}
         amount={successAmount}
+        mode="paymentLink"
+      />
+      <SuccessModal
+        isOpen={emailSentModalOpen}
+        onClose={() => setEmailSentModalOpen(false)}
+        linkUrl={successLinkUrl}
+        amount={successAmount}
+        mode="emailSent"
+        recipientEmail={emailSentRecipient}
       />
       {error && (
         <p
