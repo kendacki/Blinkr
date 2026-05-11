@@ -345,7 +345,7 @@ function RecentPayeesCard({
           <dd className="mt-1 font-semibold text-slate-900">{stats.sendUsdc}</dd>
         </div>
         <div>
-          <dt className="text-xs text-slate-500">Receive</dt>
+          <dt className="text-xs text-slate-500">Confirmed</dt>
           <dd className="mt-1 font-semibold text-slate-900">{stats.receiveUsdc}</dd>
         </div>
         <div>
