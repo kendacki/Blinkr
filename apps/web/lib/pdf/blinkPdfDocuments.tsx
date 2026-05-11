@@ -120,94 +120,6 @@ export function BlinkReceiptPdfDocument({
   );
 }
 
-const invoiceStyles = StyleSheet.create({
-  page: { fontFamily: "Helvetica", fontSize: 10, color: "#0f172a", padding: 40 },
-  accentBar: { height: 6, backgroundColor: "#9333ea", marginBottom: 24, borderRadius: 3 },
-  brandRow: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
-  brand: { fontSize: 20, fontWeight: 700, color: "#581c87", marginBottom: 4 },
-  brandImage: { width: 112, height: 34, objectFit: "contain" },
-  tag: { fontSize: 9, color: "#64748b", marginBottom: 28 },
-  h1: { fontSize: 16, fontWeight: 700, marginBottom: 16, color: "#0f172a" },
-  block: { marginBottom: 14 },
-  blockTitle: { fontSize: 8, color: "#64748b", textTransform: "uppercase", marginBottom: 4 },
-  blockBody: { fontSize: 11, color: "#0f172a" },
-  table: { marginTop: 20, borderWidth: 1, borderColor: "#e9d5ff", borderRadius: 8 },
-  tableHead: { flexDirection: "row", backgroundColor: "#faf5ff", paddingVertical: 8, paddingHorizontal: 12 },
-  tableRow: { flexDirection: "row", paddingVertical: 10, paddingHorizontal: 12, borderTopWidth: 1, borderTopColor: "#f3e8ff" },
-  colDesc: { width: "62%", fontSize: 10 },
-  colAmt: { width: "38%", fontSize: 10, textAlign: "right", fontWeight: 700 },
-  totalRow: { flexDirection: "row", justifyContent: "flex-end", marginTop: 16, paddingTop: 10, borderTopWidth: 1.5, borderTopColor: "#9333ea" },
-  totalLabel: { fontSize: 11, color: "#64748b", marginRight: 12 },
-  totalValue: { fontSize: 14, fontWeight: 700, color: "#581c87" },
-  foot: { marginTop: 36, fontSize: 8, color: "#94a3b8", lineHeight: 1.4 },
-});
-
-export type InvoicePdfInput = {
-  invoiceNo: string;
-  issuedDate: string;
-  billedToEmail: string;
-  description: string;
-  amountUsdc: string;
-};
-
-export function BlinkInvoicePdfDocument({
-  invoiceNo,
-  issuedDate,
-  billedToEmail,
-  description,
-  amountUsdc,
-  logoPngDataUri,
-}: InvoicePdfInput & { logoPngDataUri?: string }) {
-  return (
-    <Document>
-      <Page size="A4" style={invoiceStyles.page}>
-        <View style={invoiceStyles.accentBar} />
-        <View style={invoiceStyles.brandRow}>
-          {logoPngDataUri ? (
-            <PdfImage src={logoPngDataUri} style={invoiceStyles.brandImage} />
-          ) : (
-            <Text style={invoiceStyles.brand}>Blinkr</Text>
-          )}
-        </View>
-        <Text style={invoiceStyles.tag}>Solana-native payroll · USDC</Text>
-        <Text style={invoiceStyles.h1}>Invoice</Text>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 20 }}>
-          <View style={invoiceStyles.block}>
-            <Text style={invoiceStyles.blockTitle}>Invoice #</Text>
-            <Text style={invoiceStyles.blockBody}>{invoiceNo}</Text>
-          </View>
-          <View style={invoiceStyles.block}>
-            <Text style={invoiceStyles.blockTitle}>Date</Text>
-            <Text style={invoiceStyles.blockBody}>{issuedDate}</Text>
-          </View>
-        </View>
-        <View style={invoiceStyles.block}>
-          <Text style={invoiceStyles.blockTitle}>Billed to</Text>
-          <Text style={invoiceStyles.blockBody}>{billedToEmail}</Text>
-        </View>
-        <View style={invoiceStyles.table}>
-          <View style={invoiceStyles.tableHead}>
-            <Text style={invoiceStyles.colDesc}>Description</Text>
-            <Text style={invoiceStyles.colAmt}>Amount</Text>
-          </View>
-          <View style={invoiceStyles.tableRow}>
-            <Text style={invoiceStyles.colDesc}>{description}</Text>
-            <Text style={invoiceStyles.colAmt}>{amountUsdc} USDC</Text>
-          </View>
-        </View>
-        <View style={invoiceStyles.totalRow}>
-          <Text style={invoiceStyles.totalLabel}>Total due</Text>
-          <Text style={invoiceStyles.totalValue}>{amountUsdc} USDC</Text>
-        </View>
-        <Text style={invoiceStyles.foot}>
-          Thank you for using Blinkr. This invoice was generated from your employer dashboard and is
-          suitable for internal records. Settlement is handled separately on-chain.
-        </Text>
-      </Page>
-    </Document>
-  );
-}
-
 export async function downloadBlinkReceiptPdf(blink: BlinkRow) {
   const logoPngDataUri = await fetchBlinkrLogoPngDataUri();
   const blob = await pdf(<BlinkReceiptPdfDocument blink={blink} logoPngDataUri={logoPngDataUri} />).toBlob();
@@ -215,17 +127,6 @@ export async function downloadBlinkReceiptPdf(blink: BlinkRow) {
   const a = document.createElement("a");
   a.href = url;
   a.download = `blinkr-receipt-${blink.id.slice(0, 12)}.pdf`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-export async function downloadBlinkInvoicePdf(input: InvoicePdfInput) {
-  const logoPngDataUri = await fetchBlinkrLogoPngDataUri();
-  const blob = await pdf(<BlinkInvoicePdfDocument {...input} logoPngDataUri={logoPngDataUri} />).toBlob();
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `blinkr-invoice-${input.invoiceNo.replace(/[^\w-]+/g, "_")}.pdf`;
   a.click();
   URL.revokeObjectURL(url);
 }

@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Download, FileText } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Download } from "lucide-react";
 import type { BlinkRow } from "@/components/dashboard/EmployerSession";
 import { useEmployerSession } from "@/components/dashboard/EmployerSession";
 import { FundBlinkButton } from "@/components/dashboard/FundBlinkButton";
 import { dicebearInitialsUrl, formatBlinkDateTime, truncateMiddle } from "@/lib/blinkDisplayFormat";
-import { downloadBlinkInvoicePdf, downloadBlinkReceiptPdf } from "@/lib/pdf/blinkPdfDocuments";
+import { downloadBlinkReceiptPdf } from "@/lib/pdf/blinkPdfDocuments";
 import { solanaAddressExplorerUrl, solanaTxExplorerUrl } from "@/lib/explorer";
 
 const STATUS_BADGE: Record<string, string> = {
@@ -33,155 +33,9 @@ function sortBlinksDesc(blinks: BlinkRow[]): BlinkRow[] {
   return [...blinks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
-function InvoiceModal({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
-  const [billedTo, setBilledTo] = useState("");
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  const submit = async () => {
-    const email = billedTo.trim();
-    const desc = description.trim();
-    const amt = amount.trim();
-    if (!email || !desc || !amt) return;
-    setBusy(true);
-    try {
-      const invoiceNo = `INV-${Date.now().toString(36).toUpperCase()}`;
-      const issued = new Date();
-      const { dateLine, timeLine } = formatBlinkDateTime(issued.toISOString());
-      await downloadBlinkInvoicePdf({
-        invoiceNo,
-        issuedDate: `${dateLine} · ${timeLine}`,
-        billedToEmail: email,
-        description: desc,
-        amountUsdc: amt,
-      });
-      onClose();
-      setBilledTo("");
-      setDescription("");
-      setAmount("");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  if (!open) return null;
-
-  return (
-    <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-900/50 p-4 sm:items-center"
-      role="presentation"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="invoice-modal-title"
-        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl font-[var(--font-poppins)]"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 id="invoice-modal-title" className="text-lg font-bold tracking-tight text-slate-900">
-              Create invoice
-            </h2>
-            <p className="mt-1 text-sm text-slate-600">Generate a Blinkr-branded PDF for your records.</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg px-2 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100"
-          >
-            Close
-          </button>
-        </div>
-        <div className="mt-6 space-y-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="inv-to">
-              Billed to (email)
-            </label>
-            <input
-              id="inv-to"
-              type="email"
-              value={billedTo}
-              onChange={(e) => setBilledTo(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none ring-purple-500/0 transition-shadow focus:border-purple-500 focus:ring-2 focus:ring-purple-500/25"
-              placeholder="client@company.com"
-              autoComplete="email"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="inv-desc">
-              Service description
-            </label>
-            <input
-              id="inv-desc"
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/25"
-              placeholder="e.g. March sprint — payroll facilitation"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="inv-amt">
-              Amount (USDC)
-            </label>
-            <input
-              id="inv-amt"
-              type="text"
-              inputMode="decimal"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/25"
-              placeholder="1250.00"
-            />
-          </div>
-        </div>
-        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            disabled={busy || !billedTo.trim() || !description.trim() || !amount.trim()}
-            onClick={() => void submit()}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <FileText className="h-4 w-4" aria-hidden />
-            {busy ? "Building PDF…" : "Download invoice PDF"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function BlinkHistoryTable() {
   const { blinks } = useEmployerSession();
   const baseUrl = (process.env.NEXT_PUBLIC_URL ?? "").replace(/\/$/, "");
-  const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const rows = useMemo(() => sortBlinksDesc(blinks), [blinks]);
@@ -201,24 +55,12 @@ export function BlinkHistoryTable() {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm font-[var(--font-poppins)]">
-      <div className="flex flex-col gap-4 border-b border-slate-100 px-4 py-6 sm:flex-row sm:items-start sm:justify-between sm:px-6">
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight text-slate-900">Payment History</h2>
-          <p className="mt-1 max-w-2xl text-sm text-slate-600">
-            Manage your recent payments. Fund pending transactions to activate them for your contractors.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setInvoiceOpen(true)}
-          className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-800 shadow-sm transition-colors hover:bg-purple-100"
-        >
-          <FileText className="h-4 w-4" aria-hidden />
-          Create invoice
-        </button>
+      <div className="border-b border-slate-100 px-4 py-6 sm:px-6">
+        <h2 className="text-xl font-semibold tracking-tight text-slate-900">Payment History</h2>
+        <p className="mt-1 max-w-2xl text-sm text-slate-600">
+          Manage your recent payments. Fund pending transactions to activate them for your contractors.
+        </p>
       </div>
-
-      <InvoiceModal open={invoiceOpen} onClose={() => setInvoiceOpen(false)} />
 
       {blinks.length === 0 ? (
         <div className="px-4 py-16 text-center sm:px-6">
