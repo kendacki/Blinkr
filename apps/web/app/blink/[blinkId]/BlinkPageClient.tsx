@@ -205,6 +205,21 @@ async function readJson<T>(res: Response): Promise<T> {
   return body as T;
 }
 
+/** Matches marketing `SiteHeader` logo placement for every blink claim URL. */
+function BlinkClaimShellHeader({ variant }: { variant: "solid" | "glass" }) {
+  const bar =
+    variant === "glass"
+      ? "border-b border-slate-200/70 bg-white/90 backdrop-blur-xl"
+      : "border-b border-slate-200/70 bg-white";
+  return (
+    <header className={bar}>
+      <div className="mx-auto flex max-w-6xl items-center justify-start px-4 py-3 sm:px-6 lg:px-8">
+        <LogoMark href="/" size={40} priority />
+      </div>
+    </header>
+  );
+}
+
 /** Dedupe React Strict Mode double-invoke for the same Stripe return URL. */
 const stripeCompleteInflight = new Set<string>();
 
@@ -412,11 +427,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   if (loadError && !meta) {
     return (
       <div className="min-h-screen bg-slate-50 font-[var(--font-poppins)] text-slate-900">
-        <header className="border-b border-slate-200/70 bg-white">
-          <div className="mx-auto flex max-w-5xl items-center justify-center px-4 py-4 sm:px-6">
-            <LogoMark href="/" size={40} priority />
-          </div>
-        </header>
+        <BlinkClaimShellHeader variant="solid" />
         <main className="mx-auto max-w-lg px-4 py-16 text-center">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             This payment link is unavailable
@@ -430,11 +441,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   if (!meta) {
     return (
       <div className="min-h-screen bg-slate-50 font-[var(--font-poppins)] text-slate-900">
-        <header className="border-b border-slate-200/70 bg-white">
-          <div className="mx-auto flex max-w-5xl items-center justify-center px-4 py-4 sm:px-6">
-            <LogoMark href="/" size={40} priority />
-          </div>
-        </header>
+        <BlinkClaimShellHeader variant="solid" />
         <main
           className="mx-auto flex max-w-lg items-center justify-center gap-3 px-4 py-16 text-sm text-slate-600"
           role="status"
@@ -457,11 +464,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
 
   return (
     <div className="min-h-screen bg-slate-50 font-[var(--font-poppins)] text-slate-900">
-      <header className="border-b border-slate-200/70 bg-white/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-5xl items-center justify-center px-4 py-4 sm:px-6">
-          <LogoMark href="/" size={40} priority />
-        </div>
-      </header>
+      <BlinkClaimShellHeader variant="glass" />
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:py-12">
         <div className="grid gap-6 md:grid-cols-2 md:items-start">
@@ -479,10 +482,6 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                 Your payment is ready!
               </h1>
-              <p className="mt-1 text-sm text-slate-600">
-                From{" "}
-                <span className="font-semibold text-slate-800">{meta.employerName}</span>
-              </p>
 
               <div className="mt-6 rounded-2xl bg-slate-50 px-5 py-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
