@@ -617,7 +617,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                   ) : codeSent ? (
                     "Resend code"
                   ) : (
-                    "Email me a code"
+                    "Request Code"
                   )}
                 </button>
               </section>
