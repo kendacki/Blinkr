@@ -16,19 +16,45 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const siteUrlRaw =
-  process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000";
-const siteUrl = siteUrlRaw.replace(/\/$/, "");
-const metadataBase = (() => {
+function normalizeToOrigin(raw: string | undefined): URL | null {
+  if (!raw?.trim()) return null;
+  const trimmed = raw.trim().replace(/\/$/, "");
   try {
-    return new URL(siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`);
+    const withProto =
+      trimmed.startsWith("http://") || trimmed.startsWith("https://") ? trimmed : `https://${trimmed}`;
+    return new URL(withProto);
   } catch {
-    return new URL("http://localhost:3000");
+    return null;
   }
-})();
+}
 
-/** Dedicated social preview asset (full hero screenshot) for Open Graph / Twitter cards. */
-const defaultOgImage = "/images/blinkr-og-share.png";
+/**
+ * Crawlers require absolute og:image / og:url. Prefer env, then Vercel production URL,
+ * then public marketing domain when running on Vercel without mis-set env (common OG bug).
+ */
+function resolveSiteOrigin(): URL {
+  const fromEnv = [
+    normalizeToOrigin(process.env.NEXT_PUBLIC_SITE_URL),
+    normalizeToOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL),
+    normalizeToOrigin(process.env.NEXT_PUBLIC_URL),
+  ];
+  for (const u of fromEnv) {
+    if (u) return u;
+  }
+  if (process.env.VERCEL) {
+    const marketing = normalizeToOrigin("https://blinkr.fun");
+    if (marketing) return marketing;
+    return normalizeToOrigin(`https://${process.env.VERCEL_URL}`) ?? new URL("http://localhost:3000");
+  }
+  return new URL("http://localhost:3000");
+}
+
+const siteOrigin = resolveSiteOrigin();
+const metadataBase = siteOrigin;
+const siteUrl = siteOrigin.href.replace(/\/$/, "");
+
+const ogImagePath = "/images/blinkr-og-share.png";
+const absoluteOgImageUrl = new URL(ogImagePath, siteOrigin).href;
 
 const shareDescription =
   "Fund. Verify.  Settle globally. Meet Blinkr, the Solana-first payroll stack for modern teams.";
@@ -53,7 +79,7 @@ export const metadata: Metadata = {
     siteName: "Blinkr",
     images: [
       {
-        url: defaultOgImage,
+        url: absoluteOgImageUrl,
         alt: "Blinkr — Pay your global team instantly. USDC payroll on Solana.",
       },
     ],
@@ -63,7 +89,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Blinkr — Solana-native cross-border payroll",
     description: shareDescription,
-    images: [defaultOgImage],
+    images: [absoluteOgImageUrl],
   },
 };
 
