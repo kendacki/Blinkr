@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { Wand2 } from "lucide-react";
 import { LogoMark } from "@/components/marketing/LogoMark";
+import { DashboardDemoProvider, useDashboardDemo } from "@/components/dashboard/DashboardDemoContext";
 import { EmployerSessionProvider, useEmployerSession } from "@/components/dashboard/EmployerSession";
 
 function DashboardChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { jwt, balance, loading, connectPhantom, disconnect, refresh } = useEmployerSession();
+  const { appendMockTransactions } = useDashboardDemo();
 
   const handleDisconnect = () => {
     disconnect();
@@ -43,6 +46,15 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
                   <span className="rounded-full bg-purple-100 px-3 py-1.5 text-xs font-semibold text-purple-700">
                     {balance ?? "—"} USDC
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => appendMockTransactions(5)}
+                    title="Append demo rows to Payment History (not saved to Blinkr)"
+                    className="inline-flex items-center justify-center rounded-full border border-dashed border-purple-300 bg-purple-50/80 p-2 text-purple-700 transition-colors hover:bg-purple-100"
+                    aria-label="Populate mock data"
+                  >
+                    <Wand2 className="h-4 w-4" aria-hidden />
+                  </button>
                   <button
                     type="button"
                     onClick={() => void refresh()}
@@ -86,7 +98,9 @@ function DashboardChrome({ children }: { children: React.ReactNode }) {
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <EmployerSessionProvider>
-      <DashboardChrome>{children}</DashboardChrome>
+      <DashboardDemoProvider>
+        <DashboardChrome>{children}</DashboardChrome>
+      </DashboardDemoProvider>
     </EmployerSessionProvider>
   );
 }
