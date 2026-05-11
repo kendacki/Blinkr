@@ -90,7 +90,7 @@ function formatMonthlyChartYAxisTick(value: number): string {
 
 function formatUsdTooltip(value: number | undefined, name: string) {
   const v = Number(value) || 0;
-  const label = name.includes("Funded") ? "Funded" : "Pending queue";
+  const label = name.includes("Funded") ? "Funded" : "Not funded yet";
   return [
     new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -273,7 +273,7 @@ function MonthlyVolumeChart({ filteredData }: { filteredData: MonthlyVolumePoint
               />
               <Bar
                 dataKey="previous"
-                name="Pending (USDC)"
+                name="Not funded yet (USDC)"
                 minPointSize={4}
                 radius={[4, 4, 0, 0]}
                 fill={PURPLE_SOFT}

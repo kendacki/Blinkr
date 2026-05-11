@@ -60,9 +60,14 @@ export function mapBlinkToTransaction(b: BlinkRow): DashboardTransaction {
   };
 }
 
-/** Schema has no `FUNDED` — treat funded as escrow transaction present on-chain. */
+/**
+ * Schema has no `FUNDED` — treat as funded when escrow landed on-chain, or when payout
+ * progressed past escrow (OPENED-only rows without a sig still count as not funded).
+ */
 export function isFunded(tx: DashboardTransaction): boolean {
-  return Boolean(tx.escrowTxSig);
+  if (Boolean(tx.escrowTxSig)) return true;
+  if (tx.status === "CLAIMED" || tx.status === "OFFRAMPED") return true;
+  return false;
 }
 
 export function isPendingAwaitingFund(tx: DashboardTransaction): boolean {
@@ -146,10 +151,14 @@ export function uniqueContractorCount(txs: DashboardTransaction[]): number {
   return new Set(txs.map((t) => t.contractorEmail.toLowerCase())).size;
 }
 
-export function donutFundedPercent(funded: Decimal, pendingAwaiting: Decimal): number {
-  const denom = funded.plus(pendingAwaiting);
-  if (denom.isZero()) return 0;
-  return funded.div(denom).times(100).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
+/** Funded USDC as a percent of total in-range payroll volume (all Blink amounts). */
+export function fundedPercentOfTotalVolume(funded: Decimal, totalPayroll: Decimal): number {
+  if (totalPayroll.isZero()) return 0;
+  return funded
+    .div(totalPayroll)
+    .times(100)
+    .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
+    .toNumber();
 }
 
 function monthKey(d: Date): string {
@@ -184,16 +193,18 @@ export function buildMonthlyVolumePoints(
   if (months.length === 0) return [];
 
   const byMonthFunded = new Map<string, Decimal>();
-  const byMonthPending = new Map<string, Decimal>();
+  const byMonthNotFunded = new Map<string, Decimal>();
 
   for (const tx of filtered) {
     const d = new Date(tx.createdAt);
     const key = monthKey(d);
     if (isFunded(tx)) {
       byMonthFunded.set(key, (byMonthFunded.get(key) ?? new Decimal(0)).plus(tx.amountUsdc));
-    }
-    if (isPendingAwaitingFund(tx)) {
-      byMonthPending.set(key, (byMonthPending.get(key) ?? new Decimal(0)).plus(tx.amountUsdc));
+    } else {
+      byMonthNotFunded.set(
+        key,
+        (byMonthNotFunded.get(key) ?? new Decimal(0)).plus(tx.amountUsdc)
+      );
     }
   }
 
@@ -202,7 +213,7 @@ export function buildMonthlyVolumePoints(
     const funded = (byMonthFunded.get(key) ?? new Decimal(0))
       .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
       .toNumber();
-    const pending = (byMonthPending.get(key) ?? new Decimal(0))
+    const pending = (byMonthNotFunded.get(key) ?? new Decimal(0))
       .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
       .toNumber();
     // Unique label per bucket (avoids duplicate "Jan" across years breaking Recharts categories)

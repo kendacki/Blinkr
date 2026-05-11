@@ -11,14 +11,15 @@ import {
   buildWeeklyActivity,
   countPendingAwaitingFund,
   defaultDateRange,
-  donutFundedPercent,
   filterTransactionsByRange,
   formatRangeLabel,
   formatUsd2,
+  fundedPercentOfTotalVolume,
+  isFunded,
   mapBlinkToTransaction,
+  sumAmount,
   totalFundedVolume,
   totalPendingEscrowAmount,
-  totalPendingAwaitingVolume,
   transactionsToCsv,
   uniqueContractorCount,
   type DashboardTransaction,
@@ -129,13 +130,13 @@ export function useDashboardData(): UseDashboardDataResult {
 
   const rangeLabel = useMemo(() => formatRangeLabel(dateRange), [dateRange]);
 
+  const totalPayrollVol = useMemo(
+    () => sumAmount(filteredTransactions),
+    [filteredTransactions]
+  );
   const fundedVol = useMemo(() => totalFundedVolume(filteredTransactions), [filteredTransactions]);
   const pendingVol = useMemo(
     () => totalPendingEscrowAmount(filteredTransactions),
-    [filteredTransactions]
-  );
-  const pendingAwaitingVol = useMemo(
-    () => totalPendingAwaitingVolume(filteredTransactions),
     [filteredTransactions]
   );
   const pendingAwaitingCount = useMemo(
@@ -147,7 +148,7 @@ export function useDashboardData(): UseDashboardDataResult {
     [filteredTransactions]
   );
   const fundedCount = useMemo(
-    () => filteredTransactions.filter((t) => Boolean(t.escrowTxSig)).length,
+    () => filteredTransactions.filter(isFunded).length,
     [filteredTransactions]
   );
 
@@ -179,16 +180,18 @@ export function useDashboardData(): UseDashboardDataResult {
   );
 
   const donutPct = useMemo(
-    () => donutFundedPercent(fundedVol, pendingAwaitingVol),
-    [fundedVol, pendingAwaitingVol]
+    () => fundedPercentOfTotalVolume(fundedVol, totalPayrollVol),
+    [fundedVol, totalPayrollVol]
   );
 
   const kpis = useMemo(
     () => ({
       volume: {
-        value: formatUsd2(fundedVol),
+        value: formatUsd2(totalPayrollVol),
         donutPct,
-        delta: `${fundedCount} funded payment${fundedCount === 1 ? "" : "s"}`,
+        delta: `${fundedCount} funded of ${filteredTransactions.length} payment${
+          filteredTransactions.length === 1 ? "" : "s"
+        }`,
         spark: [],
       },
       pending: {
@@ -207,7 +210,7 @@ export function useDashboardData(): UseDashboardDataResult {
       donutPct,
       filteredTransactions.length,
       fundedCount,
-      fundedVol,
+      totalPayrollVol,
       pendingAwaitingCount,
       pendingVol,
       sparkContractors,
