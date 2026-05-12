@@ -14,10 +14,7 @@ package-lock.json
 **/package-lock.json
 
 # Env and secrets
-.env
-.env.*
 !.env.example
-**/.env
 **/.env.local
 **/.env.*.local
 !**/.env.example
@@ -34,7 +31,6 @@ coverage
 
 # IDE / OS
 .idea
-.vscode
 Thumbs.db
 
 # Deploy / certs
@@ -45,3 +41,5 @@ temp_interactive_push.bat
 AGENTS.md
 build-context.md
 CONTRIBUTING.md
+branch_structure.json
+config.bat

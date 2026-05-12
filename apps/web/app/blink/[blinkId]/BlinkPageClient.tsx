@@ -921,12 +921,65 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                       "Stripe simulation (bank payout)"
                     )}
                   </button>
-                  <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-4">
+                  <div className="relative mt-0 overflow-hidden rounded-3xl border border-purple-200/90 bg-gradient-to-br from-purple-50 via-white to-violet-50/70 p-5 shadow-[0_14px_44px_-18px_rgba(109,40,217,0.35)] ring-1 ring-purple-100/90 sm:p-6">
+                    <div
+                      className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-purple-300/25 blur-3xl"
+                      aria-hidden
+                    />
+                    <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-lg font-bold tracking-tight text-slate-900">Send to Solana</p>
+                        <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                          Move your full USDC balance to any wallet on this cluster — Phantom,
+                          Backpack, or a pasted address.
+                        </p>
+                        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-purple-700/85">
+                          One transfer · Entire balance
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 justify-center sm:pt-1" aria-hidden="true">
+                        <svg
+                          className="h-16 w-24 text-purple-400/95 sm:h-[4.5rem] sm:w-28"
+                          viewBox="0 0 112 80"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="26"
+                            cy="42"
+                            r="14"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="M44 42h46"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="M78 30l16 12-16 12"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M18 18c8-4 18-4 26 0M22 58c6 3 14 4 22 2"
+                            stroke="currentColor"
+                            strokeWidth="1.2"
+                            strokeLinecap="round"
+                            opacity={0.55}
+                          />
+                        </svg>
+                      </div>
+                    </div>
                     <label
-                      className="block text-xs font-semibold uppercase tracking-wide text-slate-500"
+                      className="relative mt-5 block text-xs font-semibold uppercase tracking-wide text-purple-900/75"
                       htmlFor="sol-withdraw-dest"
                     >
-                      Send full balance to Solana wallet
+                      Destination address
                     </label>
                     <input
                       id="sol-withdraw-dest"
@@ -936,34 +989,47 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                       value={walletDestInput}
                       onChange={(e) => setWalletDestInput(e.target.value)}
                       placeholder="Paste recipient wallet address"
-                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono text-xs text-slate-900 outline-none transition-shadow focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+                      className="mt-2 w-full rounded-2xl border border-purple-100/90 bg-white/95 px-4 py-3.5 font-mono text-sm text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] outline-none ring-0 transition-[border-color,box-shadow] placeholder:text-slate-400 focus:border-purple-400 focus:ring-4 focus:ring-purple-500/15"
                     />
-                    <button
-                      type="button"
-                      disabled={
-                        busy ||
-                        !sessionToken ||
-                        !walletDestInput.trim() ||
-                        balanceLoading ||
-                        !walletBalance ||
-                        walletBalance.balanceUsdc === "0"
-                      }
-                      onClick={() => void runSolanaWithdraw()}
-                      className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-purple-200 bg-white py-3 text-sm font-semibold text-purple-800 transition-all hover:-translate-y-px hover:border-purple-400 hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
-                    >
-                      {busy ? (
-                        <>
+                    <div className="relative mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-purple-100/90 pt-4">
+                      <p className="max-w-md flex-1 text-[11px] leading-relaxed text-slate-600">
+                        Sends the entire USDC balance of your Blinkr wallet in one transaction. Ensure
+                        the address accepts USDC for this cluster (same mint as this payment).
+                      </p>
+                      <button
+                        type="button"
+                        disabled={
+                          busy ||
+                          !sessionToken ||
+                          !walletDestInput.trim() ||
+                          balanceLoading ||
+                          !walletBalance ||
+                          walletBalance.balanceUsdc === "0"
+                        }
+                        onClick={() => void runSolanaWithdraw()}
+                        className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-purple-500 text-white shadow-lg shadow-purple-600/25 transition-all hover:-translate-y-0.5 hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+                        aria-label="Send full USDC balance to this address"
+                      >
+                        {busy ? (
                           <ButtonSpinner />
-                          Sending…
-                        </>
-                      ) : (
-                        "Send USDC to this address"
-                      )}
-                    </button>
-                    <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-                      Sends the entire USDC balance of your Blinkr wallet in one transaction. Ensure
-                      the address accepts USDC for this cluster (same mint as this payment).
-                    </p>
+                        ) : (
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            className="h-5 w-5"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            aria-hidden
+                          >
+                            <path
+                              d="M5 12h12M13 6l6 6-6 6"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </section>
