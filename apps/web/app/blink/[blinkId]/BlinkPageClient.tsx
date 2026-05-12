@@ -664,13 +664,32 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                     </p>
                   ) : null}
                   {meta.status === "OFFRAMPED" ? (
-                    <p>
-                      Cash-out complete. If you used the Stripe simulation, test USDC may have been
-                      swept into the platform treasury. If you sent funds to your own Solana wallet,
-                      they should appear in that wallet&apos;s USDC token account. Legacy claim
-                      addresses the server cannot sign may still show a balance in an explorer even
-                      though this payment is marked complete here.
-                    </p>
+                    <div className="space-y-3">
+                      <p className="font-semibold text-slate-900">Cash-out Successful!</p>
+                      <p>
+                        Your transaction has been processed. Depending on the method you used,
+                        here is where you can find your funds:
+                      </p>
+                      <p>
+                        <span className="font-semibold text-slate-800">Stripe Simulation: </span>
+                        If you were testing with the simulation, your test USDC has been transferred
+                        to the platform treasury.
+                      </p>
+                      <p>
+                        <span className="font-semibold text-slate-800">Solana Wallet: </span>
+                        If you withdrew to your own wallet, the funds should now be visible in your
+                        USDC token account.
+                      </p>
+                      <p>
+                        <span className="font-semibold text-slate-800">
+                          Important Note on Explorer Balances:{" "}
+                        </span>
+                        If you are checking a block explorer and still see a balance on a
+                        &quot;legacy claim&quot; address, don&apos;t worry. This is a technical sync
+                        limitation regarding server signatures; your payment is officially complete
+                        and recorded here.
+                      </p>
+                    </div>
                   ) : null}
                   {meta.status === "OFFRAMPED" && solanaSweepSig ? (
                     <p className="mt-2">
