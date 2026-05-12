@@ -26,11 +26,18 @@ export async function POST(
     if (!blink) {
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
-    if (blink.status !== "PENDING") {
+    if (blink.escrowTxSig) {
       throw new ApiError(
         400,
         "INVALID_STATE",
-        "Fund transaction is only available while Blink is PENDING"
+        "This Blink already has a recorded fund transaction"
+      );
+    }
+    if (blink.status !== "PENDING" && blink.status !== "OPENED") {
+      throw new ApiError(
+        400,
+        "INVALID_STATE",
+        "Fund is only available while the Blink is pending or opened and not yet funded on-chain"
       );
     }
 
@@ -47,6 +54,15 @@ export async function POST(
     const [escrowPda] = getEscrowPDA(programId, employer, blinkBytes);
     if (blink.escrowPDA && escrowPda.toBase58() !== blink.escrowPDA) {
       throw new ApiError(500, "CONFIG", "Escrow PDA mismatch; contact support");
+    }
+
+    const existingEscrow = await connection.getAccountInfo(escrowPda, "confirmed");
+    if (existingEscrow && existingEscrow.owner.equals(programId)) {
+      throw new ApiError(
+        400,
+        "ESCROW_EXISTS",
+        "Escrow already exists on-chain. If your dashboard does not show it as funded, use confirm escrow with your transaction signature or contact support."
+      );
     }
 
     const tokenProgram = await getMintOwnerProgram(connection, usdcMint);

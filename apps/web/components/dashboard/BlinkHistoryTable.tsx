@@ -82,7 +82,8 @@ export function BlinkHistoryTable() {
           {rows.map((b) => {
             const { dateLine, timeLine } = formatBlinkDateTime(b.createdAt);
             const avatarSrc = dicebearInitialsUrl(b.contractorEmail);
-            const canFund = b.status === "PENDING" && !b.escrowTxSig;
+            const canFund =
+              (b.status === "PENDING" || b.status === "OPENED") && !b.escrowTxSig;
             const linkClass =
               "block w-full text-left text-xs font-medium text-slate-600 underline-offset-2 transition-colors hover:text-purple-700 hover:underline lg:w-auto lg:text-right";
             const linkPrimary = `${linkClass} text-purple-700 hover:text-purple-800`;
