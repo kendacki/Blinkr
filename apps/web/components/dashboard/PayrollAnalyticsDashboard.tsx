@@ -201,29 +201,6 @@ function MonthlyVolumeChart({ filteredData }: { filteredData: MonthlyVolumePoint
       variants={itemVariants}
       className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm sm:p-6"
     >
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 rounded-full bg-purple-500 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-purple-600"
-        >
-          <svg viewBox="0 0 20 20" fill="none" className="h-3.5 w-3.5" aria-hidden="true">
-            <path
-              d="M10 3l1.7 4.3L16 9l-4.3 1.7L10 15l-1.7-4.3L4 9l4.3-1.7L10 3z"
-              fill="currentColor"
-            />
-          </svg>
-          Assistant
-        </button>
-      </div>
-
-      <div className="mt-4 rounded-full border border-purple-100 bg-purple-50/40 px-4 py-2 text-sm text-slate-700">
-        <p>
-          Display the <span className="font-medium text-purple-600">earnings report</span> for the
-          present quarter and produce a{" "}
-          <span className="font-medium text-purple-600">financial statement</span>.
-        </p>
-      </div>
-
       <div className="mt-5 h-64 w-full sm:h-72">
         {filteredData.length === 0 ? (
           <div className="flex h-full min-h-[14rem] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 text-center text-sm text-gray-500">
