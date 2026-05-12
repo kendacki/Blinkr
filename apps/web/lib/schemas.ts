@@ -43,3 +43,9 @@ export const stripeOfframpCompleteBodySchema = z.object({
   blinkId: z.string().min(1),
   sessionId: z.string().min(1),
 });
+
+/** Custodial smart wallet → external Solana wallet (USDC SPL transfer, relayer-paid fees). */
+export const solanaOfframpTransferBodySchema = z.object({
+  blinkId: z.string().min(1),
+  destinationAddress: z.string().min(32).max(64),
+});

@@ -35,3 +35,40 @@ export function contractorWalletMatchesDerivation(
     return false;
   }
 }
+
+/** Blink row stores the claim wallet; derivation must use the same email source(s) as verify-code / credential. */
+export type BlinkCustodialWalletLookup = {
+  walletAddress: string | null;
+  contractorEmail: string;
+  credential: { email: string } | null;
+};
+
+/**
+ * Returns the custodial keypair that controls `blink.walletAddress`, or null if
+ * no configured email derives to that pubkey (true legacy random wallets).
+ */
+export function resolveCustodialSignerForBlinkWallet(
+  blink: BlinkCustodialWalletLookup
+): Keypair | null {
+  const target = blink.walletAddress;
+  if (!target) {
+    return null;
+  }
+  const emails = new Set<string>();
+  const credEmail = blink.credential?.email?.trim().toLowerCase();
+  if (credEmail) {
+    emails.add(credEmail);
+  }
+  emails.add(blink.contractorEmail.trim().toLowerCase());
+  for (const emailNorm of emails) {
+    try {
+      const kp = deriveContractorWalletKeypair(emailNorm);
+      if (kp.publicKey.toBase58() === target) {
+        return kp;
+      }
+    } catch {
+      // Misconfigured secret or bad email — try other email if any
+    }
+  }
+  return null;
+}

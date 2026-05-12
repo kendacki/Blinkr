@@ -22,13 +22,6 @@ export async function migrateCredentialToDerivedWalletIfSafe(
     return false;
   }
 
-  const anyClaimed = await prisma.blink.findFirst({
-    where: { credentialId, claimTxSig: { not: null } },
-  });
-  if (anyClaimed) {
-    return false;
-  }
-
   await prisma.$transaction([
     prisma.credential.update({
       where: { id: credentialId },

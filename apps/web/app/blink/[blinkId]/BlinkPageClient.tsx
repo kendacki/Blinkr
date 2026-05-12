@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LogoMark } from "@/components/marketing/LogoMark";
 import { solanaAddressExplorerUrl, solanaTxExplorerUrl } from "@/lib/explorer";
+import { truncateMiddle } from "@/lib/blinkDisplayFormat";
 
 const STATUS_ORDER = ["PENDING", "OPENED", "CLAIMED", "OFFRAMPED"] as const;
 type OrderedStatus = (typeof STATUS_ORDER)[number];
@@ -233,6 +234,14 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [claimSig, setClaimSig] = useState<string | null>(null);
   const [claimModalDismissed, setClaimModalDismissed] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<{
+    walletAddress: string;
+    balanceUsdc: string;
+  } | null>(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
+  const [walletDestInput, setWalletDestInput] = useState("");
+  const [solanaSweepSig, setSolanaSweepSig] = useState<string | null>(null);
 
   const explorerEscrow = useMemo(
     () => (meta?.escrowPDA ? solanaAddressExplorerUrl(meta.escrowPDA) : null),
@@ -250,6 +259,41 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   useEffect(() => {
     void refreshMeta().catch((e: Error) => setLoadError(e.message));
   }, [refreshMeta]);
+
+  useEffect(() => {
+    setSolanaSweepSig(null);
+    setWalletBalance(null);
+    setBalanceError(null);
+    setWalletDestInput("");
+  }, [blinkId]);
+
+  const fetchWalletBalance = useCallback(async () => {
+    if (!sessionToken) {
+      return;
+    }
+    setBalanceLoading(true);
+    setBalanceError(null);
+    try {
+      const res = await fetch(`/api/blinks/${blinkId}/wallet-usdc-balance`, {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${sessionToken}` },
+      });
+      const out = await readJson<{ walletAddress: string; balanceUsdc: string }>(res);
+      setWalletBalance(out);
+    } catch (e) {
+      setWalletBalance(null);
+      setBalanceError(e instanceof Error ? e.message : "Could not load wallet balance");
+    } finally {
+      setBalanceLoading(false);
+    }
+  }, [blinkId, sessionToken]);
+
+  useEffect(() => {
+    if (meta?.status !== "CLAIMED" || !sessionToken) {
+      return;
+    }
+    void fetchWalletBalance();
+  }, [meta?.status, sessionToken, fetchWalletBalance]);
 
   useEffect(() => {
     const t = typeof window !== "undefined" ? window.sessionStorage.getItem(sessionKey(blinkId)) : null;
@@ -454,6 +498,39 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
     }
   };
 
+  const runSolanaWithdraw = async () => {
+    if (!sessionToken) {
+      setActionError("Verify your email with the code first.");
+      return;
+    }
+    const dest = walletDestInput.trim();
+    if (!dest) {
+      setActionError("Enter the Solana wallet address that should receive USDC.");
+      return;
+    }
+    setActionError(null);
+    setBusy(true);
+    try {
+      const res = await fetch("/api/offramp/solana-transfer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({ blinkId, destinationAddress: dest }),
+      });
+      const out = await readJson<{ sweepTxSig: string }>(res);
+      setSolanaSweepSig(out.sweepTxSig);
+      setWalletDestInput("");
+      await refreshMeta();
+      void fetchWalletBalance();
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Could not send USDC");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (loadError && !meta) {
     return (
       <div className="min-h-screen bg-slate-50 font-[var(--font-poppins)] text-slate-900">
@@ -588,10 +665,24 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                   ) : null}
                   {meta.status === "OFFRAMPED" ? (
                     <p>
-                      Simulated bank payout finished. For newer wallets we sweep devnet USDC into
-                      the platform treasury; if this Blink used a legacy claim address we could
-                      not sign on-chain, your USDC may still show at that address in a block
-                      explorer even though this Blink is marked complete here.
+                      Cash-out complete. If you used the Stripe simulation, test USDC may have been
+                      swept into the platform treasury. If you sent funds to your own Solana wallet,
+                      they should appear in that wallet&apos;s USDC token account. Legacy claim
+                      addresses the server cannot sign may still show a balance in an explorer even
+                      though this payment is marked complete here.
+                    </p>
+                  ) : null}
+                  {meta.status === "OFFRAMPED" && solanaSweepSig ? (
+                    <p className="mt-2">
+                      <a
+                        href={solanaTxExplorerUrl(solanaSweepSig)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600 transition-colors hover:text-purple-700"
+                      >
+                        View USDC transfer
+                        <ExternalArrowIcon />
+                      </a>
                     </p>
                   ) : null}
                   {meta.status !== "CLAIMED" && meta.status !== "OFFRAMPED" ? (
@@ -736,32 +827,126 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
             {meta.status === "CLAIMED" ? (
               <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm sm:p-8">
                 <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-                  Withdrawal
+                  Withdraw your USDC
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Test the withdrawal process with Stripe. This clears your test USDC to simulate
-                  a bank transfer (no real funds are moved).
+                  Your Blinkr smart wallet holds the USDC after claim. Simulate a bank payout with
+                  Stripe, or send the full balance to any Solana address (Phantom, Backpack, etc.).
+                  On-chain fees for the transfer are paid by the service.
                 </p>
                 {!sessionToken ? (
                   <p className="mt-3 text-sm text-slate-600">
-                    Verify your email with the code above to enable Stripe Cash-out.
+                    Verify your email with the code above to load your balance and use either
+                    option.
                   </p>
-                ) : null}
-                <button
-                  type="button"
-                  disabled={busy || !sessionToken}
-                  onClick={() => void startStripeCashOut()}
-                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all hover:-translate-y-px hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
-                >
-                  {busy ? (
-                    <>
-                      <ButtonSpinner />
-                      Starting…
-                    </>
-                  ) : (
-                    "Stripe Cash-out"
-                  )}
-                </button>
+                ) : (
+                  <div className="mt-5 rounded-xl border border-slate-100 bg-slate-50 px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Blinkr smart wallet
+                    </p>
+                    {walletBalance ? (
+                      <p className="mt-1 font-mono text-xs text-slate-800 break-all">
+                        {truncateMiddle(walletBalance.walletAddress, 10, 10)}
+                        <a
+                          href={solanaAddressExplorerUrl(walletBalance.walletAddress)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="ml-2 inline-flex items-center gap-0.5 text-[11px] font-semibold text-purple-600 hover:text-purple-700"
+                        >
+                          Explorer
+                          <ExternalArrowIcon />
+                        </a>
+                      </p>
+                    ) : balanceLoading ? (
+                      <p className="mt-2 text-sm text-slate-500">Loading wallet…</p>
+                    ) : (
+                      <p className="mt-2 text-sm text-slate-500">Wallet address loads with balance.</p>
+                    )}
+                    <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-medium text-slate-500">USDC balance</p>
+                        <p className="mt-0.5 text-2xl font-bold tabular-nums tracking-tight text-slate-900">
+                          {balanceLoading ? "…" : walletBalance?.balanceUsdc ?? "—"}
+                          <span className="ml-1.5 text-sm font-semibold text-purple-600">USDC</span>
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        disabled={balanceLoading || !sessionToken}
+                        onClick={() => void fetchWalletBalance()}
+                        className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-purple-300 hover:text-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Refresh
+                      </button>
+                    </div>
+                    {balanceError ? (
+                      <p className="mt-2 text-xs text-red-700" role="alert">
+                        {balanceError}
+                      </p>
+                    ) : null}
+                  </div>
+                )}
+                <div className="mt-6 space-y-3">
+                  <button
+                    type="button"
+                    disabled={busy || !sessionToken}
+                    onClick={() => void startStripeCashOut()}
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all hover:-translate-y-px hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                  >
+                    {busy ? (
+                      <>
+                        <ButtonSpinner />
+                        Starting…
+                      </>
+                    ) : (
+                      "Stripe simulation (bank payout)"
+                    )}
+                  </button>
+                  <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-4">
+                    <label
+                      className="block text-xs font-semibold uppercase tracking-wide text-slate-500"
+                      htmlFor="sol-withdraw-dest"
+                    >
+                      Send full balance to Solana wallet
+                    </label>
+                    <input
+                      id="sol-withdraw-dest"
+                      type="text"
+                      autoComplete="off"
+                      spellCheck={false}
+                      value={walletDestInput}
+                      onChange={(e) => setWalletDestInput(e.target.value)}
+                      placeholder="Paste recipient wallet address"
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono text-xs text-slate-900 outline-none transition-shadow focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+                    />
+                    <button
+                      type="button"
+                      disabled={
+                        busy ||
+                        !sessionToken ||
+                        !walletDestInput.trim() ||
+                        balanceLoading ||
+                        !walletBalance ||
+                        walletBalance.balanceUsdc === "0"
+                      }
+                      onClick={() => void runSolanaWithdraw()}
+                      className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-purple-200 bg-white py-3 text-sm font-semibold text-purple-800 transition-all hover:-translate-y-px hover:border-purple-400 hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                    >
+                      {busy ? (
+                        <>
+                          <ButtonSpinner />
+                          Sending…
+                        </>
+                      ) : (
+                        "Send USDC to this address"
+                      )}
+                    </button>
+                    <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+                      Sends the entire USDC balance of your Blinkr wallet in one transaction. Ensure
+                      the address accepts USDC for this cluster (same mint as this payment).
+                    </p>
+                  </div>
+                </div>
               </section>
             ) : null}
 

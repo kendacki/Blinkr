@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { createBlinkBodySchema, decimalUsdcString } from "@/lib/schemas";
+import {
+  createBlinkBodySchema,
+  decimalUsdcString,
+  solanaOfframpTransferBodySchema,
+} from "@/lib/schemas";
 
 describe("createBlinkBodySchema", () => {
   it("accepts string decimals up to 6dp", () => {
@@ -25,5 +29,16 @@ describe("createBlinkBodySchema", () => {
 describe("decimalUsdcString", () => {
   it("rejects scientific notation", () => {
     expect(decimalUsdcString.safeParse("1e6").success).toBe(false);
+  });
+});
+
+describe("solanaOfframpTransferBodySchema", () => {
+  it("parses blink id and destination", () => {
+    const parsed = solanaOfframpTransferBodySchema.parse({
+      blinkId: "clxyz",
+      destinationAddress: "246VxdVvQkKDk51fxbAYaszJHsqoRQd8vdqbBy7LKjgx",
+    });
+    expect(parsed.blinkId).toBe("clxyz");
+    expect(parsed.destinationAddress).toContain("246Vxd");
   });
 });

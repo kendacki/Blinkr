@@ -28,3 +28,5 @@ process.env.HELIUS_API_KEY = "x";
 process.env.USDC_MINT_ADDRESS = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
 process.env.SQUADS_PROGRAM_ID = "11111111111111111111111111111111";
 process.env.CORS_ALLOWED_ORIGINS = "http://localhost:3000";
+process.env.CONTRACTOR_WALLET_DERIVATION_SECRET =
+  "test-contractor-derivation-secret-32chars";

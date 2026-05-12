@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 
 import { assertBlinkTransition } from "@/lib/blinkStateMachine";
-import { deriveContractorWalletKeypair } from "@/lib/deriveContractorWallet";
+import { resolveCustodialSignerForBlinkWallet } from "@/lib/deriveContractorWallet";
 import { prisma } from "@/lib/prisma";
 import { sweepContractorUsdcToTreasury } from "@/lib/sweepContractorUsdc";
 import { getOfframpTreasuryOwner } from "@/lib/offrampTreasury";
@@ -61,7 +61,7 @@ export async function finalizeStripeSimulatedOfframp(
 
   const offramp = await prisma.offrampRequest.findUnique({
     where: { id: offrampId },
-    include: { blink: true },
+    include: { blink: { include: { credential: true } } },
   });
   if (!offramp || offramp.blinkId !== blinkId) {
     return;
@@ -85,15 +85,30 @@ export async function finalizeStripeSimulatedOfframp(
     return;
   }
 
-  const emailNorm = blink.contractorEmail.trim().toLowerCase();
-  let contractorKp;
-  try {
-    contractorKp = deriveContractorWalletKeypair(emailNorm);
-  } catch {
-    await prisma.offrampRequest.update({
-      where: { id: offramp.id },
-      data: { status: "failed", providerRef: session.id },
+  const secretOk =
+    (process.env.CONTRACTOR_WALLET_DERIVATION_SECRET ?? "").length >= 32;
+  const contractorKp = resolveCustodialSignerForBlinkWallet(blink);
+  if (!contractorKp) {
+    if (!secretOk) {
+      await prisma.offrampRequest.update({
+        where: { id: offramp.id },
+        data: { status: "failed", providerRef: session.id },
+      });
+      return;
+    }
+    await prisma.offrampRequest.updateMany({
+      where: {
+        id: offramp.id,
+        status: { in: ["initiated", "failed"] },
+      },
+      data: { status: "processing", providerRef: session.id },
     });
+    await commitStripeOfframpSuccess(
+      offramp.id,
+      blink.id,
+      session.id,
+      "legacy_no_sweep"
+    );
     return;
   }
 
@@ -104,16 +119,6 @@ export async function finalizeStripeSimulatedOfframp(
     },
     data: { status: "processing", providerRef: session.id },
   });
-
-  if (contractorKp.publicKey.toBase58() !== blink.walletAddress) {
-    await commitStripeOfframpSuccess(
-      offramp.id,
-      blink.id,
-      session.id,
-      "legacy_no_sweep"
-    );
-    return;
-  }
 
   const treasury = getOfframpTreasuryOwner();
 

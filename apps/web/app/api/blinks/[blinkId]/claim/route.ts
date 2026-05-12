@@ -79,7 +79,7 @@ export async function POST(
 
     await migrateCredentialToDerivedWalletIfSafe(
       blink.credentialId,
-      blink.contractorEmail.trim().toLowerCase()
+      blink.credential.email.trim().toLowerCase()
     );
     const reloaded = await prisma.blink.findUnique({
       where: { id: params.blinkId },

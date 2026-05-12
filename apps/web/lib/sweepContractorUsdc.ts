@@ -1,4 +1,5 @@
 import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
   createTransferCheckedInstruction,
   getAccount,
@@ -7,21 +8,22 @@ import {
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
 
 import { getConnection } from "@/lib/anchor";
-import { loadRelayerKeypair } from "@/lib/relayer";
+import { assertRelayerMatchesProgramConstant, loadRelayerKeypair } from "@/lib/relayer";
 import { getMintOwnerProgram } from "@/lib/tokenProgram";
 
 const USDC_DECIMALS = 6;
 
 /**
- * Move all USDC from the contractor's ATA to the treasury owner's ATA.
- * Relayer pays tx fee and creates treasury ATA if missing. Contractor must sign the transfer.
+ * Move all USDC from the contractor's ATA to a destination owner's ATA.
+ * Relayer pays tx fee and creates the destination ATA if missing. Contractor must sign the transfer.
  */
-export async function sweepContractorUsdcToTreasury(params: {
+export async function sweepContractorUsdcToOwner(params: {
   contractorSigner: Keypair;
-  treasuryOwner: PublicKey;
+  destinationOwner: PublicKey;
 }): Promise<{ sweepTxSig: string | null; amountRaw: bigint }> {
   const connection = getConnection();
   const relayer = loadRelayerKeypair();
+  assertRelayerMatchesProgramConstant(relayer);
   const mint = new PublicKey(process.env.USDC_MINT_ADDRESS ?? "");
   const tokenProgram = await getMintOwnerProgram(connection, mint);
   const contractorPub = params.contractorSigner.publicKey;
@@ -30,13 +32,15 @@ export async function sweepContractorUsdcToTreasury(params: {
     mint,
     contractorPub,
     false,
-    tokenProgram
+    tokenProgram,
+    ASSOCIATED_TOKEN_PROGRAM_ID
   );
   const destAta = getAssociatedTokenAddressSync(
     mint,
-    params.treasuryOwner,
+    params.destinationOwner,
     false,
-    tokenProgram
+    tokenProgram,
+    ASSOCIATED_TOKEN_PROGRAM_ID
   );
 
   const acc = await getAccount(connection, sourceAta, "confirmed", tokenProgram);
@@ -52,9 +56,10 @@ export async function sweepContractorUsdcToTreasury(params: {
       createAssociatedTokenAccountIdempotentInstruction(
         relayer.publicKey,
         destAta,
-        params.treasuryOwner,
+        params.destinationOwner,
         mint,
-        tokenProgram
+        tokenProgram,
+        ASSOCIATED_TOKEN_PROGRAM_ID
       )
     );
   }
@@ -79,8 +84,9 @@ export async function sweepContractorUsdcToTreasury(params: {
     recentBlockhash: blockhash,
   });
   tx.add(...ixs);
-  tx.partialSign(params.contractorSigner);
-  tx.sign(relayer);
+  // Both relayer and contractor must sign in one `sign()` call — `partialSign` then
+  // `sign(relayer)` drops the contractor signature on @solana/web3.js (serialize fails RPC-side).
+  tx.sign(relayer, params.contractorSigner);
 
   const sig = await connection.sendRawTransaction(tx.serialize(), {
     skipPreflight: false,
@@ -91,4 +97,18 @@ export async function sweepContractorUsdcToTreasury(params: {
     "confirmed"
   );
   return { sweepTxSig: sig, amountRaw };
+}
+
+/**
+ * Move all USDC from the contractor's ATA to the treasury owner's ATA.
+ * Relayer pays tx fee and creates treasury ATA if missing. Contractor must sign the transfer.
+ */
+export async function sweepContractorUsdcToTreasury(params: {
+  contractorSigner: Keypair;
+  treasuryOwner: PublicKey;
+}): Promise<{ sweepTxSig: string | null; amountRaw: bigint }> {
+  return sweepContractorUsdcToOwner({
+    contractorSigner: params.contractorSigner,
+    destinationOwner: params.treasuryOwner,
+  });
 }
