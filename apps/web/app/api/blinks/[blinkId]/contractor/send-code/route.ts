@@ -1,6 +1,6 @@
 import { randomInt } from "crypto";
 import { NextRequest } from "next/server";
-import { ensureBlinkContractorAllowed } from "@/lib/blinkGuards";
+import { ensureBlinkContractorOtpAllowed } from "@/lib/blinkGuards";
 import {
   contractorOtpPayloadKey,
   contractorOtpSendCooldownKey,
@@ -36,7 +36,7 @@ export async function POST(
     if (!blink) {
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
-    ensureBlinkContractorAllowed(blink);
+    ensureBlinkContractorOtpAllowed(blink);
     if (blink.contractorEmail.trim().toLowerCase() !== emailNorm) {
       throw new ApiError(403, "FORBIDDEN", "Email does not match this Blink");
     }

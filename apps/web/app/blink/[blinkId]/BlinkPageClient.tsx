@@ -486,6 +486,11 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
   const expired = new Date(meta.expiresAt).getTime() < Date.now();
   /** Stops email / claim flow (but CLAIMED still shows cash-out). */
   const claimFlowDone = ["CLAIMED", "OFFRAMPED", "REFUNDED", "EXPIRED"].includes(meta.status);
+  const needsSessionRefreshForCashOut = meta.status === "CLAIMED" && !sessionToken;
+  const showVerifyEmailCard =
+    (!claimFlowDone && !expired) || needsSessionRefreshForCashOut;
+  const showVerifyCodeCard =
+    codeSent && ((!claimFlowDone && !expired) || needsSessionRefreshForCashOut);
   const showClaimModal =
     meta.status === "OPENED" && Boolean(sessionToken) && !claimFlowDone && !expired;
   const claimModalOpen = showClaimModal && !claimModalDismissed;
@@ -612,13 +617,15 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
 
           {/* Card 2 — Action / Verification */}
           <div className="flex flex-col gap-6">
-            {!claimFlowDone && !expired ? (
+            {showVerifyEmailCard ? (
               <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm sm:p-8">
                 <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-                  Verify to claim
+                  {needsSessionRefreshForCashOut ? "Verify to continue" : "Verify to claim"}
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Enter your email to securely claim your funds. No downloads or apps required.
+                  {needsSessionRefreshForCashOut
+                    ? "Request a code with the same email as this payment to use Stripe Cash-out again."
+                    : "Enter your email to securely claim your funds. No downloads or apps required."}
                 </p>
 
                 <label
@@ -657,7 +664,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
               </section>
             ) : null}
 
-            {codeSent && !claimFlowDone && !expired ? (
+            {showVerifyCodeCard ? (
               <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm sm:p-8">
                 <h2 className="text-xl font-semibold tracking-tight text-slate-900">
                   Enter the code
@@ -726,7 +733,7 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
               </section>
             ) : null}
 
-            {meta.status === "CLAIMED" && sessionToken ? (
+            {meta.status === "CLAIMED" ? (
               <section className="rounded-2xl border border-slate-200/70 bg-white p-6 shadow-sm sm:p-8">
                 <h2 className="text-xl font-semibold tracking-tight text-slate-900">
                   Withdrawal
@@ -735,9 +742,14 @@ export function BlinkPageClient({ blinkId }: { blinkId: string }) {
                   Test the withdrawal process with Stripe. This clears your test USDC to simulate
                   a bank transfer (no real funds are moved).
                 </p>
+                {!sessionToken ? (
+                  <p className="mt-3 text-sm text-slate-600">
+                    Verify your email with the code above to enable Stripe Cash-out.
+                  </p>
+                ) : null}
                 <button
                   type="button"
-                  disabled={busy}
+                  disabled={busy || !sessionToken}
                   onClick={() => void startStripeCashOut()}
                   className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-500 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all hover:-translate-y-px hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                 >

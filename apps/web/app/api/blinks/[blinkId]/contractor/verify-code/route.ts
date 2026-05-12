@@ -4,7 +4,7 @@ import { signContractorSessionToken } from "@/lib/auth";
 import { assertBlinkTransition } from "@/lib/blinkStateMachine";
 import { deriveContractorWalletKeypair } from "@/lib/deriveContractorWallet";
 import { migrateCredentialToDerivedWalletIfSafe } from "@/lib/migrateCredentialToDerivedWallet";
-import { ensureBlinkContractorAllowed } from "@/lib/blinkGuards";
+import { ensureBlinkContractorOtpAllowed } from "@/lib/blinkGuards";
 import {
   contractorOtpPayloadKey,
   contractorOtpVerifyFailsKey,
@@ -44,7 +44,7 @@ export async function POST(
     if (!blink) {
       throw new ApiError(404, "NOT_FOUND", "Blink not found");
     }
-    ensureBlinkContractorAllowed(blink);
+    ensureBlinkContractorOtpAllowed(blink);
     if (blink.contractorEmail.trim().toLowerCase() !== emailNorm) {
       throw new ApiError(403, "FORBIDDEN", "Email does not match this Blink");
     }
@@ -144,6 +144,21 @@ export async function POST(
             credentialId: row.id,
           },
         });
+      }
+    } else if (blink.status === "CLAIMED") {
+      if (!blink.walletAddress || !blink.credentialId) {
+        throw new ApiError(
+          500,
+          "INVALID_STATE",
+          "Claimed Blink is missing wallet linkage"
+        );
+      }
+      if (blink.credentialId !== row.id || blink.walletAddress !== row.walletAddress) {
+        throw new ApiError(
+          403,
+          "FORBIDDEN",
+          "This Blink is linked to a different verified identity"
+        );
       }
     } else {
       throw new ApiError(400, "INVALID_STATE", "Blink cannot accept contractor verification");
